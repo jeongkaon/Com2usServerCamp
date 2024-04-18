@@ -4,3 +4,13 @@ GET {{HiveServer_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{HiveServer_HostAddress}}/CreateAccount
+Accept: application/json
+
+{
+    "Email" : "kaon7723@tukroea.ac.kr",
+    "Password":"a1234567890"
+}
+
+###

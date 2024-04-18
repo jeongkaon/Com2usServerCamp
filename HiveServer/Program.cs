@@ -1,4 +1,19 @@
+using System;
+using System.IO;
+using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using SqlKata;
+using ZLogger;
+
 var builder = WebApplication.CreateBuilder(args);
+
+IConfiguration configuration = builder.Configuration;
+builder.Services.Configure<DbConfig>(configuration.GetSection(nameof(DbConfig)));
+
 
 // Add services to the container.
 
@@ -22,4 +37,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+IConfiguration configuration = app.Configuration;
+
+app.Run(configuration["ServerAddress"]);
