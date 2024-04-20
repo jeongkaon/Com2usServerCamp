@@ -13,9 +13,9 @@ namespace HiveServer.Repository;
 
 public class HiveAccountDB : IHiveAccountDB
 {
-    //로그랑 그런거 일단 나중에하기
 
     readonly IOptions<DbConfig> _dbConfig;
+    private readonly ILogger<HiveAccountDB> _logger;
 
 
     //private필드니까 _사용함
@@ -25,10 +25,11 @@ public class HiveAccountDB : IHiveAccountDB
     QueryFactory _qFactory;
 
 
-    public HiveAccountDB(IOptions<DbConfig> dbConfig)
+    public HiveAccountDB(ILogger<HiveAccountDB> logger,IOptions<DbConfig> dbConfig)
     {
 
         _dbConfig = dbConfig;
+        _logger = logger;
 
         Open();
 
@@ -45,7 +46,7 @@ public class HiveAccountDB : IHiveAccountDB
 
         var count = await _qFactory.Query("account").InsertAsync(new
         {
-            Eamil = email,
+            Email = email,
             SaltValue = password,
             HashedPassword = "HassehdPassworld@@@@@"
         });
@@ -70,6 +71,7 @@ public class HiveAccountDB : IHiveAccountDB
     public void Dispose()
     {
 
+        Close();
     }
 
 
@@ -93,7 +95,7 @@ public class DbConfig
 {
     public string? HiveDB { get; set; }
 
-
+    public string? Redis { get; set; }
 
 
 }

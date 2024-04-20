@@ -18,7 +18,11 @@ builder.Services.Configure<DbConfig>(configuration.GetSection(nameof(DbConfig)))
 builder.Services.AddTransient<IHiveAccountDB, HiveAccountDB>();
 builder.Services.AddControllers();
 
+//SettingLogger();
+
 var app = builder.Build();
+
+
 app.MapDefaultControllerRoute();
 
 app.UseRouting();
@@ -29,3 +33,32 @@ app.UseEndpoints(endpoints => { _ = endpoints.MapControllers(); });
 app.Run(configuration["ServerAddress"]);
 
 
+void SettingLogger()
+{
+    ILoggingBuilder logging = builder.Logging;
+    _ = logging.ClearProviders();
+
+    string fileDir = configuration["logdir"];
+
+    bool exists = Directory.Exists(fileDir);
+
+    if (!exists)
+    {
+        _ = Directory.CreateDirectory(fileDir);
+    }
+
+    _ = logging.AddZLoggerRollingFile(
+        options =>
+        {
+            options.UseJsonFormatter();
+            options.FilePathSelector = (timestamp, sequenceNumber) => $"{fileDir}{timestamp.ToLocalTime():yyyy-MM-dd}_{sequenceNumber:000}.log";
+            options.RollingInterval = ZLogger.Providers.RollingInterval.Day;
+            options.RollingSizeKB = 1024;
+        });
+
+    _ = logging.AddZLoggerConsole(options =>
+    {
+        options.UseJsonFormatter();
+    });
+
+}
