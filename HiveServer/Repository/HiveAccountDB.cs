@@ -41,7 +41,7 @@ public class HiveAccountDB : IHiveAccountDB
 
         //이따가 try-catch문으로 바꿔보자.
 
-        var (salt, hashed) = PasswordCheck.GenerateHashValue(password);
+        var (salt, hashed) = Security.GenerateHashValue(password);
 
         var count = await _qFactory.Query("account").InsertAsync(new
         {

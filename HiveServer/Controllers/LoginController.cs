@@ -40,17 +40,9 @@ public class LoginController : ControllerBase
             return response;
         }
 
-
-
         //토큰 발행 -> 함수 따로 만들어야함, 유효시간도 정해야한다.
-        string tok = "Tocken0000";
-        response.Token = tok;
-
-        //레디스에 저장하자.
-        errorCode= await _HiveRedis.RegistUserAsync(email, tok);
-        response.Result = errorCode;
-        response.Token = tok;
-
+        response.Token = Security.GenerateToken();
+        response.Result = await _HiveRedis.RegistUserAsync(email, response.Token);
 
 
         return response;

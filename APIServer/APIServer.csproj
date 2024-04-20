@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\" />
     <Folder Include="MiddleWare\" />
+    <Folder Include="Models\" />
     <Folder Include="Repository\" />
     <Folder Include="Services\" />
   </ItemGroup>

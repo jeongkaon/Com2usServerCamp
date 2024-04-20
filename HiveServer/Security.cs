@@ -5,7 +5,7 @@ using System.Text;
 
 
 namespace HiveServer;
-public class PasswordCheck
+public class Security
 {
     private const int SaltSize = 16; // 솔트의 바이트 크기
     private const int Iterations = 10000; // PBKDF2 반복 횟수
@@ -51,6 +51,16 @@ public class PasswordCheck
     }
 
 
+    public static string GenerateToken()
+    {
+        Guid tokenGuid = Guid.NewGuid();
+
+        // GUID를 문자열로 변환하여 하이픈(-) 제거
+        string token = tokenGuid.ToString("N");
+
+        return token;
+    }
+
     // 두 바이트 배열 비교
     private static bool ByteArraysEqual(byte[] array1, byte[] array2)
     {
@@ -69,6 +79,8 @@ public class PasswordCheck
 
         return true;
     }
+
+
 
 
 }

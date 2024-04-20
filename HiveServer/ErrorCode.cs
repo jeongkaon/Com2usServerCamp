@@ -7,5 +7,6 @@ public enum ErrorCode : UInt16
     FailCreateAccount=1,
     FailVerifyUserAccount=2,
 
+    FailVerifyUserToken=3,
 
 }
