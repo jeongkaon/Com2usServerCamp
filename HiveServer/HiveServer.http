@@ -1,12 +1,8 @@
 @HiveServer_HostAddress = http://localhost:5242
 
-GET {{HiveServer_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
 
 POST {{HiveServer_HostAddress}}/CreateAccount
-Accept: application/json
+Content-Type: application/json
 
 {
     "Email" : "kaon7723@tukroea.ac.kr",

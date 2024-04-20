@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using HiveServer.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,31 +13,19 @@ using ZLogger;
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = builder.Configuration;
+
 builder.Services.Configure<DbConfig>(configuration.GetSection(nameof(DbConfig)));
-
-
-// Add services to the container.
-
+builder.Services.AddTransient<IHiveAccountDB, HiveAccountDB>();
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+app.MapDefaultControllerRoute();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-IConfiguration configuration = app.Configuration;
+app.UseRouting();
+#pragma warning disable ASP0014
+app.UseEndpoints(endpoints => { _ = endpoints.MapControllers(); });
+#pragma warning restore ASP0014
 
 app.Run(configuration["ServerAddress"]);
+
+
