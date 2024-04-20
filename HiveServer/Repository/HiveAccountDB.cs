@@ -15,13 +15,9 @@ public class HiveAccountDB : IHiveAccountDB
 {
 
     readonly IOptions<DbConfig> _dbConfig;
-    private readonly ILogger<HiveAccountDB> _logger;
-
-
-    //private필드니까 _사용함
+    readonly ILogger<HiveAccountDB> _logger;
     IDbConnection _dbCon;
     SqlKata.Compilers.MySqlCompiler _compiler;
-    //실제 쿼리를 만들어주는 애
     QueryFactory _qFactory;
 
 
@@ -78,9 +74,7 @@ public class HiveAccountDB : IHiveAccountDB
 
     void Open()
     {
-        //db를 열어보자.
-
-        _dbCon = new MySqlConnection(_dbConfig.Value.HiveDB); //여기 안에 환경변수를 넣어줘야한다. 
+        _dbCon = new MySqlConnection(_dbConfig.Value.HiveDB); 
         _dbCon.Open();
 
     }

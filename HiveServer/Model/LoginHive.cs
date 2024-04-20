@@ -16,6 +16,5 @@ public class LoginHiveResponse
 {
     public ErrorCode Result { get; set; } = ErrorCode.None;
 
-    public int uId {  get; set; }
     public string? Token { get; set; }
 }
