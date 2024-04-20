@@ -18,7 +18,6 @@ public class CreateAccountController : ControllerBase
     readonly IHiveAccountDB _HiveDB;
 
 
-    //로그는 일단 나중에 하기
     public CreateAccountController(IHiveAccountDB db)
     {
         _HiveDB = db;

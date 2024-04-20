@@ -69,9 +69,7 @@ public class HiveAccountDB : IHiveAccountDB
     public async Task<Tuple<ErrorCode, string>> VerifyUserAccount(string email, string password)
     {
 
-        Console.WriteLine("대답....");
 
-        //차후 try-catch로 바꿔야함 
 
         UserInfoAccountDB userInfo = await _qFactory.Query("account")
             .Where("Email", email).FirstOrDefaultAsync<UserInfoAccountDB>();

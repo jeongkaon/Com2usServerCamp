@@ -28,7 +28,6 @@ public class LoginController : ControllerBase
     [HttpPost]
     public async Task<LoginHiveResponse> Create([FromBody] LoginHiveRequest request)
     {
-        Console.WriteLine("시발 불렷나??");
 
         LoginHiveResponse response = new();
 
@@ -38,11 +37,9 @@ public class LoginController : ControllerBase
         {
             response.Result = errorCode;
 
-            Console.WriteLine("유저정보없음!!!!!!!!!!!!!!");
             return response;
         }
 
-        Console.WriteLine("유저정보있음!!!!!!!!!!!!!!");
 
 
         //토큰 발행 -> 함수 따로 만들어야함, 유효시간도 정해야한다.
