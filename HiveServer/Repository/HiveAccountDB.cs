@@ -6,9 +6,10 @@ using MySqlConnector;
 using SqlKata.Execution;
 using Microsoft.Extensions.Logging;
 using ZLogger;
-using HiveServer.Model;
 using System.Diagnostics;
 using System.Security.Principal;
+using HiveServer.Model;
+
 
 namespace HiveServer.Repository;
 
@@ -39,18 +40,20 @@ public class HiveAccountDB : IHiveAccountDB
     {
 
         //이따가 try-catch문으로 바꿔보자.
-        //securty해서 해싱하고 해야되는데 일단 +string올 해보자 연결이 먼저임
+
+        var (salt, hashed) = PasswordCheck.GenerateHashValue(password);
 
         var count = await _qFactory.Query("account").InsertAsync(new
         {
             Email = email,
-            SaltValue = password,
-            HashedPassword = "HassehdPassworld@@@@@"
+            SaltValue = salt,
+            HashedPassword = hashed
         });
 
         if(count== 1)
         {
             Console.WriteLine("Insert Data in DataBase SucceSSS11");
+            
         }
         else
         {
@@ -65,21 +68,27 @@ public class HiveAccountDB : IHiveAccountDB
 
     public async Task<Tuple<ErrorCode, string>> VerifyUserAccount(string email, string password)
     {
-        //계정검증하는 코드
-        //실제 존재하는 유저인지 검사 - sql에서 가져와야한다.
+
+        Console.WriteLine("대답....");
 
         //차후 try-catch로 바꿔야함 
-        AdbUser userInfo = await _qFactory.Query("account")
-            .Where("Email", email).FirstOrDefaultAsync<AdbUser>();
 
-        //값 가져온거로 예외처리해야함 일단 넘어가~
+        UserInfoAccountDB userInfo = await _qFactory.Query("account")
+            .Where("Email", email).FirstOrDefaultAsync<UserInfoAccountDB>();
 
-        //테스트
-        if("HassehdPassworld@@@@@" != userInfo.hashed_pw)
+        if(userInfo.email== null)
         {
-            //안됨 돌아가
+            //없는 user 돌아가...
         }
 
+        //불일치 돌아가~
+     //   if (false ==PasswordCheck.VerifyPassword(password, userInfo.salt_value, userInfo.hashed_pw))
+       // {
+    //        Console.WriteLine("verifyuserAccount fail!!");
+//            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserAccount, email);
+
+     //   }
+        Console.WriteLine("verifyuserAccount suc!!");
 
         return new Tuple<ErrorCode, string>(ErrorCode.None, email);
 

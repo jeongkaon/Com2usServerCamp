@@ -13,12 +13,12 @@ namespace HiveServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserLoginController : ControllerBase
+public class LoginController : ControllerBase
 {
     readonly IHiveRedis _HiveRedis;
     readonly IHiveAccountDB _AccountDB;
 
-    public UserLoginController(IHiveRedis hiveRedis, IHiveAccountDB accountDB)
+    public LoginController(IHiveRedis hiveRedis, IHiveAccountDB accountDB)
     {
         _HiveRedis = hiveRedis;
         _AccountDB = accountDB;
@@ -28,6 +28,8 @@ public class UserLoginController : ControllerBase
     [HttpPost]
     public async Task<LoginHiveResponse> Create([FromBody] LoginHiveRequest request)
     {
+        Console.WriteLine("시발 불렷나??");
+
         LoginHiveResponse response = new();
 
         // 유저정보 있는지 없는지 검사

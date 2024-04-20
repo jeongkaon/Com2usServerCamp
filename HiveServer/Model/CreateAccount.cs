@@ -24,11 +24,11 @@ public class CreateHiveAccountResponse
     public ErrorCode Result { get; set; } = ErrorCode.None;
 }
 
-//accountDB의 유저정보인가?
-public class AdbUser
+public class UserInfoAccountDB
 {
-    public long user_id { get; set; }
+
     public string email { get; set; }
-    public string hashed_pw { get; set; }
+    
     public string salt_value { get; set; }
+    public string hashed_pw { get; set; }
 }
