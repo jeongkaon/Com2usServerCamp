@@ -10,3 +10,11 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{HiveServer_HostAddress}}/Login
+Content-Type: application/json
+
+{
+    "Email" : "kaon7723@tukroea.ac.kr",
+    "Password":"a1234567890"
+}

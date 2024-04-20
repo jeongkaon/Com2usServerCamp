@@ -16,6 +16,8 @@ IConfiguration configuration = builder.Configuration;
 
 builder.Services.Configure<DbConfig>(configuration.GetSection(nameof(DbConfig)));
 builder.Services.AddTransient<IHiveAccountDB, HiveAccountDB>();
+builder.Services.AddTransient<IHiveRedis, HiveRedis>();
+
 builder.Services.AddControllers();
 
 //SettingLogger();

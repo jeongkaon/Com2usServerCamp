@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using ZLogger;
 using HiveServer.Model;
 using System.Diagnostics;
+using System.Security.Principal;
 
 namespace HiveServer.Repository;
 
@@ -61,6 +62,31 @@ public class HiveAccountDB : IHiveAccountDB
         return ErrorCode.None;
 
     }
+
+    public async Task<Tuple<ErrorCode, string>> VerifyUserAccount(string email, string password)
+    {
+        //계정검증하는 코드
+        //실제 존재하는 유저인지 검사 - sql에서 가져와야한다.
+
+        //차후 try-catch로 바꿔야함 
+        AdbUser userInfo = await _qFactory.Query("account")
+            .Where("Email", email).FirstOrDefaultAsync<AdbUser>();
+
+        //값 가져온거로 예외처리해야함 일단 넘어가~
+
+        //테스트
+        if("HassehdPassworld@@@@@" != userInfo.hashed_pw)
+        {
+            //안됨 돌아가
+        }
+
+
+        return new Tuple<ErrorCode, string>(ErrorCode.None, email);
+
+
+
+    }
+
 
 
 
