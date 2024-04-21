@@ -1,5 +1,18 @@
-﻿namespace APIServer;
+﻿using System.Diagnostics.Tracing;
 
-public class ErrorCode
+namespace APIServer;
+
+public enum ErrorCode : UInt16
 {
+    None = 0,
+
+    FailVerifyAccount=1000,
+    FailVerifyToken=1001,
+    FailHiveInvalidResponse=1002,
+    FailCreateUserGameData=1003,
+
+
+
+    NotExistAccount=2000,
+    
 }

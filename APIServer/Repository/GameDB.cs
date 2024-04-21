@@ -11,9 +11,11 @@ using System.Security.Principal;
 using APIServer.Models;
 using Microsoft.AspNetCore.Identity;
 using APIServer.Repository.Interfaces;
+using APIServer.Models.GameDB;
 
 namespace APIServer.Repository;
 
+//game_db에 있는 데이터 가져온다.
 public class GameDB : IGameDB
 {
     readonly IOptions<DbConfig> _dbConfig;
@@ -35,6 +37,43 @@ public class GameDB : IGameDB
         _qFactory = new QueryFactory(_dbCon, _compiler);
 
     }
+
+    public async Task<UserGameDataDB> GetUserGameDataByEmail(string email)
+    {
+        return await _qFactory.Query("usergamedata")
+                        .Where("email", email)
+                         .FirstOrDefaultAsync<UserGameDataDB>();
+    }
+
+
+
+
+    public async Task<ErrorCode> CreateUserGameData(string email)
+    {
+
+        var count = await _qFactory.Query("game_db").InsertAsync(new
+        {
+            email = email,
+            exp = 0,
+            win_score =0,
+            lose_score=0,
+            level=0
+            
+        });
+
+        if (count != 1)
+        {
+            return ErrorCode.FailCreateUserGameData;
+
+        }
+
+
+        return ErrorCode.None;
+
+    }
+
+
+
 
 
     public void Dispose()

@@ -1,4 +1,6 @@
-﻿using APIServer.Repository.Interfaces;
+﻿using APIServer.Models.AccountDB;
+using APIServer.Models.GameDB;
+using APIServer.Repository.Interfaces;
 using Microsoft.Extensions.Options;
 using MySqlConnector;
 using SqlKata.Execution;
@@ -6,6 +8,7 @@ using System.Data;
 
 namespace APIServer.Repository;
 
+//account_db에 있는 데이터 가져오는역할
 public class AccountDB : IAccountDB
 {
     readonly IOptions<DbConfig> _dbConfig;
@@ -27,6 +30,13 @@ public class AccountDB : IAccountDB
 
     }
 
+    public async Task<UserAccountDB> GetUserAccountByEmail(string email)
+    {
+        return await _qFactory.Query("account")
+                        .Where("email", email)
+                         .FirstOrDefaultAsync<UserAccountDB>();
+
+    }
 
     public void Dispose()
     {
