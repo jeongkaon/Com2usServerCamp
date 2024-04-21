@@ -9,6 +9,7 @@ using ZLogger;
 using System.Diagnostics;
 using System.Security.Principal;
 using HiveServer.Model;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace HiveServer.Repository;
@@ -38,9 +39,6 @@ public class HiveAccountDB : IHiveAccountDB
 
     public async Task<ErrorCode> CreateAccountAsync(string email, string password)
     {
-
-        //이따가 try-catch문으로 바꿔보자.
-
         var (salt, hashed) = Security.GenerateHashValue(password);
 
         var count = await _qFactory.Query("account").InsertAsync(new
@@ -53,14 +51,11 @@ public class HiveAccountDB : IHiveAccountDB
         if(count== 1)
         {
             Console.WriteLine("Insert Data in DataBase SucceSSS11");
-            
         }
         else
         {
             Console.WriteLine("Insert Data in DataBase FAILE!!!!!!");
-
         }
-
 
         return ErrorCode.None;
 
@@ -68,24 +63,22 @@ public class HiveAccountDB : IHiveAccountDB
 
     public async Task<Tuple<ErrorCode, string>> VerifyUserAccount(string email, string password)
     {
-
-
-
         UserInfoAccountDB userInfo = await _qFactory.Query("account")
             .Where("Email", email).FirstOrDefaultAsync<UserInfoAccountDB>();
 
         if(userInfo.email== null)
         {
-            //없는 user 돌아가...
+            Console.WriteLine("verifyuserAccount fail!!");
+            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNoEmail, email);
+
         }
 
-        //불일치 돌아가~
-     //   if (false ==PasswordCheck.VerifyPassword(password, userInfo.salt_value, userInfo.hashed_pw))
-       // {
-    //        Console.WriteLine("verifyuserAccount fail!!");
-//            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserAccount, email);
+        if (false == Security.VerifyPassword(password, userInfo.saltvalue, userInfo.hashedpassword))
+        {
+            Console.WriteLine("verifyuserAccount fail!!");
+            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNotPassword, email);
 
-     //   }
+        }
         Console.WriteLine("verifyuserAccount suc!!");
 
         return new Tuple<ErrorCode, string>(ErrorCode.None, email);
@@ -99,7 +92,6 @@ public class HiveAccountDB : IHiveAccountDB
 
     public void Dispose()
     {
-
         Close();
     }
 

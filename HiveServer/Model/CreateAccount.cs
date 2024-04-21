@@ -26,9 +26,10 @@ public class CreateHiveAccountResponse
 
 public class UserInfoAccountDB
 {
-
     public string email { get; set; }
-    
-    public string salt_value { get; set; }
-    public string hashed_pw { get; set; }
+    public string password { get; set; }
+
+
+    public string saltvalue { get; set; }
+    public string hashedpassword { get; set; }
 }

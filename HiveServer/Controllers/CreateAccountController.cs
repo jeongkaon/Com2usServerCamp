@@ -17,7 +17,6 @@ public class CreateAccountController : ControllerBase
 {
     readonly IHiveAccountDB _HiveDB;
 
-
     public CreateAccountController(IHiveAccountDB db)
     {
         _HiveDB = db;

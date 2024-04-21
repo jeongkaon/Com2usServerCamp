@@ -24,39 +24,26 @@ public class HiveRedis : IHiveRedis
         RedisConfig config = new("default", dbConfig.Value.Redis);
         _redisCon = new RedisConnection(config);
 
-
     }
 
     public async Task<ErrorCode> RegistUserAsync(string email, string authToken)
     {
-
-        ErrorCode result = ErrorCode.None;
-
-        //이메일이랑 토큰 매개변수로 받음 레디스 저장 ㄱㄱ
         var idDefaultExpiry = TimeSpan.FromDays(1);
-
         var redisId = new RedisString<string>(_redisCon, email, idDefaultExpiry);
         await redisId.SetAsync(authToken);
-      
 
-        return result;
-
+        return ErrorCode.None;
     }
     public async Task<ErrorCode> VerifyUserToken(string email, string authToken)
     {
-        //인자로 받은거 레디스에서 찾아서 알려주기
-
         var idDefaultExpiry = TimeSpan.FromDays(1);
 
         var redisId = new RedisString<string>(_redisCon, email, idDefaultExpiry);
         var res =  await redisId.GetAsync();
-        
         if(res.Value != authToken)
         {
-            //돌아가...
             return ErrorCode.FailVerifyUserToken;
         }
-        Console.WriteLine(res.GetType());
 
         return ErrorCode.None;
     }
