@@ -12,12 +12,12 @@ using ZLogger;
 namespace HiveServer.Repository;
 public class HiveRedis : IHiveRedis
 {
-    readonly ILogger<HiveAccountDB> _logger;
+    readonly ILogger<HiveRedis> _logger;
     
     public RedisConnection _redisCon;
 
 
-    public HiveRedis(ILogger<HiveAccountDB> logger, IOptions<DbConfig> dbConfig)
+    public HiveRedis(ILogger<HiveRedis> logger, IOptions<DbConfig> dbConfig)
     {
         _logger = logger;
 
