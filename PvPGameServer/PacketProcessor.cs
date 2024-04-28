@@ -44,14 +44,12 @@ public class PacketProcessor
 
     public void Destroy()
     {
-        //로그설정
         MainServer.MainLogger.Info("PacketProcessor::Destory - begin");
 
         isThreadRunning = false;
         msgBuffer.Complete();
         ProcessThread.Join();
 
-        //로그설정
         MainServer.MainLogger.Info("PacketProcessor::Destory - end");
 
     }
@@ -72,6 +70,9 @@ public class PacketProcessor
         RoomPacketHandler.Init(UserMgr);
         RoomPacketHandler.SetRoomList(RoomList);
         RoomPacketHandler.RegistPacketHandler(PacketHandlerMap);
+
+        //게임관련 패킷 핸들러 
+
     }
 
     void Process()

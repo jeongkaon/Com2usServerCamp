@@ -66,42 +66,42 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.CS_ROOM_CHAT, RequestChat);
 
         packetHandlerMap.Add((int)PACKET_ID.CS_READY_GAME, RecvReadyPacket);
+      //  packetHandlerMap.Add((int)PACKET_ID.NTR_READY_GAME, NotifyReady);
 
     }
 
     public void RecvReadyPacket(MemoryPackBinaryRequestInfo packetData)
     {
+        Console.WriteLine("게임준비 완료 요청 받음");
+        var reqData = MemoryPackSerializer.Deserialize<CSReadyPacket>(packetData.Data);
+        var roomNumber = reqData.RoomNumber;
         var sessionID = packetData.SessionID;
-        var user = UserMgr.GetUser(sessionID);
 
-        var room = RoomList[user.RoomNumber];
-
+        var room = GetRoom(roomNumber);
         room.SetRoomUserBeReady(sessionID);
-        
-        if(room.CheckReady())
+
+        if (room.CheckReady())
         {
             //게임시작 패킷 모두에게 보내야한다.
-            //room에서 broadcast 해주자,,노티파이인가...? 일단 넘어가
-            //room.Broadcast(sessionID, sendPacket); sendpackt세팅해서 보내쟈
+            //룸에 있는 모든 사람들에게 전송
             room.NotifyPacketGameStart(sessionID);
         }
         else
         {
-            //걍 대기상태임 - 오류코드라도 보내야한다 responseRedaydpacket쓰면될듯
-            SendReadyPacket(sessionID, ERROR_CODE.ROOM_NOTALL_READY);
+            SendReadyPacket(sessionID);
+            //노티파이도 해야함
         }
 
     }
 
-    //이게 필요할까???????
-    public void SendReadyPacket(string sessionId,ERROR_CODE err)
+    public void SendReadyPacket(string sessionId)
     {
-        var resReadyPacket = new SCReadyPacket()
+        var temp = new SCReadyPacket()
         {
-            Result = (short)err
+            Result = (short)ERROR_CODE.ROOM_NOTALL_READY
         };
 
-        var sendPacket = MemoryPackSerializer.Serialize(resReadyPacket);
+        var sendPacket = MemoryPackSerializer.Serialize(temp);
         MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_READY_GAME);
 
         NetworkSendFunc(sessionId, sendPacket);

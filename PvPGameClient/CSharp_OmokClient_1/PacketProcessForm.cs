@@ -195,9 +195,9 @@ namespace csharp_test_client
 
         void PacketProcess_ReadyOmokResponse(byte[] packetData)
         {
-            //var responsePkt =  MemoryPackSerializer.Deserialize<PKTResReadyOmok>(packetData);
+            var responsePkt =  MemoryPackSerializer.Deserialize<SCReadyPacket>(packetData);
 
-            //DevLog.Write($"게임 준비 완료 요청 결과:  {(ErrorCode)responsePkt.Result}");
+            DevLog.Write($"게임 준비 완료 요청 결과:  {(ErrorCode)responsePkt.Result}");
         }
 
         void PacketProcess_ReadyOmokNotify(byte[] packetData)
@@ -217,18 +217,18 @@ namespace csharp_test_client
 
         void PacketProcess_StartOmokNotify(byte[] packetData)
         {
-            //var isMyTurn = false;
+            var isMyTurn = false;
 
-            //var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfStartOmok>(packetData);
-            
-            //if(notifyPkt.FirstUserID == textBoxUserID.Text)
-            //{
-            //    isMyTurn = true;
-            //}
+            var notifyPkt = MemoryPackSerializer.Deserialize<SCGameStartPacket>(packetData);
 
-            //StartGame(isMyTurn, textBoxUserID.Text, GetOtherPlayer(textBoxUserID.Text));
+            if (notifyPkt.FirstUserID == textBoxUserID.Text)
+            {
+                isMyTurn = true;
+            }
 
-            //DevLog.Write($"게임 시작. 흑돌 플레이어: {notifyPkt.FirstUserID}");
+            StartGame(isMyTurn, textBoxUserID.Text, GetOtherPlayer(textBoxUserID.Text));
+
+            DevLog.Write($"게임 시작. 흑돌 플레이어: {notifyPkt.FirstUserID}");
         }
         
 

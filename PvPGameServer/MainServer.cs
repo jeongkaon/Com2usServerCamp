@@ -25,9 +25,12 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
 
 
+
+
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
     {
+
         NewSessionConnected += new SessionHandler<ClientSession>(OnConnected);
         SessionClosed += new SessionHandler<ClientSession, CloseReason>(OnClosed);
         NewRequestReceived += new RequestHandler<ClientSession, MemoryPackBinaryRequestInfo>(OnPacketReceived);
@@ -56,7 +59,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         try
         {
             //맨마지막 인자 로그수정 있음!
-            bool res = Setup(new SuperSocket.SocketBase.Config.RootConfig(), serverConfig, logFactory: new NLogLogFactory());
+            bool res = Setup(new SuperSocket.SocketBase.Config.RootConfig(), serverConfig, logFactory: new NLogLogFactory("Log.config"));
 
             if (res == false)
             {
@@ -68,22 +71,23 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             {
 
                 MainLogger = base.Logger;
-                MainLogger.Info("server init");
-                Console.WriteLine("네트워크 설정 성공?");
+                MainLogger.Info("서버 초기화 성공");
+                Console.WriteLine("네트워크 설정 엔로그 찍어조 ㅜㅜㅜㅜ");
 
             }
 
             CreateComponent();
+            Console.WriteLine("서버 생성 성공");
+
             MainLogger.Info("서버 생성 성공");
 
             Start();
 
         }
-        catch (Exception e) 
+        catch (Exception ex) 
         {
-            MainLogger.Info("서버 생성 실패");
+            MainLogger.Error($"[ERROR] 서버 생성 실패: {ex.ToString()}");
 
-            //서버 생성 실패!   
         }
     }
 
@@ -138,14 +142,10 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     void OnConnected(ClientSession session)
     {
-        //메모리패킷 그거 해야햠
         MainLogger.Info($"세션 번호 {session.SessionID} 접속");
-
 
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(true,session.SessionID);
         Distribute(packet);
-
-
     }
 
     void OnClosed(ClientSession session, CloseReason reason)
@@ -153,7 +153,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainLogger.Info($"세션 번호 {session.SessionID} 접속해제: {reason.ToString()}");
 
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(false, session.SessionID);
-
         Distribute(packet);
 
     }

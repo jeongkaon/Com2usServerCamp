@@ -160,6 +160,7 @@ public partial class PKTNtfRoomChat : PacketHeader
 public partial class CSReadyPacket : PacketHeader
 {
 
+    public int RoomNumber { get; set; }
 
 }
 
@@ -169,7 +170,9 @@ public partial class SCReadyPacket : PacketHeader
     public short Result { get; set; }
 
 }
+[MemoryPackable]
 public partial class SCGameStartPacket : PacketHeader
 {
+    public string FirstUserID { get; set; }
 
 }

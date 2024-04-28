@@ -371,9 +371,14 @@ namespace csharp_test_client
         private void button3_Click(object sender, EventArgs e)
         {
 
-            //예외처리할거있음 -> 방 입장 안했는데 눌리면 곤란
+            //예외처리할거있음 -> 방 입장 안했는데 눌리면 곤란 처리해야함
+            int result;
+            int.TryParse(textBoxRoomNumber.Text, out result);
 
-            var temp = new CSReadyPacket();
+            var temp = new CSReadyPacket()
+            {
+                RoomNumber = result
+            };
             var packet = MemoryPackSerializer.Serialize(temp);
 
             PostSendPacket(PACKET_ID.CS_READY_GAME, packet);

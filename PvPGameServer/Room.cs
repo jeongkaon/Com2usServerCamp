@@ -36,10 +36,19 @@ public class Room
         return true;
     }
     
-    public void SetRoomUserBeReady(string sessionId)
+    public void SetRoomUserBeReady(string SessionId)
     {
-        var roomUser = GetUser(sessionId);
-        roomUser.IsReady = true;
+        foreach (var user in UserList)
+        {
+            if (user.NetSessionID == SessionId)
+            {
+                user.IsReady = true;
+            }
+
+       
+        }
+
+
     }
 
 
@@ -92,10 +101,16 @@ public class Room
     public void NotifyPacketGameStart(string sessionId)
     {
         var packet = new SCGameStartPacket();
+
+        //선을 누구로하지? 일단 0번ㄱㄱ
+        packet.FirstUserID = UserList[0].UserID;
+        Console.WriteLine("%s가 1등으로 할거임", packet.FirstUserID);
+
+
         var sendPacket = MemoryPackSerializer.Serialize(packet);
         MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_START_GAME);
 
-        Broadcast(sessionId, sendPacket);
+        Broadcast("", sendPacket);
 
     }
 
