@@ -33,11 +33,14 @@ public class PacketProcessor
         var MinRoomNum = RoomList[0].Number;
         var MaxRoomNum = RoomList[0].Number + RoomList.Count() - 1;
 
+        RegistPacketHandlers();
+
         isThreadRunning = true;
         ProcessThread = new System.Threading.Thread(Process);
         ProcessThread.Start();
 
     }
+
 
     public void Destroy()
     {

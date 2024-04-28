@@ -87,7 +87,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         }
     }
 
-    public void CreateComponent()
+    public ERROR_CODE CreateComponent()
     {
         Room.NetworkSendFunc = SendData;
 
@@ -97,7 +97,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainPacketProcessor.NeworktSendFunc = SendData;
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
-        return;
+        return ERROR_CODE.NONE;
 
     }
 

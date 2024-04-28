@@ -126,7 +126,7 @@ public class PacketHandlerRoom : PacketHandler
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(resRoomEnter);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.CS_ROOM_LEAVE);
+        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_ROOM_LEAVE);
 
         NetworkSendFunc(sessionID, sendPacket);
     }
@@ -192,7 +192,7 @@ public class PacketHandlerRoom : PacketHandler
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(resRoomLeave);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.CS_ROOM_LEAVE);
+        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_ROOM_LEAVE);
 
         NetworkSendFunc(sessionID, sendPacket);
     }
