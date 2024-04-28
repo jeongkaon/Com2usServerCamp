@@ -64,9 +64,10 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.CS_ROOM_LEAVE, RequestLeave);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOM_LEAVE, NotifyLeaveInternal);
         packetHandlerMap.Add((int)PACKET_ID.CS_ROOM_CHAT, RequestChat);
-
         packetHandlerMap.Add((int)PACKET_ID.CS_READY_GAME, RecvReadyPacket);
-      //  packetHandlerMap.Add((int)PACKET_ID.NTR_READY_GAME, NotifyReady);
+
+        //게임
+        packetHandlerMap.Add((int)PACKET_ID.CS_PUT_OMOK, recvOmokPacket);
 
     }
 
@@ -108,7 +109,28 @@ public class PacketHandlerRoom : PacketHandler
 
     }
 
+    public void recvOmokPacket(MemoryPackBinaryRequestInfo packetData)
+    {
+        var sessionId = packetData.SessionID;
+        var reqData = MemoryPackSerializer.Deserialize<CSPutOMok>(packetData.Data);
+        var user = UserMgr.GetUser(sessionId);
 
+        var room = GetRoom(user.RoomNumber);
+
+        room.SetBoard(reqData.PosX,reqData.PosY);
+
+        var temp = new NTFPutOmok();
+        temp.PosX= reqData.PosX;
+        temp.PosY= reqData.PosY;
+
+        //지워야함 일단보내바
+
+        var sendPacket = MemoryPackSerializer.Serialize(temp);
+        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
+
+
+        room.Broadcast("", sendPacket);
+    }
 
 
     public void RequestRoomEnter(MemoryPackBinaryRequestInfo packetData)

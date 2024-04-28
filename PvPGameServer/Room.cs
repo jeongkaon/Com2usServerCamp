@@ -21,6 +21,10 @@ public class Room
 
     public static Func<string, byte[], bool> NetworkSendFunc;
 
+    GameBoard board = new GameBoard();
+
+
+
 
     public bool CheckReady()
     {
@@ -104,7 +108,6 @@ public class Room
 
         //선을 누구로하지? 일단 0번ㄱㄱ
         packet.FirstUserID = UserList[0].UserID;
-        Console.WriteLine("%s가 1등으로 할거임", packet.FirstUserID);
 
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
@@ -112,7 +115,10 @@ public class Room
 
         Broadcast("", sendPacket);
 
+        SetGame();    
+    
     }
+
 
 
     public void NotifyPacketUserList(string userNetSessionID)
@@ -169,6 +175,18 @@ public class Room
         }
     }
 
+    //게임관련 send 여기서
+    public void SetGame()
+    {
+        //board.SetPlayer(UserList[0].NetSessionID, UserList[0].UserID, true);
+        //board.SetPlayer(UserList[1].NetSessionID, UserList[1].UserID, false);
+
+    }
+
+    public void SetBoard(int x,int y)
+    {
+        board.SetBoard(x,y);
+    }
 
 
 }

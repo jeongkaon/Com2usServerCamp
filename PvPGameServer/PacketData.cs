@@ -157,7 +157,7 @@ public partial class PKTNtfRoomChat : PacketHeader
 }
 
 
-//게임데이터
+//오목게임데이터
 
 [MemoryPackable]
 public partial class CSReadyPacket : PacketHeader
@@ -179,3 +179,28 @@ public partial class SCGameStartPacket : PacketHeader
     public string FirstUserID { get; set; }
 
 }
+
+
+[MemoryPackable]
+public partial class CSPutOMok : PacketHeader
+{
+    public int PosX { get; set; }
+    public int PosY { get; set; }
+
+}
+[MemoryPackable]
+public partial class SCPutOMok : PacketHeader
+{
+    public short Result { get; set; }
+
+}
+
+[MemoryPackable]
+public partial class NTFPutOmok : PacketHeader
+{
+
+    public int PosX { get; set; }
+    public int PosY { get; set; }
+
+}
+

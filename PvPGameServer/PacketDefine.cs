@@ -66,8 +66,8 @@ public enum PACKET_ID : int
 
     NTF_START_GAME = 1034,
 
-    CS_KEYINPUT = 1035,
-    SC_KEYINPUT = 1036,
+    CS_PUT_OMOK = 1035,
+    SC_PUT_OMOK = 1036,
     NTF_PUT_OMOK = 1037,
 
     //

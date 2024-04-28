@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Notifications;
 
 #pragma warning disable CA1416
 
@@ -32,7 +33,7 @@ namespace csharp_test_client
             PacketFuncDic.Add((int)PACKET_ID.SC_READY_GAME, PacketProcess_ReadyOmokResponse);
             PacketFuncDic.Add((int)PACKET_ID.NTR_READY_GAME, PacketProcess_ReadyOmokNotify);
             PacketFuncDic.Add((int)PACKET_ID.NTF_START_GAME, PacketProcess_StartOmokNotify);
-            PacketFuncDic.Add((int)PACKET_ID.SC_KEYINPUT, PacketProcess_PutMokResponse);
+            PacketFuncDic.Add((int)PACKET_ID.SC_PUT_OMOK, PacketProcess_PutMokResponse);
             PacketFuncDic.Add((int)PACKET_ID.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
             //PacketFuncDic.Add((ushort)PACKET_ID.NTF_END_GAME, PacketProcess_EndOmokNotify);
         }
@@ -234,9 +235,14 @@ namespace csharp_test_client
 
         void PacketProcess_PutMokResponse(byte[] packetData)
         {
-            //var responsePkt =  MemoryPackSerializer.Deserialize<PKTResPutMok>(packetData);
+            var responsePkt =  MemoryPackSerializer.Deserialize<SCPutOMok>(packetData);
 
-            //DevLog.Write($"오목 놓기 실패: {(ErrorCode)responsePkt.Result}");
+            if(responsePkt.Result != (short)ErrorCode.NONE) 
+            {
+
+                DevLog.Write($"오목 놓기 실패: {(ErrorCode)responsePkt.Result}");
+            }
+
 
             //TODO 방금 놓은 오목 정보를 취소 시켜야 한다
         }
@@ -244,11 +250,11 @@ namespace csharp_test_client
 
         void PacketProcess_PutMokNotify(byte[] packetData)
         {
-            //var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfPutMok>(packetData);
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NTFPutOmok>(packetData);
 
-           // 플레이어_돌두기(true, notifyPkt.PosX, notifyPkt.PosY);
+            플레이어_돌두기(true, notifyPkt.PosX, notifyPkt.PosY);
 
-            //DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY},   알:{notifyPkt.Mok}");
+            DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY}");// 알:{notifyPkt.Mok}");
         }
         
 
@@ -262,3 +268,5 @@ namespace csharp_test_client
         }
     }
 }
+
+

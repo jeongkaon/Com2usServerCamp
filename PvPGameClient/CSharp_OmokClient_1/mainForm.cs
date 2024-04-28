@@ -404,14 +404,14 @@ namespace csharp_test_client
        
         void SendPacketOmokPut(int x, int y)
         {
-            //var requestPkt = new PKTReqPutMok
-            //{
-            //    PosX = x,
-            //    PosY = y
-            //};
+            var temp = new CSPutOMok
+            {
+                PosX = x,
+                PosY = y
+            };
 
-           // var packet =  MemoryPackSerializer.Serialize(requestPkt);
-           // PostSendPacket(PACKET_ID.CS_KEYINPUT, packet);
+            var packet = MemoryPackSerializer.Serialize(temp);
+            PostSendPacket(PACKET_ID.CS_PUT_OMOK, packet);
 
             DevLog.Write($"put stone 요청 : x  [ {x} ], y: [ {y} ] ");
         }
