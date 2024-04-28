@@ -28,8 +28,11 @@ public enum ERROR_CODE : short
     ROOM_ENTER_INVALID_ROOM_NUMBER = 1024,
     ROOM_ENTER_FAIL_ADD_USER = 1025,
 
+    ROOM_ENTER_FAILED_USERFULL = 1028,
+
     ROOM_NOTALL_READY=1026,     //방안에 다 아직 레디안됨
     ROOM_ALL_READY = 1027,      //다 준비함
+
     //게임
     
     

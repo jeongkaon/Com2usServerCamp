@@ -202,5 +202,8 @@ public partial class NTFPutOmok : PacketHeader
     public int PosX { get; set; }
     public int PosY { get; set; }
 
+    public int Mok;
+
+
 }
 

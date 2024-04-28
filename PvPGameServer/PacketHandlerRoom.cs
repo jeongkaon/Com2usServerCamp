@@ -119,17 +119,7 @@ public class PacketHandlerRoom : PacketHandler
 
         room.SetBoard(reqData.PosX,reqData.PosY);
 
-        var temp = new NTFPutOmok();
-        temp.PosX= reqData.PosX;
-        temp.PosY= reqData.PosY;
-
-        //지워야함 일단보내바
-
-        var sendPacket = MemoryPackSerializer.Serialize(temp);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
-
-
-        room.Broadcast("", sendPacket);
+     
     }
 
 
@@ -141,6 +131,8 @@ public class PacketHandlerRoom : PacketHandler
         try
         {
             var user = UserMgr.GetUser(sessionID);
+            
+
 
             if (user == null || user.IsConfirm(sessionID) == false)
             {
@@ -158,9 +150,18 @@ public class PacketHandlerRoom : PacketHandler
 
             var room = GetRoom(reqData.RoomNumber);
 
+
             if (room == null)
             {
                 ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_ROOM_NUMBER, sessionID);
+                return;
+            }
+
+            if(room.CheckIsFull())
+            {
+                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_FAILED_USERFULL, sessionID);
+
+                Console.WriteLine("방 다참");
                 return;
             }
 
@@ -169,6 +170,7 @@ public class PacketHandlerRoom : PacketHandler
                 ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_FAIL_ADD_USER, sessionID);
                 return;
             }
+
 
 
             user.EnteredRoom(reqData.RoomNumber);

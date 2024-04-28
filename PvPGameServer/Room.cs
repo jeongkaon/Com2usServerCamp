@@ -39,7 +39,15 @@ public class Room
 
         return true;
     }
-    
+    public bool CheckIsFull()
+    {
+        
+        if(UserList.Count() == MaxUserCount)
+        {
+            return true;
+        }
+        return false;
+    }
     public void SetRoomUserBeReady(string SessionId)
     {
         foreach (var user in UserList)
@@ -119,7 +127,20 @@ public class Room
     
     }
 
+    public void NotifyPutOmok(int x, int y)
+    {
+        var temp = new NTFPutOmok();
+        temp.PosX = x;
+        temp.PosY = y;
+        //temp.Mok = ?;
 
+        var sendPacket = MemoryPackSerializer.Serialize(temp);
+        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
+
+
+        Broadcast("", sendPacket);
+
+    }
 
     public void NotifyPacketUserList(string userNetSessionID)
     {
@@ -178,8 +199,8 @@ public class Room
     //게임관련 send 여기서
     public void SetGame()
     {
-        //board.SetPlayer(UserList[0].NetSessionID, UserList[0].UserID, true);
-        //board.SetPlayer(UserList[1].NetSessionID, UserList[1].UserID, false);
+        board.SetPlayer(UserList[0].NetSessionID, UserList[0].UserID, true);
+        board.SetPlayer(UserList[1].NetSessionID, UserList[1].UserID, false);
 
     }
 
