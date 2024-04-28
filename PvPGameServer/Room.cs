@@ -1,6 +1,7 @@
 ﻿using MemoryPack;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,11 +15,32 @@ public class Room
     public  int Index {  get; set; }
     public int Number { get; private set; }
 
-    int MaxUserCount = 0;
+    int MaxUserCount = 2;
 
     List<RoomUser> UserList = new List<RoomUser>();
 
     public static Func<string, byte[], bool> NetworkSendFunc;
+
+
+    public bool CheckReady()
+    {
+        //방안에 있는 모든 애들 ready했는지 체크한다.
+        foreach (var user in UserList)
+        {
+            if (user.IsReady == false)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    public void SetRoomUserBeReady(string sessionId)
+    {
+        var roomUser = GetUser(sessionId);
+        roomUser.IsReady = true;
+    }
 
 
     public void Init(int index, int number, int maxUserCount)
@@ -66,6 +88,17 @@ public class Room
     {
         return UserList.Count();
     }
+
+    public void NotifyPacketGameStart(string sessionId)
+    {
+        var packet = new SCGameStartPacket();
+        var sendPacket = MemoryPackSerializer.Serialize(packet);
+        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_START_GAME);
+
+        Broadcast(sessionId, sendPacket);
+
+    }
+
 
     public void NotifyPacketUserList(string userNetSessionID)
     {
@@ -129,6 +162,9 @@ public class RoomUser
 {
     public string UserID { get; private set; }
     public string NetSessionID { get; private set; }
+
+    public bool IsReady { get; set; }
+
 
     public void Set(string userID, string netSessionID)
     {

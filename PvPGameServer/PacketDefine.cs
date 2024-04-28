@@ -28,7 +28,11 @@ public enum ERROR_CODE : short
     ROOM_ENTER_INVALID_ROOM_NUMBER = 1024,
     ROOM_ENTER_FAIL_ADD_USER = 1025,
 
+    ROOM_NOTALL_READY=1026,     //방안에 다 아직 레디안됨
+    ROOM_ALL_READY = 1027,      //다 준비함
     //게임
+    
+    
 }
 
 public enum PACKET_ID : int
@@ -55,6 +59,18 @@ public enum PACKET_ID : int
     CS_ROOM_CHAT = 1026,
     NTF_ROOM_CHAT = 1027,
 
+    //게임관련
+    CS_READY_GAME = 1031,
+    SC_READY_GAME = 1032,
+    NTR_READY_GAME = 1033,
+
+    NTF_START_GAME = 1034,
+
+    CS_KEYINPUT = 1035,
+    SC_KEYINPUT = 1036,
+    NTF_PUT_OMOK = 1037,
+
+    //
 
     CS_ROOM_DEV_ALL_ROOM_START_GAME = 1091,
     SC_ROOM_DEV_ALL_ROOM_START_GAME = 1092,

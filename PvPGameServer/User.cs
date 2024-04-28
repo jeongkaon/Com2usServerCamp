@@ -14,12 +14,17 @@ public class User
     public int RoomNumber { get; private set; } = -1;
     string UserID;
 
+
+
     public void Set(UInt64 sequence, string sessionID, string userID)
     {
         SequenceNumber = sequence;
         SessionID = sessionID;
         UserID = userID;
+
+
     }
+
 
     public bool IsConfirm(string netSessionID)
     {
@@ -28,12 +33,15 @@ public class User
 
     public string ID()
     {
+
         return UserID;
     }
 
     public void EnteredRoom(int roomNumber)
     {
         RoomNumber = roomNumber;
+
+
     }
 
     public void LeaveRoom()

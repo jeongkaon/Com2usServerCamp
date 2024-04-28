@@ -125,6 +125,7 @@ public partial class PKTNtfRoomNewUser : PacketHeader
 [MemoryPackable]
 public partial class CSRoomLeavePacket : PacketHeader
 {
+    //public string UserID { get; set; }
 }
 
 [MemoryPackable]
@@ -156,3 +157,22 @@ public partial class PKTNtfRoomChat : PacketHeader
 }
 
 
+//게임데이터
+
+[MemoryPackable]
+public partial class CSReadyPacket : PacketHeader
+{
+
+
+}
+
+[MemoryPackable]
+public partial class SCReadyPacket : PacketHeader
+{
+    public short Result { get; set; }
+
+}
+public partial class SCGameStartPacket : PacketHeader
+{
+
+}
