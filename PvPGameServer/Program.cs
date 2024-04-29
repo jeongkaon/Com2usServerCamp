@@ -12,7 +12,6 @@ ServerApp.InitConfig(serverOption);
 ServerApp.CreateAndStartServer();
 
 
-
 while (true)
 {
     System.Threading.Thread.Sleep(50);

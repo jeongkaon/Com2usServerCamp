@@ -6,7 +6,8 @@ namespace PvPGameServer;
 
 public class FastBinaryWrite
 {
-    public static void Boolean(byte[] bytes, int offset, bool value)
+    public 
+        void Boolean(byte[] bytes, int offset, bool value)
     {
         bytes[offset] = (byte)(value ? 1 : 0);
     }

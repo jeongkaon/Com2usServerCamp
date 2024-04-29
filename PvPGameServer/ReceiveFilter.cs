@@ -43,11 +43,6 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<MemoryPackBinaryRequestInf
 
     protected override MemoryPackBinaryRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] readBuffer, int offset, int length)
     {
-        if (!BitConverter.IsLittleEndian)
-        {
-            Array.Reverse(header.Array, 0, MemoryPackBinaryRequestInfo.HEADERE_SIZE);
-        }
-
         if (length > 0)
         {
             if (offset >= MemoryPackBinaryRequestInfo.HEADERE_SIZE)

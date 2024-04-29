@@ -66,60 +66,9 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.CS_ROOM_CHAT, RequestChat);
         packetHandlerMap.Add((int)PACKET_ID.CS_READY_GAME, RecvReadyPacket);
 
-        //게임
+        //게임 관련 옮겨야함
         packetHandlerMap.Add((int)PACKET_ID.CS_PUT_OMOK, recvOmokPacket);
 
-    }
-
-    public void RecvReadyPacket(MemoryPackBinaryRequestInfo packetData)
-    {
-        Console.WriteLine("게임준비 완료 요청 받음");
-        var reqData = MemoryPackSerializer.Deserialize<CSReadyPacket>(packetData.Data);
-        var roomNumber = reqData.RoomNumber;
-        var sessionID = packetData.SessionID;
-
-        var room = GetRoom(roomNumber);
-        room.SetRoomUserBeReady(sessionID);
-
-        if (room.CheckReady())
-        {
-            //게임시작 패킷 모두에게 보내야한다.
-            //룸에 있는 모든 사람들에게 전송
-            room.NotifyPacketGameStart(sessionID);
-        }
-        else
-        {
-            SendReadyPacket(sessionID);
-            //노티파이도 해야함
-        }
-
-    }
-
-    public void SendReadyPacket(string sessionId)
-    {
-        var temp = new SCReadyPacket()
-        {
-            Result = (short)ERROR_CODE.ROOM_NOTALL_READY
-        };
-
-        var sendPacket = MemoryPackSerializer.Serialize(temp);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_READY_GAME);
-
-        NetworkSendFunc(sessionId, sendPacket);
-
-    }
-
-    public void recvOmokPacket(MemoryPackBinaryRequestInfo packetData)
-    {
-        var sessionId = packetData.SessionID;
-        var reqData = MemoryPackSerializer.Deserialize<CSPutOMok>(packetData.Data);
-        var user = UserMgr.GetUser(sessionId);
-
-        var room = GetRoom(user.RoomNumber);
-
-        room.SetBoard(reqData.PosX,reqData.PosY);
-
-     
     }
 
 
@@ -312,6 +261,56 @@ public class PacketHandlerRoom : PacketHandler
         {
             MainServer.MainLogger.Error(ex.ToString());
         }
+    }
+
+    public void RecvReadyPacket(MemoryPackBinaryRequestInfo packetData)
+    {
+        var reqData = MemoryPackSerializer.Deserialize<CSReadyPacket>(packetData.Data);
+        var roomNumber = reqData.RoomNumber;
+        var sessionID = packetData.SessionID;
+
+        var room = GetRoom(roomNumber);
+        room.SetRoomUserBeReady(sessionID);
+
+        if (room.CheckReady())
+        {
+            //게임시작 패킷 모두에게 보내야한다.
+            //룸에 있는 모든 사람들에게 전송
+            room.NotifyPacketGameStart(sessionID);
+        }
+        else
+        {
+            SendReadyPacket(sessionID);
+            //노티파이도 해야함
+        }
+
+    }
+
+    public void SendReadyPacket(string sessionId)
+    {
+        var temp = new SCReadyPacket()
+        {
+            Result = (short)ERROR_CODE.ROOM_NOTALL_READY
+        };
+
+        var sendPacket = MemoryPackSerializer.Serialize(temp);
+        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_READY_GAME);
+
+        NetworkSendFunc(sessionId, sendPacket);
+
+    }
+
+    public void recvOmokPacket(MemoryPackBinaryRequestInfo packetData)
+    {
+        var sessionId = packetData.SessionID;
+        var reqData = MemoryPackSerializer.Deserialize<CSPutOMok>(packetData.Data);
+        var user = UserMgr.GetUser(sessionId);
+
+        var room = GetRoom(user.RoomNumber);
+
+        room.SetBoard(reqData.PosX, reqData.PosY);
+
+
     }
 
 
