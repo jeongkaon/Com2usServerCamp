@@ -38,7 +38,6 @@ static PvPServerOption ParseCommandLine(string[] args)
 
     if(res == null)
     {
-        System.Console.WriteLine("Failed ParseCommandLine ");
         return null;
     }
 

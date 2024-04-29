@@ -20,6 +20,9 @@
     <Reference Include="SuperSocketLite">
       <HintPath>..\..\StudyC-Server\net8.0\SuperSocketLite.dll</HintPath>
     </Reference>
+	<None Update="NLog.config">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
 
 </Project>

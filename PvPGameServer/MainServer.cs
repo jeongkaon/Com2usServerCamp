@@ -58,25 +58,22 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         try
         {
-            bool res = Setup(new SuperSocket.SocketBase.Config.RootConfig(), serverConfig, logFactory: new NLogLogFactory("Log.config"));
+            bool res = Setup(new SuperSocket.SocketBase.Config.RootConfig(), serverConfig, logFactory: new NLogLogFactory("NLog.config"));
 
             if (res == false)
             {
-                Console.WriteLine("네트워크 설정 실패");
                 return;
             }
             else
             {
                 MainLogger = base.Logger;
                 MainLogger.Info("서버 초기화 성공");
-                Console.WriteLine("네트워크 설정 엔로그 찍어조 ㅜㅜㅜㅜ");
 
             }
 
             CreateComponent();
-            Console.WriteLine("서버 생성 성공");
 
-            MainLogger.Info("서버 생성 성공");
+            MainLogger.Debug("서버 생성 성공");
 
             Start();
 
