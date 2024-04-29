@@ -39,10 +39,8 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<MemoryPackBinaryRequestInf
 
         var totalSize = BitConverter.ToUInt16(header, offset + MemoryPackBinaryRequestInfo.PACKET_HEADER_MEMORYPACK_START_POS);
         return totalSize - MemoryPackBinaryRequestInfo.HEADERE_SIZE;
-    }
+    } 
 
-    // offset: header 데이터까지 있는 readBuffer 에서 body가 시작되는 위치를 가리킨다
-    // length: body 데이터의 크기 
     protected override MemoryPackBinaryRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] readBuffer, int offset, int length)
     {
         if (!BitConverter.IsLittleEndian)
@@ -50,7 +48,6 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<MemoryPackBinaryRequestInf
             Array.Reverse(header.Array, 0, MemoryPackBinaryRequestInfo.HEADERE_SIZE);
         }
 
-        // body 데이터가 있는 경우
         if (length > 0)
         {
             if (offset >= MemoryPackBinaryRequestInfo.HEADERE_SIZE)
@@ -62,7 +59,6 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<MemoryPackBinaryRequestInf
             }
             else
             {
-                //offset 이 헤더 크기보다 작으므로 헤더와 보디를 직접 합쳐야 한다.
                 var packetData = new Byte[length + MemoryPackBinaryRequestInfo.HEADERE_SIZE];
                 header.CopyTo(packetData, 0);
                 Array.Copy(readBuffer, offset, packetData, MemoryPackBinaryRequestInfo.HEADERE_SIZE, length);
@@ -71,7 +67,6 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<MemoryPackBinaryRequestInf
             }
         }
 
-        // body 데이터가 없는 경우
         return new MemoryPackBinaryRequestInfo(header.CloneRange(header.Offset, header.Count));
     }
 

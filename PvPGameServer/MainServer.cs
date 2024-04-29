@@ -58,18 +58,15 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         try
         {
-            //맨마지막 인자 로그수정 있음!
             bool res = Setup(new SuperSocket.SocketBase.Config.RootConfig(), serverConfig, logFactory: new NLogLogFactory("Log.config"));
 
             if (res == false)
             {
                 Console.WriteLine("네트워크 설정 실패");
-                //네트워크 실패
                 return;
             }
             else
             {
-
                 MainLogger = base.Logger;
                 MainLogger.Info("서버 초기화 성공");
                 Console.WriteLine("네트워크 설정 엔로그 찍어조 ㅜㅜㅜㅜ");

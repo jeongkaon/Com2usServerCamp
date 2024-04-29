@@ -132,7 +132,7 @@ public class Room
         var temp = new NTFPutOmok();
         temp.PosX = x;
         temp.PosY = y;
-        //temp.Mok = ?;
+        //temp.Mok =
 
         var sendPacket = MemoryPackSerializer.Serialize(temp);
         MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
@@ -181,6 +181,7 @@ public class Room
         MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_LEAVE_USER);
 
         Broadcast("", sendPacket);
+
     }
 
     public void Broadcast(string excludeNetSessionID, byte[] sendPacket)

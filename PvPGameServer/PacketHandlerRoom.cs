@@ -196,7 +196,7 @@ public class PacketHandlerRoom : PacketHandler
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(resRoomEnter);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_ROOM_LEAVE);
+        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_ROOM_ENTER);
 
         NetworkSendFunc(sessionID, sendPacket);
     }
@@ -205,6 +205,7 @@ public class PacketHandlerRoom : PacketHandler
     {
         var sessionID = packetData.SessionID;
         MainServer.MainLogger.Debug("방나가기 요청 받음");
+        Console.WriteLine("방나가기 요청 받음");
 
         try
         {
@@ -234,6 +235,7 @@ public class PacketHandlerRoom : PacketHandler
     bool LeaveRoomUser(string sessionID, int roomNumber)
     {
         MainServer.MainLogger.Debug($"LeaveRoomUser. SessionID:{sessionID}");
+        Console.WriteLine("LeaveRoomUser ");
 
         var room = GetRoom(roomNumber);
         if (room == null)

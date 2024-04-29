@@ -71,10 +71,6 @@ public class PacketProcessor
         RoomPacketHandler.SetRoomList(RoomList);
         RoomPacketHandler.RegistPacketHandler(PacketHandlerMap);
 
-
-
-
-
     }
 
     void Process()

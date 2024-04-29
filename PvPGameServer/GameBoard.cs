@@ -23,11 +23,8 @@ public class GameBoard
 
     public void SetBoard(int x, int y)
     {
-        //마우스로 들어옴 걍 걸러지네
+        //마우스로 들어옴 걍 걸러져서 따로 확인안해도됨
         board[x, y] = true;
-
-        //우승체크
-
 
     }
 

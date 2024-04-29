@@ -21,7 +21,6 @@ public class PacketHandlerCommon : PacketHandler
 
     public void NotifyInConnectClient(MemoryPackBinaryRequestInfo requestData)
     {
-        //필요한가?????
     }
     public void NotifyInDisConnectClient(MemoryPackBinaryRequestInfo requestData)
     {
@@ -76,7 +75,6 @@ public class PacketHandlerCommon : PacketHandler
         }
         catch (Exception ex)
         {
-            //로그수정
             MainServer.MainLogger.Error(ex.ToString());
         }
 

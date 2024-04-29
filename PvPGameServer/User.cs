@@ -10,9 +10,9 @@ public class User
 {
     UInt64 SequenceNumber = 0;
     string SessionID;
+    string UserID;
 
     public int RoomNumber { get; private set; } = -1;
-    string UserID;
 
 
 
@@ -47,6 +47,7 @@ public class User
     public void LeaveRoom()
     {
         RoomNumber = -1;
+
     }
 
     public bool IsStateLogin() { return SequenceNumber != 0; }

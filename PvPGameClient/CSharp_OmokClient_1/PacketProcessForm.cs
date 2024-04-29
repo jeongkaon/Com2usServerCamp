@@ -153,6 +153,8 @@ namespace csharp_test_client
         void PacketProcess_RoomLeaveResponse(byte[] packetData)
         {
             var responsePkt =  MemoryPackSerializer.Deserialize<SCRoomLeavePacket>(packetData);
+            //RemoveRoomUserList(UserID);
+
 
             DevLog.Write($"방 나가기 결과:  {(ErrorCode)responsePkt.Result}");
         }
@@ -163,7 +165,7 @@ namespace csharp_test_client
 
             RemoveRoomUserList(notifyPkt.UserID);
 
-            DevLog.Write($"방에서 나간 유저 받음");
+            DevLog.Write($"방에서 나간 유저 지움????지운거 맞아??");
         }
 
 
