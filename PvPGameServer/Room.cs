@@ -1,4 +1,5 @@
 ﻿using MemoryPack;
+using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,59 +18,34 @@ public class Room
 
     int MaxUserCount = 2;
 
-    List<RoomUser> UserList = new List<RoomUser>();
+    List<RoomUser> RoomUserList = new List<RoomUser>();
 
     public static Func<string, byte[], bool> NetworkSendFunc;
 
-    GameBoard board = new GameBoard();
-
-
-
-
-    public bool CheckReady()
-    {
-        //방안에 있는 모든 애들 ready했는지 체크한다.
-        foreach (var user in UserList)
-        {
-            if (user.IsReady == false)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    public bool CheckIsFull()
-    {
-        
-        if(UserList.Count() == MaxUserCount)
-        {
-            return true;
-        }
-        return false;
-    }
-    public void SetRoomUserBeReady(string SessionId)
-    {
-        foreach (var user in UserList)
-        {
-            if (user.NetSessionID == SessionId)
-            {
-                user.IsReady = true;
-            }
-
-       
-        }
-
-
-    }
-
+    public GameBoard board = null;
 
     public void Init(int index, int number, int maxUserCount)
     {
         Index = index;
         Number = number;
         MaxUserCount = maxUserCount;
+
+        board = new GameBoard(Number, NetworkSendFunc);
+
     }
+
+
+    public bool CheckIsFull()
+    {
+        
+        if(RoomUserList.Count() == MaxUserCount)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
 
     public bool AddUser(string userId, string netSessionId)
     {
@@ -80,89 +56,68 @@ public class Room
 
         var roomUser = new RoomUser();
         roomUser.Set(userId, netSessionId);
-        UserList.Add(roomUser);
+        RoomUserList.Add(roomUser);
 
         return true;
     }
     public void RemoveUser(string netSessionID)
     {
-        var index = UserList.FindIndex(x => x.NetSessionID == netSessionID);
-        UserList.RemoveAt(index);
+        var index = RoomUserList.FindIndex(x => x.NetSessionID == netSessionID);
+        RoomUserList.RemoveAt(index);
     }
 
     public bool RemoveUser(RoomUser user)
     {
-        return UserList.Remove(user);
+        return RoomUserList.Remove(user);
     }
 
     public RoomUser GetUser(string userID)
     {
-        return UserList.Find(x => x.UserID == userID);
+        return RoomUserList.Find(x => x.UserID == userID);
     }
 
     public RoomUser GetUserByNetSessionId(string netSessionID)
     {
-        return UserList.Find(x => x.NetSessionID == netSessionID);
+        return RoomUserList.Find(x => x.NetSessionID == netSessionID);
     }
 
     public int CurrentUserCount()
     {
-        return UserList.Count();
+        return RoomUserList.Count();
     }
-
-    public void NotifyPacketGameStart(string sessionId)
-    {
-        var packet = new SCGameStartPacket();
-
-        //선을 누구로하지? 일단 0번ㄱㄱ
-        packet.FirstUserID = UserList[0].UserID;
-
-
-        var sendPacket = MemoryPackSerializer.Serialize(packet);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_START_GAME);
-
-        Broadcast("", sendPacket);
-
-        SetGame();    
     
-    }
-
-    public void NotifyPutOmok(int x, int y)
+    (string ,string ) GetAllPlayerId()
     {
-        var temp = new NTFPutOmok();
-        temp.PosX = x;
-        temp.PosY = y;
-        //temp.Mok =
-
-        var sendPacket = MemoryPackSerializer.Serialize(temp);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
-
-
-        Broadcast("", sendPacket);
-
+        return (RoomUserList[0].UserID, RoomUserList[1].UserID);
     }
+    
+    public GameBoard GetGameBoard()
+    {
+        return board;
+    }
+ 
 
     public void NotifyPacketUserList(string userNetSessionID)
     {
-        var packet = new PKTNtfRoomUserList();
-        foreach (var user in UserList)
+        var packet = new NtfRoomUserList();
+        foreach (var user in RoomUserList)
         {
             packet.UserIDList.Add(user.UserID);
         }
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_USER_LIST);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_USER_LIST);
 
         NetworkSendFunc(userNetSessionID, sendPacket);
     }
 
     public void NofifyPacketNewUser(string newUserNetSessionID, string newUserID)
     {
-        var packet = new PKTNtfRoomNewUser();
+        var packet = new NtfRoomNewUser();
         packet.UserID = newUserID;
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_NEW_USER);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_NEW_USER);
 
         Broadcast(newUserNetSessionID, sendPacket);
     }
@@ -174,11 +129,11 @@ public class Room
             return;
         }
 
-        var packet = new PKTNtfRoomLeaveUser();
+        var packet = new NtfRoomLeaveUser();
         packet.UserID = userID;
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_LEAVE_USER);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_LEAVE_USER);
 
         Broadcast("", sendPacket);
 
@@ -186,7 +141,7 @@ public class Room
 
     public void Broadcast(string excludeNetSessionID, byte[] sendPacket)
     {
-        foreach (var user in UserList)
+        foreach (var user in RoomUserList)
         {
             if (user.NetSessionID == excludeNetSessionID)
             {
@@ -198,16 +153,65 @@ public class Room
     }
 
     //게임관련 send 여기서
-    public void SetGame()
+    public void SetRoomUserBeReady(string SessionId)
     {
-        board.SetPlayer(UserList[0].NetSessionID, UserList[0].UserID, true);
-        board.SetPlayer(UserList[1].NetSessionID, UserList[1].UserID, false);
+        //2명밖에 없으니까 그냥 foreach쓸까?, 아님 함수타고 드러가???
+        foreach (var user in RoomUserList)
+        {
+            if (user.NetSessionID == SessionId)
+            {
+                var packet = new ResGameReadyPacket();
+
+                var type = board.SetPlayer(SessionId, user.UserID);
+                packet.PlayerType = type;
+
+                var sendPacket = MemoryPackSerializer.Serialize(packet);
+                PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_READY_GAME);
+                NetworkSendFunc(SessionId, sendPacket);
+
+            }
+        }
+
+        //board에서 인원수 체크하기
+        if (board.CheckIsFull())
+        {
+            NotifyPlayersGameStart();
+
+        }
+    }
+
+    public void NotifyPlayersGameStart()
+    {
+        var players = GetAllPlayerId();
+
+        var packet = new NftGameStartPacket();
+        packet.p1 = players.Item1;
+        packet.p2 = players.Item2;
+
+        var sendPacket = MemoryPackSerializer.Serialize(packet);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_START_GAME);
+
+        Broadcast("", sendPacket);
+
+        MainServer.MainLogger.Debug("GameStart- Success");
+
+
 
     }
 
-    public void SetBoard(int x,int y)
+    public void NotifyPutOmok(int x, int y)
     {
-        board.SetBoard(x,y);
+        var temp = new NftPutOmok();
+        temp.PosX = x;
+        temp.PosY = y;
+
+
+        var sendPacket = MemoryPackSerializer.Serialize(temp);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
+
+
+        Broadcast("", sendPacket);
+
     }
 
 
@@ -218,7 +222,6 @@ public class RoomUser
     public string UserID { get; private set; }
     public string NetSessionID { get; private set; }
 
-    public bool IsReady { get; set; }
 
 
     public void Set(string userID, string netSessionID)

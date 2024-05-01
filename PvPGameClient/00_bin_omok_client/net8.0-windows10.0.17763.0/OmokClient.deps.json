@@ -14,6 +14,7 @@
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.Windows.Compatibility": "8.0.0",
           "Z.ExtensionMethods": "2.1.1",
+          "Common": "1.0.0.0",
           "runtimepack.Microsoft.Windows.SDK.NET.Ref": "10.0.17763.31"
         },
         "runtime": {
@@ -792,6 +793,14 @@
             "fileVersion": "2.1.1.0"
           }
         }
+      },
+      "Common/1.0.0.0": {
+        "runtime": {
+          "Common.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
       }
     }
   },
@@ -1295,6 +1304,11 @@
       "sha512": "sha512-HLpIUSYL8kVTKBeeMVjQMN63E7RHO+1aGt2aZBjrFhHPjJVsOUh26KDQEDMsjOjlh/hQTqZQEJJc+gNhyQxq4g==",
       "path": "z.extensionmethods/2.1.1",
       "hashPath": "z.extensionmethods.2.1.1.nupkg.sha512"
+    },
+    "Common/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

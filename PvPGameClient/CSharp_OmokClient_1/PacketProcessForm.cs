@@ -1,8 +1,8 @@
-﻿using CSCommon;
-using MemoryPack;
+﻿using MemoryPack;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,26 +21,26 @@ namespace csharp_test_client
             //PacketFuncDic.Add(PACKET_ID.PACKET_ID_ERROR_NTF, PacketProcess_ErrorNotify);
 
             //여기다가 추가하면된다.
-            PacketFuncDic.Add((int)PACKET_ID.SC_LOGIN, PacketProcess_Loginin);
+            PacketFuncDic.Add((int)PACKET_ID.RES_LOGIN, PacketProcess_Loginin);
 
-            PacketFuncDic.Add((int)PACKET_ID.SC_ROOM_ENTER, PacketProcess_RoomEnterResponse);
+            PacketFuncDic.Add((int)PACKET_ID.RES_ROOM_ENTER, PacketProcess_RoomEnterResponse);
             PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_USER_LIST, PacketProcess_RoomUserListNotify);
             PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_NEW_USER, PacketProcess_RoomNewUserNotify);
-            PacketFuncDic.Add((int)PACKET_ID.SC_ROOM_LEAVE, PacketProcess_RoomLeaveResponse);
+            PacketFuncDic.Add((int)PACKET_ID.RES_ROOM_LEAVE, PacketProcess_RoomLeaveResponse);
             PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_LEAVE_USER, PacketProcess_RoomLeaveUserNotify);
             //PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_CHAT, PacketProcess_RoomChatResponse);
             PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_CHAT, PacketProcess_RoomChatNotify);
-            PacketFuncDic.Add((int)PACKET_ID.SC_READY_GAME, PacketProcess_ReadyOmokResponse);
+            PacketFuncDic.Add((int)PACKET_ID.RES_READY_GAME, PacketProcess_ReadyOmokResponse);
             PacketFuncDic.Add((int)PACKET_ID.NTR_READY_GAME, PacketProcess_ReadyOmokNotify);
             PacketFuncDic.Add((int)PACKET_ID.NTF_START_GAME, PacketProcess_StartOmokNotify);
-            PacketFuncDic.Add((int)PACKET_ID.SC_PUT_OMOK, PacketProcess_PutMokResponse);
+            PacketFuncDic.Add((int)PACKET_ID.RES_PUT_OMOK, PacketProcess_PutMokResponse);
             PacketFuncDic.Add((int)PACKET_ID.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
             //PacketFuncDic.Add((ushort)PACKET_ID.NTF_END_GAME, PacketProcess_EndOmokNotify);
         }
 
         void PacketProcess(byte[] packet)
         {
-            var header = new MemorypackPacketHeadInfo();
+            var header = new PacketHeadInfo();
             header.Read(packet);
 
             var packetID = header.Id;
@@ -117,20 +117,20 @@ namespace csharp_test_client
         void PacketProcess_Loginin(byte[] packetData)
         {
 
-            var reqData = MemoryPackSerializer.Deserialize<SCLoginPacket>(packetData);
-            DevLog.Write($"로그인 결과: {(ErrorCode)reqData.Result}");
+            var reqData = MemoryPackSerializer.Deserialize<ResLoginPacket>(packetData);
+            DevLog.Write($"로그인 결과: {reqData.Result}");
 
         }
 
         void PacketProcess_RoomEnterResponse(byte[] packetData)
         {
-            var responsePkt = MemoryPackSerializer.Deserialize<SCRoomEnterPacket>(packetData);
-            DevLog.Write($"방 입장 결과:  {(ErrorCode)responsePkt.Result}");
+            var responsePkt = MemoryPackSerializer.Deserialize<ResRoomEnterPacket>(packetData);
+            DevLog.Write($"방 입장 결과: {responsePkt.Result}");
         }
 
         void PacketProcess_RoomUserListNotify(byte[] packetData)
         {
-            var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfRoomUserList>(packetData);
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NtfRoomUserList>(packetData);
 
             for (int i = 0; i < notifyPkt.UserIDList.Count; ++i)
             {
@@ -142,7 +142,7 @@ namespace csharp_test_client
 
         void PacketProcess_RoomNewUserNotify(byte[] packetData)
         {
-            var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfRoomNewUser>(packetData);
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NtfRoomNewUser>(packetData);
 
             AddRoomUserList(notifyPkt.UserID);
 
@@ -152,16 +152,17 @@ namespace csharp_test_client
 
         void PacketProcess_RoomLeaveResponse(byte[] packetData)
         {
-            var responsePkt =  MemoryPackSerializer.Deserialize<SCRoomLeavePacket>(packetData);
+            var responsePkt =  MemoryPackSerializer.Deserialize<ResRoomLeavePacket>(packetData);
+            //var id = responsePkt.
             //RemoveRoomUserList(UserID);
 
 
-            DevLog.Write($"방 나가기 결과:  {(ErrorCode)responsePkt.Result}");
+            DevLog.Write($"방 나가기 결과:  {responsePkt.Result}");
         }
 
         void PacketProcess_RoomLeaveUserNotify(byte[] packetData)
         {
-            var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfRoomLeaveUser>(packetData);
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NtfRoomLeaveUser>(packetData);
 
             RemoveRoomUserList(notifyPkt.UserID);
 
@@ -179,7 +180,7 @@ namespace csharp_test_client
 
         void PacketProcess_RoomChatNotify(byte[] packetData)
         {
-            var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfRoomChat>(packetData);
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NtfRoomChat>(packetData);
 
             AddRoomChatMessageList(notifyPkt.UserID, notifyPkt.ChatMessage);
         }
@@ -198,9 +199,12 @@ namespace csharp_test_client
 
         void PacketProcess_ReadyOmokResponse(byte[] packetData)
         {
-            var responsePkt =  MemoryPackSerializer.Deserialize<SCReadyPacket>(packetData);
+            var res =  MemoryPackSerializer.Deserialize<ResGameReadyPacket>(packetData);
+            MyPlayer.PlayerType = res.PlayerType;
 
-            DevLog.Write($"게임 준비 완료 요청 결과:  {(ErrorCode)responsePkt.Result}");
+          
+
+            DevLog.Write($"게임 준비 완료 요청 결과:  {MyPlayer.Id}는 {MyPlayer.PlayerType}");
         }
 
         void PacketProcess_ReadyOmokNotify(byte[] packetData)
@@ -220,29 +224,52 @@ namespace csharp_test_client
 
         void PacketProcess_StartOmokNotify(byte[] packetData)
         {
-            var isMyTurn = false;
 
-            var notifyPkt = MemoryPackSerializer.Deserialize<SCGameStartPacket>(packetData);
+            var res = MemoryPackSerializer.Deserialize<NftGameStartPacket>(packetData);
 
-            if (notifyPkt.FirstUserID == textBoxUserID.Text)
+            if (res.p1 == MyPlayer.Id)
             {
-                isMyTurn = true;
+                if (MyPlayer.PlayerType == PLYAER_TYPE.BLACK)
+                {
+                    OtherPlayer.SetPlayer(res.p2, PLYAER_TYPE.WHITE);
+                }
+                else
+                {
+                    OtherPlayer.SetPlayer(res.p2, PLYAER_TYPE.BLACK);
+
+                }
+            }
+            else
+            {
+                if (MyPlayer.PlayerType == PLYAER_TYPE.BLACK)
+                {
+                    OtherPlayer.SetPlayer(res.p1, PLYAER_TYPE.WHITE);
+                }
+                else
+                {
+                    OtherPlayer.SetPlayer(res.p1, PLYAER_TYPE.BLACK);
+
+                }
+
             }
 
-            StartGame(isMyTurn, textBoxUserID.Text, GetOtherPlayer(textBoxUserID.Text));
+            
+            bool myTurn = MyPlayer.PlayerType == PLYAER_TYPE.BLACK ? true : false;
 
-            DevLog.Write($"게임 시작. 흑돌 플레이어: {notifyPkt.FirstUserID}");
+            StartGame(MyPlayer.turn, MyPlayer.Id, OtherPlayer.Id);
+
+            DevLog.Write($"게임 시작. 흑돌 플레이어: {MyPlayer.Id}");
         }
         
 
         void PacketProcess_PutMokResponse(byte[] packetData)
         {
-            var responsePkt =  MemoryPackSerializer.Deserialize<SCPutOMok>(packetData);
+            var responsePkt =  MemoryPackSerializer.Deserialize<ResPutOMok>(packetData);
 
-            if(responsePkt.Result != (short)ErrorCode.NONE) 
+            if(responsePkt.Result != (short)ERROR_CODE.NONE) 
             {
 
-                DevLog.Write($"오목 놓기 실패: {(ErrorCode)responsePkt.Result}");
+                DevLog.Write($"오목 놓기 실패: {responsePkt.Result}");
             }
 
 
@@ -252,7 +279,7 @@ namespace csharp_test_client
 
         void PacketProcess_PutMokNotify(byte[] packetData)
         {
-            var notifyPkt =  MemoryPackSerializer.Deserialize<NTFPutOmok>(packetData);
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
             플레이어_돌두기(true, notifyPkt.PosX, notifyPkt.PosY);
 

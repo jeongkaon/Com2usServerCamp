@@ -1,5 +1,4 @@
-﻿using CSCommon;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,7 +72,7 @@ namespace csharp_test_client
                 return null;
             }
 
-            var packetDataSize = MemorypackPacketHeadInfo.GetTotalSize(PacketData, ReadPos);
+            var packetDataSize = PacketHeadInfo.GetTotalSize(PacketData, ReadPos);
             if (enableReadSize < packetDataSize)
             {
                 return null;

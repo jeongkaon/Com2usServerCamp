@@ -14,7 +14,7 @@ namespace csharp_test_client
 {    
     public partial class mainForm
     {
-        CSCommon.OmokRule OmokLogic = new CSCommon.OmokRule();
+        OmokRule OmokLogic = new OmokRule();
 
         #region 오목 게임 상수
         private int 시작위치 = 30;
@@ -41,7 +41,7 @@ namespace csharp_test_client
         bool IsMyTurn = false;
         
         private bool AI모드 = true;
-        private CSCommon.OmokRule.돌종류 컴퓨터돌;
+        private OmokRule.돌종류 컴퓨터돌;
 
         string MyPlayerName = "";        
         string 흑돌플레이어Name = "";
@@ -76,17 +76,17 @@ namespace csharp_test_client
         //오목 게임 시작
         void StartGame(bool isMyTurn, string myPlayerName, string otherPlayerName)
         {
-            MyPlayerName = myPlayerName;
+            MyPlayerName = MyPlayer.Id;
 
-            if(isMyTurn)
+            if(MyPlayer.PlayerType == PLYAER_TYPE.BLACK)
             {
-                흑돌플레이어Name = myPlayerName;
-                백돌플레이어Name = otherPlayerName;
+                흑돌플레이어Name = MyPlayer.Id;
+                백돌플레이어Name = OtherPlayer.Id;
             }
             else
             {
-                흑돌플레이어Name = otherPlayerName;
-                백돌플레이어Name = myPlayerName;
+                흑돌플레이어Name = OtherPlayer.Id;
+                백돌플레이어Name = MyPlayer.Id;
             }
 
             IsMyTurn = isMyTurn;
@@ -233,11 +233,11 @@ namespace csharp_test_client
             Rectangle r = new Rectangle(시작위치 + 눈금크기 * x - 돌크기 / 2,
                 시작위치 + 눈금크기 * y - 돌크기 / 2, 돌크기, 돌크기);
 
-            if (OmokLogic.바둑판알(x, y) == (int)CSCommon.OmokRule.돌종류.흑돌)                              // 검은 돌
+            if (OmokLogic.바둑판알(x, y) == (int)OmokRule.돌종류.흑돌)                              // 검은 돌
             {
                 g.FillEllipse(검은색, r);
             }
-            else if (OmokLogic.바둑판알(x, y) == (int)CSCommon.OmokRule.돌종류.백돌)                         // 흰 돌
+            else if (OmokLogic.바둑판알(x, y) == (int)OmokRule.돌종류.백돌)                         // 흰 돌
             {
                 g.FillEllipse(흰색, r);
             }
@@ -258,11 +258,11 @@ namespace csharp_test_client
             if (OmokLogic.전돌x좌표 >= 0 && OmokLogic.전돌y좌표 >= 0)       
             {
                 // 전돌 다시 찍어서 빨간 점 없애기
-                if (OmokLogic.바둑판알(OmokLogic.전돌x좌표, OmokLogic.전돌y좌표) == (int)CSCommon.OmokRule.돌종류.흑돌)
+                if (OmokLogic.바둑판알(OmokLogic.전돌x좌표, OmokLogic.전돌y좌표) == (int) OmokRule.돌종류.흑돌)
                 {
                     g.FillEllipse(검은색, 앞에찍은돌을다시찍기위한구역);
                 }
-                else if (OmokLogic.바둑판알(OmokLogic.전돌x좌표, OmokLogic.전돌y좌표) == (int)CSCommon.OmokRule.돌종류.백돌)
+                else if (OmokLogic.바둑판알(OmokLogic.전돌x좌표, OmokLogic.전돌y좌표) == (int)OmokRule.돌종류.백돌)
                 {
                     g.FillEllipse(흰색, 앞에찍은돌을다시찍기위한구역);
                 }
@@ -323,7 +323,7 @@ namespace csharp_test_client
                 return;
             }
             // 바둑판 해당 좌표에 아무것도 없고, 게임이 끝나지 않았으면
-            else if (OmokLogic.바둑판알(x, y) == (int)CSCommon.OmokRule.돌종류.없음 && !OmokLogic.게임종료)             
+            else if (OmokLogic.바둑판알(x, y) == (int) OmokRule.돌종류.없음 && !OmokLogic.게임종료)             
             {
                 플레이어_돌두기(false, x, y);
             }
@@ -332,11 +332,11 @@ namespace csharp_test_client
         void 플레이어_돌두기(bool isNotify, int x, int y)
         {
             var ret = OmokLogic.돌두기(x, y);
-            if (ret != CSCommon.돌두기_결과.Success)
+            if (ret !=  돌두기_결과.Success)
             {
                 //Rectangle r = new Rectangle(시작위치, 590, 시작위치 + 돌크기 + 160, 돌크기 + 10);
                 //panel1.Invalidate(r);
-                DevLog.Write($"돌 두기 실패: {(CSCommon.돌두기_결과)ret}");
+                DevLog.Write($"돌 두기 실패: {( 돌두기_결과)ret}");
                 return;
             }
 
@@ -381,7 +381,7 @@ namespace csharp_test_client
             {
                 return;
             }
-            else if (OmokLogic.바둑판알(x, y) == (int)CSCommon.OmokRule.돌종류.없음 && 
+            else if (OmokLogic.바둑판알(x, y) == (int) OmokRule.돌종류.없음 && 
                         !OmokLogic.게임종료 && 
                         (전x좌표 != x || 전y좌표 != y)
                         )  
@@ -414,13 +414,13 @@ namespace csharp_test_client
         void 컴퓨터두기()
         {
             int x = 0, y = 0;
-            CSCommon.돌두기_결과 ret;
+             돌두기_결과 ret;
 
             do
             {
                 OmokAI.AI_PutAIPlayer(ref x, ref y, false, 2);
                 ret = OmokLogic.돌두기(x, y);
-            } while (ret != CSCommon.돌두기_결과.Success);
+            } while (ret !=  돌두기_결과.Success);
 
             돌그리기(x, y);
             현재돌표시();

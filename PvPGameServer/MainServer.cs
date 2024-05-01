@@ -89,6 +89,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         Room.NetworkSendFunc = SendData;
 
+
         RoomMgr.CreateRooms(serverOption);
 
         MainPacketProcessor = new PacketProcessor();

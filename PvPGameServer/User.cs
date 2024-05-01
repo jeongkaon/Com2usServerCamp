@@ -50,6 +50,11 @@ public class User
 
     }
 
+    public int GetRoomNumber()
+    {
+        return RoomNumber;
+    }
+
     public bool IsStateLogin() { return SequenceNumber != 0; }
 
     public bool IsStateRoom() { return RoomNumber != -1; }

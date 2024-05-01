@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using MemoryPack;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,28 +11,94 @@ namespace PvPGameServer;
 
 public class GameBoard
 {
-    bool[,] board = new bool[19, 19];
-    List<Player> playerList = new List<Player>();
+    byte[,] board = new byte[19, 19];
+    List<Player> PlayerList = new List<Player>();
 
 
-    public void SetPlayer(string sessionId, string userId, bool turn)
+
+
+    public int RoomNumber;
+
+    public static Func<string, byte[], bool> NetworkSendFunc;
+
+
+
+    public GameBoard(int roomNumber, Func<string, byte[], bool> func)
     {
-        playerList.Add(new Player(sessionId, userId, turn));
+        RoomNumber = roomNumber;
+        NetworkSendFunc = func;
+    }
+
+    public bool CheckIsFull()
+    {
+        return (PlayerList.Count == 2);
+
+    }
+
+
+
+    public PLYAER_TYPE SetPlayer(string sessionId, string userId)
+    {
+        if (PlayerList.Count() == 0)
+        {
+            PlayerList.Add(new Player(sessionId, userId, PLYAER_TYPE.BLACK));
+            return PLYAER_TYPE.BLACK;
+
+        }
+        else
+        {
+            PlayerList.Add(new Player(sessionId, userId, PLYAER_TYPE.WHITE));
+            return PLYAER_TYPE.WHITE;
+        }
     }
 
 
 
     public void SetBoard(int x, int y)
     {
-        //마우스로 들어옴 걍 걸러져서 따로 확인안해도됨
-        board[x, y] = true;
-
+        board[x, y] = 1;
     }
 
-
-    public void CheckWin(int row, int col, char stone)
+    
+    public void CheckBaord(int x, int y)
     {
+
+        //오목룰 ok되면
+        SetBoard(x, y);
+
+        //다른 클라들에게 전송
+        NotifyPutOmok(x,y);
     }
+
+    public void NotifyPutOmok(int x, int y)
+    {
+        var packet = new NftPutOmok()
+        {
+            PosX = x,
+            PosY = y
+        };
+
+        var sendPacket = MemoryPackSerializer.Serialize(packet);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
+
+        Broadcast("", sendPacket);
+
+    }
+
+    public void Broadcast(string excludeNetSessionID, byte[] sendPacket)
+    {
+        foreach (var player in PlayerList)
+        {
+            if (player.NetSessionID == excludeNetSessionID)
+            {
+                continue;
+            }
+
+            NetworkSendFunc(player.NetSessionID, sendPacket);
+        }
+    }
+
+
 }
 
     
@@ -39,29 +106,3 @@ public class GameBoard
 
 
 
-public class Player
-{
-    public string UserID { get; private set; }
-    public string NetSessionID { get; private set; }
-
-    bool IsTurn { get; set; } = false;
-
-    int PassCount { get; set; } = 0;      //넘어간거
-
-
-    public Player(string userID, string netSessionID,bool turn)
-    {
-        UserID = userID;
-        NetSessionID = netSessionID;
-        IsTurn = turn;
-        PassCount = 0;
-    }
-
-    public void Set(string userId, string sessionId)
-    {
-        UserID = userId;
-        NetSessionID=sessionId;
-    }
-
-
-}

@@ -23,6 +23,8 @@ public class PacketProcessor
 
     PacketHandlerCommon CommonPacketHandler = new PacketHandlerCommon();
     PacketHandlerRoom RoomPacketHandler = new PacketHandlerRoom();
+    PacketHandlerGame GamePacketHandler = new PacketHandlerGame();
+
 
     public void CreateAndStart(List<Room> roomList, PvPServerOption option)
     {
@@ -71,6 +73,12 @@ public class PacketProcessor
         RoomPacketHandler.SetRoomList(RoomList);
         RoomPacketHandler.RegistPacketHandler(PacketHandlerMap);
 
+        //게임핸들러 초기화해줘야함
+        GamePacketHandler.Init(UserMgr);
+        GamePacketHandler.RegistPacketHandler(PacketHandlerMap);
+        GamePacketHandler.SetRoomList(RoomList);
+
+
     }
 
     void Process()
@@ -81,7 +89,7 @@ public class PacketProcessor
             {
                 var packet = msgBuffer.Receive();
 
-                var header = new MemorypackPacketHeadInfo();
+                var header = new PacketHeadInfo();
                 header.Read(packet.Data);
 
                 if (PacketHandlerMap.ContainsKey(header.Id))

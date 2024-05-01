@@ -1,6 +1,5 @@
-﻿using CSCommon;
-using MemoryPack;
-using MessagePack;
+﻿using MemoryPack;
+using OmokClient;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 #pragma warning disable CA1416
+
 
 namespace csharp_test_client
 {
@@ -32,6 +32,8 @@ namespace csharp_test_client
 
         System.Windows.Forms.Timer dispatcherUITimer = new();
 
+        public static Player MyPlayer = new Player();
+        public static Player OtherPlayer = new Player();
 
 
         public mainForm()
@@ -41,7 +43,7 @@ namespace csharp_test_client
 
         private void mainForm_Load(object sender, EventArgs e)
         {
-            PacketBuffer.Init((8096 * 10), MemorypackPacketHeadInfo.HeaderSize, 2048);
+            PacketBuffer.Init((8096 * 10), PacketHeadInfo.HeaderSize, 2048);
 
             IsNetworkThreadRunning = true;
             NetworkReadThread = new System.Threading.Thread(this.NetworkReadProcess);
@@ -257,14 +259,10 @@ namespace csharp_test_client
             if (packetData != null)
             {
                 var sendData = MemoryPackSerializer.Serialize(packetData);
-                MemorypackPacketHeadInfo.Write(packetData, packetID);
+                PacketHeadInfo.Write(packetData, packetID);
 
             }
-            else
-            {
-                //paketdatt가 없음여긴 어케 처리할까??
-                //packetData = header.Write();
-            }
+          
 
             SendPacketQueue.Enqueue(packetData);
         }
@@ -284,7 +282,7 @@ namespace csharp_test_client
                 if((string)user == userID)
                 {
                     removeItem = user;
-                    return;
+                    break;
                 }
             }
 
@@ -316,12 +314,14 @@ namespace csharp_test_client
         // 로그인 요청
         private void button2_Click(object sender, EventArgs e)
         {
-            var loginReq = new CSLoginPacket();
+            var loginReq = new ReqLoginPacket();
             loginReq.UserID = textBoxUserID.Text;
             loginReq.AuthToken = textBoxUserPW.Text;
             var packet = MemoryPackSerializer.Serialize(loginReq);
+
+            MyPlayer.Id = loginReq.UserID;
                         
-            PostSendPacket(PACKET_ID.CS_LOGIN, packet);     
+            PostSendPacket(PACKET_ID.REQ_LOGIN, packet);     
             DevLog.Write($"로그인 요청:  {textBoxUserID.Text}, {textBoxUserPW.Text}");
 
         }
@@ -331,23 +331,24 @@ namespace csharp_test_client
 
             int result;
             int.TryParse(textBoxRoomNumber.Text, out result);
+            MyPlayer.PlayRoom = result;
 
-            var temp = new CSRoomEnterPacket()
+            var temp = new ReqRoomEnterPacket()
             {
                 RoomNumber = result
             };
             var packet = MemoryPackSerializer.Serialize(temp);
 
-            PostSendPacket(PACKET_ID.CS_ROOM_ENTER, packet);
+            PostSendPacket(PACKET_ID.REQ_ROOM_ENTER, packet);
             DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번");
         }
 
         private void btn_RoomLeave_Click(object sender, EventArgs e)
         {
-            PostSendPacket(PACKET_ID.CS_ROOM_LEAVE, new byte[MemorypackPacketHeadInfo.HeaderSize]);
+            PostSendPacket(PACKET_ID.REQ_ROOM_LEAVE, new byte[PacketHeadInfo.HeaderSize]);
+            RemoveRoomUserList(textBoxUserID.Text);
 
-
-            DevLog.Write($"방 퇴장 요청:  {textBoxRoomNumber.Text} 번");
+            DevLog.Write($"방 퇴장 요청:  {textBoxUserID.Text} 번");
         }
 
         private void btnRoomChat_Click(object sender, EventArgs e)
@@ -358,12 +359,12 @@ namespace csharp_test_client
                 return;
             }
 
-            var requestPkt = new PKTReqRoomChat();
+            var requestPkt = new ReqRoomChat();
             requestPkt.ChatMessage = textBoxRoomSendMsg.Text;
 
             var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
 
-            PostSendPacket(PACKET_ID.CS_ROOM_CHAT, sendPacketData);
+            PostSendPacket(PACKET_ID.REQ_ROOM_CHAT, sendPacketData);
 
             DevLog.Write($"방 채팅 요청");
         }
@@ -375,13 +376,13 @@ namespace csharp_test_client
             int result;
             int.TryParse(textBoxRoomNumber.Text, out result);
 
-            var temp = new CSReadyPacket()
+            var temp = new ReqGameReadyPacket()
             {
                 RoomNumber = result
             };
             var packet = MemoryPackSerializer.Serialize(temp);
 
-            PostSendPacket(PACKET_ID.CS_READY_GAME, packet);
+            PostSendPacket(PACKET_ID.REQ_READY_GAME, packet);
 
             DevLog.Write($"게임 준비 완료 요청");
         }
@@ -404,14 +405,15 @@ namespace csharp_test_client
        
         void SendPacketOmokPut(int x, int y)
         {
-            var temp = new CSPutOMok
+            var temp = new ReqPutOMok
             {
+               
                 PosX = x,
                 PosY = y
             };
 
             var packet = MemoryPackSerializer.Serialize(temp);
-            PostSendPacket(PACKET_ID.CS_PUT_OMOK, packet);
+            PostSendPacket(PACKET_ID.REQ_PUT_OMOK, packet);
 
             DevLog.Write($"put stone 요청 : x  [ {x} ], y: [ {y} ] ");
         }
@@ -419,7 +421,7 @@ namespace csharp_test_client
         private void btn_GameStartClick(object sender, EventArgs e)
         {
             //PostSendPacket(PACKET_ID.GAME_START_REQ, null);
-            StartGame(true, "My", "Other");
+            StartGame(MyPlayer.turn, MyPlayer.Id,OtherPlayer.Id);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -433,7 +435,7 @@ namespace csharp_test_client
             var value = new PvPMatchingResult
             {
                 IP = "127.0.0.1",
-                Port = 32451,
+                Port = 32452,
                 RoomNumber = 0,
                 Index = 1,
                 Token = "123qwe"
@@ -449,22 +451,8 @@ namespace csharp_test_client
             var ret = v.SetAsync(saveValue).Result;
         }
 
-        [MessagePackObject]
-        public class PvPMatchingResult
-        {
-            [Key(0)]
-            public string IP;
-            [Key(1)]
-            public UInt16 Port;
-            [Key(2)]
-            public Int32 RoomNumber;
-            [Key(3)]
-            public Int32 Index;
-            [Key(4)]
-            public string Token;
-        }
 
-        // 게임 시작 요청
+
  
     }
 }

@@ -1,9 +1,17 @@
-﻿namespace PvPGameServer;
+﻿
+//에러종류, 패킷종류 등 필요한 enum들 여기다가 
+
+public enum PLYAER_TYPE
+{
+    BLACK = 0,
+    WHITE = 1
+}
+
 
 
 public enum ERROR_CODE : short
 {
-    NONE = 0, 
+    NONE = 0,
 
     // 서버 초기화 에러
     REDIS_INIT_FAIL = 1,    // Redis 초기화 에러
@@ -30,13 +38,14 @@ public enum ERROR_CODE : short
 
     ROOM_ENTER_FAILED_USERFULL = 1028,
 
-    ROOM_NOTALL_READY=1026,     //방안에 다 아직 레디안됨
+    ROOM_NOTALL_READY = 1026,     //방안에 다 아직 레디안됨
     ROOM_ALL_READY = 1027,      //다 준비함
 
-    
-    
-}
+    //게임관련 - 2000부터?
+    GAME_START = 2000
 
+
+}
 public enum PACKET_ID : int
 {
     REQ_SC_TEST_ECHO = 101,
@@ -45,40 +54,40 @@ public enum PACKET_ID : int
     // 클라이언트
     CS_BEGIN = 1001,
 
-    CS_LOGIN = 1002,
-    SC_LOGIN = 1003,
+    REQ_LOGIN = 1002,
+    RES_LOGIN = 1003,
     NTF_MUST_CLOSE = 1005,
 
-    CS_ROOM_ENTER = 1015,
-    SC_ROOM_ENTER = 1016,
+    REQ_ROOM_ENTER = 1015,
+    RES_ROOM_ENTER = 1016,
     NTF_ROOM_USER_LIST = 1017,
     NTF_ROOM_NEW_USER = 1018,
 
-    CS_ROOM_LEAVE = 1021,
-    SC_ROOM_LEAVE = 1022,
+    REQ_ROOM_LEAVE = 1021,
+    RES_ROOM_LEAVE = 1022,
     NTF_ROOM_LEAVE_USER = 1023,
 
-    CS_ROOM_CHAT = 1026,
+    REQ_ROOM_CHAT = 1026,
     NTF_ROOM_CHAT = 1027,
 
     //게임관련
-    CS_READY_GAME = 1031,
-    SC_READY_GAME = 1032,
+    REQ_READY_GAME = 1031,
+    RES_READY_GAME = 1032,
     NTR_READY_GAME = 1033,
 
     NTF_START_GAME = 1034,
 
-    CS_PUT_OMOK = 1035,
-    SC_PUT_OMOK = 1036,
+    REQ_PUT_OMOK = 1035,
+    RES_PUT_OMOK = 1036,
     NTF_PUT_OMOK = 1037,
 
     //
 
-    CS_ROOM_DEV_ALL_ROOM_START_GAME = 1091,
-    SC_ROOM_DEV_ALL_ROOM_START_GAME = 1092,
+    REQ_ROOM_DEV_ALL_ROOM_START_GAME = 1091,
+    RES_ROOM_DEV_ALL_ROOM_START_GAME = 1092,
 
-    CS_ROOM_DEV_ALL_ROOM_END_GAME = 1093,
-    SC_ROOM_DEV_ALL_ROOM_END_GAME = 1094,
+    REQ_ROOM_DEV_ALL_ROOM_END_GAME = 1093,
+    RES_ROOM_DEV_ALL_ROOM_END_GAME = 1094,
 
     CS_END = 1100,
 

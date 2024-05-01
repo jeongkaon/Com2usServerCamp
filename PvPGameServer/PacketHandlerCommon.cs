@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace PvPGameServer;
 
-//공통적인? 일들 처리하는 패킷핸들러
 public class PacketHandlerCommon : PacketHandler
 {
         
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKET_ID.CS_LOGIN, RecvLoginPacket);
+        packetHandlerMap.Add((int)PACKET_ID.REQ_LOGIN, RecvLoginPacket);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_CONNECT_CLIENT, NotifyInConnectClient);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_DISCONNECT_CLIENT, NotifyInDisConnectClient);
 
@@ -43,7 +42,6 @@ public class PacketHandlerCommon : PacketHandler
 
     public void RecvLoginPacket(MemoryPackBinaryRequestInfo recvData)
     {
-        //로긴패킷 받았을때
         var sessionID = recvData.SessionID;
 
         try
@@ -54,7 +52,7 @@ public class PacketHandlerCommon : PacketHandler
                 return;
             }
 
-            var reqData = MemoryPackSerializer.Deserialize<CSLoginPacket>(recvData.Data);
+            var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
             var errorCode = UserMgr.AddUser(reqData.UserID, sessionID);
             if (errorCode != ERROR_CODE.NONE)
             {
@@ -81,27 +79,26 @@ public class PacketHandlerCommon : PacketHandler
     }
     public void SendLoginToClient(ERROR_CODE errorCode, string sessionID)
     {
-        var resLogin = new SCLoginPacket()
+        var resLogin = new ResLoginPacket()
         {
             Result = (short)errorCode
         };
 
         var sendData = MemoryPackSerializer.Serialize(resLogin);
-        MemorypackPacketHeadInfo.Write(sendData, PACKET_ID.SC_LOGIN);
+        PacketHeadInfo.Write(sendData, PACKET_ID.RES_LOGIN);
 
         NetworkSendFunc(sessionID, sendData);
     }
 
     public void NotifyMustCloseToClient(ERROR_CODE errorCode, string sessionID)
     {
-        //로그인 실패했을때
         var resLogin = new NtfMustClosePacket()
         {
             Result = (short)errorCode
         };
 
         var sendData = MemoryPackSerializer.Serialize(resLogin);
-        MemorypackPacketHeadInfo.Write(sendData, PACKET_ID.NTF_MUST_CLOSE);
+        PacketHeadInfo.Write(sendData, PACKET_ID.NTF_MUST_CLOSE);
 
         NetworkSendFunc(sessionID, sendData);
     }

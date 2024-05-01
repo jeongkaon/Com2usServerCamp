@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PvPGameServer;
 
 public class FastBinaryWrite
 {
-    public 
+    public
         void Boolean(byte[] bytes, int offset, bool value)
     {
         bytes[offset] = (byte)(value ? 1 : 0);

@@ -1,14 +1,7 @@
 ﻿using MemoryPack;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace CSCommon;
-
-
-
-public struct MemorypackPacketHeadInfo
+public struct PacketHeadInfo       
 {
     const int PacketHeaderMemorypacStartPos = 1;
     public const int HeaderSize = 6;
@@ -63,6 +56,7 @@ public struct MemorypackPacketHeadInfo
     }
 }
 
+//패킷
 [MemoryPackable]
 public partial class PacketHeader
 {
@@ -72,15 +66,18 @@ public partial class PacketHeader
 
 }
 
+//Req -> 클라에서 서버로 요청한거
+//Res -> 서버에서 클라로 응답한거
+//Nft -> 요청없는데 클라에게 알려주는거
 [MemoryPackable]
-public partial class CSLoginPacket : PacketHeader
+public partial class ReqLoginPacket : PacketHeader
 {
     public string UserID { get; set; }
     public string AuthToken { get; set; }
 }
 
 [MemoryPackable]
-public partial class SCLoginPacket : PacketHeader
+public partial class ResLoginPacket : PacketHeader
 {
     public short Result { get; set; }
 }
@@ -96,57 +93,58 @@ public partial class NtfMustClosePacket : PacketHeader
 
 
 [MemoryPackable]
-public partial class CSRoomEnterPacket : PacketHeader
+public partial class ReqRoomEnterPacket : PacketHeader
 {
     public int RoomNumber { get; set; }
 }
 
 [MemoryPackable]
-public partial class SCRoomEnterPacket : PacketHeader
+public partial class ResRoomEnterPacket : PacketHeader
 {
     public short Result { get; set; }
 }
 
 [MemoryPackable]
-public partial class PKTNtfRoomUserList : PacketHeader
+public partial class NtfRoomUserList : PacketHeader
 {
     public List<string> UserIDList { get; set; } = new List<string>();
 }
 
 [MemoryPackable]
-public partial class PKTNtfRoomNewUser : PacketHeader
+public partial class NtfRoomNewUser : PacketHeader
 {
     public string UserID { get; set; }
 }
 
 
 [MemoryPackable]
-public partial class CSRoomLeavePacket : PacketHeader
+public partial class ReqRoomLeavePacket : PacketHeader
 {
+    //public string UserID { get; set; }
 }
 
 [MemoryPackable]
-public partial class SCRoomLeavePacket : PacketHeader
+public partial class ResRoomLeavePacket : PacketHeader
 {
     public short Result { get; set; }
 }
 
 [MemoryPackable]
-public partial class PKTNtfRoomLeaveUser : PacketHeader
+public partial class NtfRoomLeaveUser : PacketHeader
 {
     public string UserID { get; set; }
 }
 
 
 [MemoryPackable]
-public partial class PKTReqRoomChat : PacketHeader
+public partial class ReqRoomChat : PacketHeader
 {
     public string ChatMessage { get; set; }
 }
 
 
 [MemoryPackable]
-public partial class PKTNtfRoomChat : PacketHeader
+public partial class NtfRoomChat : PacketHeader
 {
     public string UserID { get; set; }
 
@@ -154,49 +152,64 @@ public partial class PKTNtfRoomChat : PacketHeader
 }
 
 
-//게임데이터
+//게임관련패킷
 
 [MemoryPackable]
-public partial class CSReadyPacket : PacketHeader
+public partial class ReqGameReadyPacket : PacketHeader
 {
-
     public int RoomNumber { get; set; }
 
 }
 
 [MemoryPackable]
-public partial class SCReadyPacket : PacketHeader
+public partial class ResGameReadyPacket : PacketHeader
 {
-    public short Result { get; set; }
-
-}
-[MemoryPackable]
-public partial class SCGameStartPacket : PacketHeader
-{
-    public string FirstUserID { get; set; }
+    public PLYAER_TYPE PlayerType { get; set; }
 
 }
 
+[MemoryPackable]
+public partial class NftGameStartPacket : PacketHeader
+{
+   public string p1 { get;  set; }
+    public string p2 { get;  set; }
+
+
+}
 
 
 [MemoryPackable]
-public partial class CSPutOMok : PacketHeader
+public partial class ReqPutOMok : PacketHeader
 {
     public int PosX { get; set; }
     public int PosY { get; set; }
 
 }
 [MemoryPackable]
-public partial class SCPutOMok : PacketHeader
+public partial class ResPutOMok : PacketHeader
 {
     public short Result { get; set; }
 
 }
+
 [MemoryPackable]
-public partial class NTFPutOmok : PacketHeader
+public partial class NftPutOmok : PacketHeader
 {
-   
+
+    //public int Mok;
     public int PosX { get; set; }
     public int PosY { get; set; }
 
+
+}
+
+
+[MemoryPackable]
+public partial class PvPMatchingResult : PacketHeader
+{
+    public string IP;
+    public UInt16 Port;
+    public Int32 RoomNumber;
+    public Int32 Index;
+    public string Token;
 }

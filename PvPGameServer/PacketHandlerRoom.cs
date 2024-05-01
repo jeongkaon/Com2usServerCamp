@@ -60,14 +60,12 @@ public class PacketHandlerRoom : PacketHandler
 
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKET_ID.CS_ROOM_ENTER, RequestRoomEnter);
-        packetHandlerMap.Add((int)PACKET_ID.CS_ROOM_LEAVE, RequestLeave);
+        packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_ENTER, RequestRoomEnter);
+        packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_LEAVE, RequestLeave);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOM_LEAVE, NotifyLeaveInternal);
-        packetHandlerMap.Add((int)PACKET_ID.CS_ROOM_CHAT, RequestChat);
-        packetHandlerMap.Add((int)PACKET_ID.CS_READY_GAME, RecvReadyPacket);
+        packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_CHAT, RequestChat);
+        packetHandlerMap.Add((int)PACKET_ID.REQ_READY_GAME, RequestGameReadyPacket);
 
-        //게임 관련 옮겨야함
-        packetHandlerMap.Add((int)PACKET_ID.CS_PUT_OMOK, recvOmokPacket);
 
     }
 
@@ -95,7 +93,7 @@ public class PacketHandlerRoom : PacketHandler
                 return;
             }
 
-            var reqData = MemoryPackSerializer.Deserialize<CSRoomEnterPacket>(packetData.Data);
+            var reqData = MemoryPackSerializer.Deserialize<ReqRoomEnterPacket>(packetData.Data);
 
             var room = GetRoom(reqData.RoomNumber);
 
@@ -139,13 +137,13 @@ public class PacketHandlerRoom : PacketHandler
 
     void ResponseEnterRoomToClient(ERROR_CODE errorCode, string sessionID)
     {
-        var resRoomEnter = new SCRoomEnterPacket()
+        var resRoomEnter = new ResRoomEnterPacket()
         {
             Result = (short)errorCode
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(resRoomEnter);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_ROOM_ENTER);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_ROOM_ENTER);
 
         NetworkSendFunc(sessionID, sendPacket);
     }
@@ -154,7 +152,6 @@ public class PacketHandlerRoom : PacketHandler
     {
         var sessionID = packetData.SessionID;
         MainServer.MainLogger.Debug("방나가기 요청 받음");
-        Console.WriteLine("방나가기 요청 받음");
 
         try
         {
@@ -207,13 +204,13 @@ public class PacketHandlerRoom : PacketHandler
 
     void ResponseLeaveRoomToClient(string sessionID)
     {
-        var resRoomLeave = new SCRoomLeavePacket()
+        var resRoomLeave = new ResRoomLeavePacket()
         {
             Result = (short)ERROR_CODE.NONE
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(resRoomLeave);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_ROOM_LEAVE);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_ROOM_LEAVE);
 
         NetworkSendFunc(sessionID, sendPacket);
     }
@@ -242,16 +239,16 @@ public class PacketHandlerRoom : PacketHandler
             }
 
 
-            var reqData = MemoryPackSerializer.Deserialize<PKTReqRoomChat>(packetData.Data);
+            var reqData = MemoryPackSerializer.Deserialize<ReqRoomChat>(packetData.Data);
 
-            var notifyPacket = new PKTNtfRoomChat()
+            var notifyPacket = new NtfRoomChat()
             {
                 UserID = roomObject.Item3.UserID,
                 ChatMessage = reqData.ChatMessage
             };
 
             var sendPacket = MemoryPackSerializer.Serialize(notifyPacket);
-            MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_CHAT);
+            PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_CHAT);
 
             roomObject.Item2.Broadcast("", sendPacket);
 
@@ -263,55 +260,21 @@ public class PacketHandlerRoom : PacketHandler
         }
     }
 
-    public void RecvReadyPacket(MemoryPackBinaryRequestInfo packetData)
+    public void RequestGameReadyPacket(MemoryPackBinaryRequestInfo packetData)
     {
-        var reqData = MemoryPackSerializer.Deserialize<CSReadyPacket>(packetData.Data);
+        var reqData = MemoryPackSerializer.Deserialize<ReqGameReadyPacket>(packetData.Data);
         var roomNumber = reqData.RoomNumber;
         var sessionID = packetData.SessionID;
 
         var room = GetRoom(roomNumber);
         room.SetRoomUserBeReady(sessionID);
 
-        if (room.CheckReady())
-        {
-            //게임시작 패킷 모두에게 보내야한다.
-            //룸에 있는 모든 사람들에게 전송
-            room.NotifyPacketGameStart(sessionID);
-        }
-        else
-        {
-            SendReadyPacket(sessionID);
-            //노티파이도 해야함
-        }
+        MainServer.MainLogger.Debug("Room Game Ready Recv - Success");
+
+
 
     }
 
-    public void SendReadyPacket(string sessionId)
-    {
-        var temp = new SCReadyPacket()
-        {
-            Result = (short)ERROR_CODE.ROOM_NOTALL_READY
-        };
-
-        var sendPacket = MemoryPackSerializer.Serialize(temp);
-        MemorypackPacketHeadInfo.Write(sendPacket, PACKET_ID.SC_READY_GAME);
-
-        NetworkSendFunc(sessionId, sendPacket);
-
-    }
-
-    public void recvOmokPacket(MemoryPackBinaryRequestInfo packetData)
-    {
-        var sessionId = packetData.SessionID;
-        var reqData = MemoryPackSerializer.Deserialize<CSPutOMok>(packetData.Data);
-        var user = UserMgr.GetUser(sessionId);
-
-        var room = GetRoom(user.RoomNumber);
-
-        room.SetBoard(reqData.PosX, reqData.PosY);
-
-
-    }
 
 
 }

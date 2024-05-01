@@ -37,4 +37,9 @@
     <Compile Remove="PacketHeader.cs" />
     <Compile Remove="PacketID.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\..\Common\bin\Debug\net8.0\Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
