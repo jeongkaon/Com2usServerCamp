@@ -199,10 +199,14 @@ public partial class NftPutOmok : PacketHeader
     //public int Mok;
     public int PosX { get; set; }
     public int PosY { get; set; }
-
-
 }
 
+[MemoryPackable]
+public partial class NtfOmokWinner : PacketHeader
+{
+    public string UserId { get; set; }
+
+}
 
 [MemoryPackable]
 public partial class PvPMatchingResult : PacketHeader

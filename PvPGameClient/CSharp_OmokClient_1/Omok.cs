@@ -35,7 +35,7 @@ public class OmokRule
         전돌x좌표 = 전돌y좌표 = -1;
         현재돌x좌표 = 현재돌y좌표 = -1;
         흑돌차례 = true;
-        CurTuenCount = 1;
+        //CurTuenCount = 1;
         게임종료 = false;
 
         st.Clear();

@@ -152,7 +152,6 @@ public class Room
         }
     }
 
-    //게임관련 send 여기서
     public void SetRoomUserBeReady(string SessionId)
     {
         //2명밖에 없으니까 그냥 foreach쓸까?, 아님 함수타고 드러가???
@@ -198,23 +197,6 @@ public class Room
 
 
     }
-
-    public void NotifyPutOmok(int x, int y)
-    {
-        var temp = new NftPutOmok();
-        temp.PosX = x;
-        temp.PosY = y;
-
-
-        var sendPacket = MemoryPackSerializer.Serialize(temp);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
-
-
-        Broadcast("", sendPacket);
-
-    }
-
-
 }
 
 public class RoomUser

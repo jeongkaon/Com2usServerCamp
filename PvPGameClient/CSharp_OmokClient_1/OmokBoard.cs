@@ -39,11 +39,13 @@ namespace csharp_test_client
         private int 전x좌표 = -1, 전y좌표 = -1;
         
         bool IsMyTurn = false;
+
+        PLYAER_TYPE curPlayer = PLYAER_TYPE.BLACK;
         
         private bool AI모드 = true;
         private OmokRule.돌종류 컴퓨터돌;
 
-        string MyPlayerName = "";        
+        string MyPlayerName = MyPlayer.Id;        
         string 흑돌플레이어Name = "";
         string 백돌플레이어Name = "";
 
@@ -82,14 +84,17 @@ namespace csharp_test_client
             {
                 흑돌플레이어Name = MyPlayer.Id;
                 백돌플레이어Name = OtherPlayer.Id;
+                MyPlayer.turn = true;
+
             }
             else
             {
                 흑돌플레이어Name = OtherPlayer.Id;
                 백돌플레이어Name = MyPlayer.Id;
-            }
+                MyPlayer.turn = false;
 
-            IsMyTurn = isMyTurn;
+            }
+            IsMyTurn = MyPlayer.turn;
 
             전x좌표 = 전y좌표 = -1;
             시작효과음.Play();
@@ -225,7 +230,25 @@ namespace csharp_test_client
                 현재턴_플레이어_정보();
             }
         }
+        void 입력된돌그리기(int x, int y)
+        {
+            Graphics g = panel1.CreateGraphics();
 
+            Rectangle r = new Rectangle(시작위치 + 눈금크기 * x - 돌크기 / 2,
+                시작위치 + 눈금크기 * y - 돌크기 / 2, 돌크기, 돌크기);
+
+
+            if (curPlayer == PLYAER_TYPE.BLACK)
+            {
+                g.FillEllipse(검은색, r);
+
+            }
+            else
+            {
+                g.FillEllipse(흰색, r);
+
+            }
+        }
         void 돌그리기(int x, int y)
         {
             Graphics g = panel1.CreateGraphics();
@@ -233,13 +256,17 @@ namespace csharp_test_client
             Rectangle r = new Rectangle(시작위치 + 눈금크기 * x - 돌크기 / 2,
                 시작위치 + 눈금크기 * y - 돌크기 / 2, 돌크기, 돌크기);
 
+
+
             if (OmokLogic.바둑판알(x, y) == (int)OmokRule.돌종류.흑돌)                              // 검은 돌
             {
                 g.FillEllipse(검은색, r);
+
             }
             else if (OmokLogic.바둑판알(x, y) == (int)OmokRule.돌종류.백돌)                         // 흰 돌
             {
                 g.FillEllipse(흰색, r);
+
             }
         }
 
@@ -278,7 +305,7 @@ namespace csharp_test_client
             string str;
             Font 글꼴 = new Font("HY견고딕", 15);
 
-            if (OmokLogic.Is흑돌차례())       
+            if (curPlayer == PLYAER_TYPE.BLACK)       
             {
                 str = "현재 턴 돌";
                 g.FillEllipse(검은색, 시작위치 + 100, 599, 돌크기, 돌크기);
@@ -300,7 +327,7 @@ namespace csharp_test_client
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (OmokLogic.게임종료 || IsMyTurn == false)
+            if (OmokLogic.게임종료 || MyPlayer.turn == false)
             {
                 return;
             }
@@ -342,12 +369,20 @@ namespace csharp_test_client
 
             돌그리기(x, y);
             현재돌표시();
-            OmokLogic.오목확인(x, y);
                         
             
             if (isNotify == false)
             {
                 IsMyTurn = false;
+                if(curPlayer == PLYAER_TYPE.BLACK)
+                {
+                    curPlayer = PLYAER_TYPE.WHITE;
+                }
+                else
+                {
+                    curPlayer = PLYAER_TYPE.BLACK;
+
+                }
                 SendPacketOmokPut(x, y);
             }
             else

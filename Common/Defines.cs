@@ -3,6 +3,7 @@
 
 public enum PLYAER_TYPE
 {
+    NONE = -1,
     BLACK = 0,
     WHITE = 1
 }
@@ -38,11 +39,9 @@ public enum ERROR_CODE : short
 
     ROOM_ENTER_FAILED_USERFULL = 1028,
 
-    ROOM_NOTALL_READY = 1026,     //방안에 다 아직 레디안됨
-    ROOM_ALL_READY = 1027,      //다 준비함
+    ROOM_NOTALL_READY = 1026,  
+    ROOM_ALL_READY = 1027,     
 
-    //게임관련 - 2000부터?
-    GAME_START = 2000
 
 
 }
@@ -81,7 +80,7 @@ public enum PACKET_ID : int
     RES_PUT_OMOK = 1036,
     NTF_PUT_OMOK = 1037,
 
-    //
+    NTR_WINNER_OMOK = 1038,
 
     REQ_ROOM_DEV_ALL_ROOM_START_GAME = 1091,
     RES_ROOM_DEV_ALL_ROOM_START_GAME = 1092,

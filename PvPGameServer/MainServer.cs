@@ -23,10 +23,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     PacketProcessor MainPacketProcessor = new PacketProcessor();
     RoomManager RoomMgr = new RoomManager();
 
-
-
-
-
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
     {

@@ -20,7 +20,7 @@ public class Player
     int PassCount { get; set; } = 0;      //넘어간거
 
 
-    public Player(string userID, string netSessionID,PLYAER_TYPE type)
+    public Player(string netSessionID,string userID,PLYAER_TYPE type)
     {
         UserID = userID;
         NetSessionID = netSessionID;

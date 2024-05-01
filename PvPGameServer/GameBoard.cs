@@ -13,20 +13,31 @@ public class GameBoard
 {
     byte[,] board = new byte[19, 19];
     List<Player> PlayerList = new List<Player>();
-
-
-
-
     public int RoomNumber;
+    
+    bool GameEnd = false;
+    PLYAER_TYPE CurType = PLYAER_TYPE.BLACK;
 
+    
     public static Func<string, byte[], bool> NetworkSendFunc;
-
-
 
     public GameBoard(int roomNumber, Func<string, byte[], bool> func)
     {
         RoomNumber = roomNumber;
         NetworkSendFunc = func;
+    }
+
+    public string GetUserIdByPlayerType(PLYAER_TYPE type)
+    {
+
+        foreach(var player in PlayerList)
+        {
+            if(player.PlayerType == type)
+            {
+                return player.UserID;
+            }
+        }
+        return null;
     }
 
     public bool CheckIsFull()
@@ -35,7 +46,11 @@ public class GameBoard
 
     }
 
-
+    public void ClearBoard()
+    {
+        board.Initialize();
+        PlayerList.Clear();
+    }
 
     public PLYAER_TYPE SetPlayer(string sessionId, string userId)
     {
@@ -52,22 +67,22 @@ public class GameBoard
         }
     }
 
-
-
     public void SetBoard(int x, int y)
     {
         board[x, y] = 1;
     }
 
-    
     public void CheckBaord(int x, int y)
     {
-
-        //오목룰 ok되면
         SetBoard(x, y);
 
-        //다른 클라들에게 전송
         NotifyPutOmok(x,y);
+
+        if (CheckBoardEnd(x, y) == true)
+        {
+            var ID = GetUserIdByPlayerType(CurType);
+            NotifyWinner(ID);
+        }
     }
 
     public void NotifyPutOmok(int x, int y)
@@ -80,6 +95,20 @@ public class GameBoard
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
+
+        Broadcast("", sendPacket);
+
+    }
+
+    public void NotifyWinner(string id)
+    {
+        var packet = new NtfOmokWinner()
+        {
+            UserId = id
+        };
+
+        var sendPacket = MemoryPackSerializer.Serialize(packet);
+        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTR_WINNER_OMOK);
 
         Broadcast("", sendPacket);
 
@@ -99,9 +128,132 @@ public class GameBoard
     }
 
 
+    //오목룰 체크
+    public bool CheckBoardEnd(int x, int y)
+    {
+        if (CheckCol(x, y) == 5)        // 같은 돌 개수가 5개면 (6목이상이면 게임 계속) 
+        {
+            return true;
+        }
+
+        else if (CheckRow(x, y) == 5)
+        {
+            return true;
+        }
+
+        else if (CheckDiagonal(x, y) == 5)
+        {
+            return true;
+        }
+
+        else if (CheckReversDiagonal(x, y) == 5)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    int CheckCol(int x, int y)      // ㅡ 확인
+    {
+        int SameCount = 1;
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (x + i <= 18 && board[x + i, y] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (x - i >= 0 && board[x - i, y] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        return SameCount;
+    }
+    int CheckRow(int x, int y)      // | 확인
+    {
+        int SameCount = 1;
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (y + i <= 18 && board[x, y + i] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (y - i >= 0 && board[x, y - i] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        return SameCount;
+    }
+
+    int CheckDiagonal(int x, int y)      // / 확인
+    {
+        int SameCount = 1;
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (x + i <= 18 && y - i >= 0 && board[x + i, y - i] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (x - i >= 0 && y + i <= 18 && board[x - i, y + i] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        return SameCount;
+    }
+    int CheckReversDiagonal(int x, int y)     // ＼ 확인
+    {
+        int SameCount = 1;
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (x + i <= 18 && y + i <= 18 && board[x + i, y + i] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        for (int i = 1; i <= 5; i++)
+        {
+            if (x - i >= 0 && y - i >= 0 && board[x - i, y - i] == board[x, y])
+                SameCount++;
+
+            else
+                break;
+        }
+
+        return SameCount;
+    }
+
+
 }
 
-    
 
 
 

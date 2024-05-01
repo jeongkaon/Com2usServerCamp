@@ -34,6 +34,7 @@ namespace csharp_test_client
             PacketFuncDic.Add((int)PACKET_ID.NTR_READY_GAME, PacketProcess_ReadyOmokNotify);
             PacketFuncDic.Add((int)PACKET_ID.NTF_START_GAME, PacketProcess_StartOmokNotify);
             PacketFuncDic.Add((int)PACKET_ID.RES_PUT_OMOK, PacketProcess_PutMokResponse);
+
             PacketFuncDic.Add((int)PACKET_ID.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
             //PacketFuncDic.Add((ushort)PACKET_ID.NTF_END_GAME, PacketProcess_EndOmokNotify);
         }
@@ -279,9 +280,11 @@ namespace csharp_test_client
 
         void PacketProcess_PutMokNotify(byte[] packetData)
         {
+            int temp = 100;
+
             var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
-            플레이어_돌두기(true, notifyPkt.PosX, notifyPkt.PosY);
+            입력된돌그리기(notifyPkt.PosX, notifyPkt.PosY);
 
             DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY}");// 알:{notifyPkt.Mok}");
         }
