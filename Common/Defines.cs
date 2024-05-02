@@ -1,11 +1,11 @@
 ﻿
 //에러종류, 패킷종류 등 필요한 enum들 여기다가 
 
-public enum PLYAER_TYPE
+public enum STONE_TYPE //: int
 {
-    NONE = -1,
-    BLACK = 0,
-    WHITE = 1
+    NONE = 0,
+    BLACK = 1,
+    WHITE = 2
 }
 
 

@@ -161,8 +161,7 @@ public class Room
             {
                 var packet = new ResGameReadyPacket();
 
-                var type = board.SetPlayer(SessionId, user.UserID);
-                packet.PlayerType = type;
+                packet.PlayerStoneType = board.SetPlayer(SessionId, user.UserID);
 
                 var sendPacket = MemoryPackSerializer.Serialize(packet);
                 PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_READY_GAME);

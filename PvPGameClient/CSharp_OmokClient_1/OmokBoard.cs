@@ -40,7 +40,7 @@ namespace csharp_test_client
         
         bool IsMyTurn = false;
 
-        PLYAER_TYPE curPlayer = PLYAER_TYPE.BLACK;
+        STONE_TYPE curPlayer = STONE_TYPE.BLACK;
         
         private bool AI모드 = true;
         private OmokRule.돌종류 컴퓨터돌;
@@ -80,21 +80,20 @@ namespace csharp_test_client
         {
             MyPlayerName = MyPlayer.Id;
 
-            if(MyPlayer.PlayerType == PLYAER_TYPE.BLACK)
+            if(MyPlayer.PlayerType == STONE_TYPE.BLACK)
             {
                 흑돌플레이어Name = MyPlayer.Id;
                 백돌플레이어Name = OtherPlayer.Id;
-                MyPlayer.turn = true;
+                IsMyTurn = true;
 
             }
             else
             {
                 흑돌플레이어Name = OtherPlayer.Id;
                 백돌플레이어Name = MyPlayer.Id;
-                MyPlayer.turn = false;
-
+                IsMyTurn = false;
             }
-            IsMyTurn = MyPlayer.turn;
+            IsMyTurn = isMyTurn;
 
             전x좌표 = 전y좌표 = -1;
             시작효과음.Play();
@@ -238,7 +237,7 @@ namespace csharp_test_client
                 시작위치 + 눈금크기 * y - 돌크기 / 2, 돌크기, 돌크기);
 
 
-            if (curPlayer == PLYAER_TYPE.BLACK)
+            if (curPlayer == STONE_TYPE.BLACK)
             {
                 g.FillEllipse(검은색, r);
 
@@ -248,6 +247,9 @@ namespace csharp_test_client
                 g.FillEllipse(흰색, r);
 
             }
+
+
+            
         }
         void 돌그리기(int x, int y)
         {
@@ -305,7 +307,7 @@ namespace csharp_test_client
             string str;
             Font 글꼴 = new Font("HY견고딕", 15);
 
-            if (curPlayer == PLYAER_TYPE.BLACK)       
+            if (curPlayer == STONE_TYPE.BLACK)       
             {
                 str = "현재 턴 돌";
                 g.FillEllipse(검은색, 시작위치 + 100, 599, 돌크기, 돌크기);
@@ -327,7 +329,7 @@ namespace csharp_test_client
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (OmokLogic.게임종료 || MyPlayer.turn == false)
+            if (OmokLogic.게임종료 || IsMyTurn == false)
             {
                 return;
             }
@@ -374,16 +376,16 @@ namespace csharp_test_client
             if (isNotify == false)
             {
                 IsMyTurn = false;
-                if(curPlayer == PLYAER_TYPE.BLACK)
+                if(curPlayer == STONE_TYPE.BLACK)
                 {
-                    curPlayer = PLYAER_TYPE.WHITE;
+                    curPlayer = STONE_TYPE.WHITE;
                 }
                 else
                 {
-                    curPlayer = PLYAER_TYPE.BLACK;
+                    curPlayer = STONE_TYPE.BLACK;
 
                 }
-                SendPacketOmokPut(x, y);
+                //SendPacketOmokPut(x, y);
             }
             else
             {

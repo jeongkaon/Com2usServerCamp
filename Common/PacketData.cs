@@ -164,7 +164,7 @@ public partial class ReqGameReadyPacket : PacketHeader
 [MemoryPackable]
 public partial class ResGameReadyPacket : PacketHeader
 {
-    public PLYAER_TYPE PlayerType { get; set; }
+    public STONE_TYPE PlayerStoneType { get; set; }
 
 }
 
@@ -172,7 +172,7 @@ public partial class ResGameReadyPacket : PacketHeader
 public partial class NftGameStartPacket : PacketHeader
 {
    public string p1 { get;  set; }
-    public string p2 { get;  set; }
+   public string p2 { get;  set; }
 
 
 }
@@ -181,6 +181,7 @@ public partial class NftGameStartPacket : PacketHeader
 [MemoryPackable]
 public partial class ReqPutOMok : PacketHeader
 {
+    public STONE_TYPE mok { get; set; }
     public int PosX { get; set; }
     public int PosY { get; set; }
 
@@ -196,7 +197,7 @@ public partial class ResPutOMok : PacketHeader
 public partial class NftPutOmok : PacketHeader
 {
 
-    //public int Mok;
+    public STONE_TYPE mok { get; set; }
     public int PosX { get; set; }
     public int PosY { get; set; }
 }

@@ -30,7 +30,7 @@ public class PacketHandlerGame : PacketHandler
         var user = UserMgr.GetUser(sessionId);
         var board = RoomList[user.GetRoomNumber()].GetGameBoard();
 
-        board.CheckBaord(reqData.PosX, reqData.PosY);
+        board.CheckBaord(reqData.mok, reqData.PosX, reqData.PosY);
 
     }
 

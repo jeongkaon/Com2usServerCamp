@@ -11,12 +11,14 @@ namespace PvPGameServer;
 
 public class GameBoard
 {
+    public int RoomNumber;
+
     byte[,] board = new byte[19, 19];
     List<Player> PlayerList = new List<Player>();
-    public int RoomNumber;
     
     bool GameEnd = false;
-    PLYAER_TYPE CurType = PLYAER_TYPE.BLACK;
+
+    STONE_TYPE CurType = STONE_TYPE.NONE;
 
     
     public static Func<string, byte[], bool> NetworkSendFunc;
@@ -27,7 +29,7 @@ public class GameBoard
         NetworkSendFunc = func;
     }
 
-    public string GetUserIdByPlayerType(PLYAER_TYPE type)
+    public string GetUserIdByPlayerType(STONE_TYPE type)
     {
 
         foreach(var player in PlayerList)
@@ -52,43 +54,42 @@ public class GameBoard
         PlayerList.Clear();
     }
 
-    public PLYAER_TYPE SetPlayer(string sessionId, string userId)
+    public STONE_TYPE SetPlayer(string sessionId, string userId)
     {
         if (PlayerList.Count() == 0)
         {
-            PlayerList.Add(new Player(sessionId, userId, PLYAER_TYPE.BLACK));
-            return PLYAER_TYPE.BLACK;
+            PlayerList.Add(new Player(sessionId, userId, STONE_TYPE.BLACK));
+            return STONE_TYPE.BLACK;
 
         }
         else
         {
-            PlayerList.Add(new Player(sessionId, userId, PLYAER_TYPE.WHITE));
-            return PLYAER_TYPE.WHITE;
+            PlayerList.Add(new Player(sessionId, userId, STONE_TYPE.WHITE));
+            return STONE_TYPE.WHITE;
         }
     }
 
-    public void SetBoard(int x, int y)
+ 
+
+    public void CheckBaord(STONE_TYPE cur,int x, int y)
     {
-        board[x, y] = 1;
-    }
-
-    public void CheckBaord(int x, int y)
-    {
-        SetBoard(x, y);
-
-        NotifyPutOmok(x,y);
-
+        board[x, y] = (byte)cur;
+        CurType = cur;
+   
         if (CheckBoardEnd(x, y) == true)
         {
             var ID = GetUserIdByPlayerType(CurType);
             NotifyWinner(ID);
         }
+        NotifyPutOmok(x,y);
     }
 
     public void NotifyPutOmok(int x, int y)
     {
+
         var packet = new NftPutOmok()
         {
+            mok = CurType,
             PosX = x,
             PosY = y
         };

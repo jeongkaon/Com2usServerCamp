@@ -201,7 +201,7 @@ namespace csharp_test_client
         void PacketProcess_ReadyOmokResponse(byte[] packetData)
         {
             var res =  MemoryPackSerializer.Deserialize<ResGameReadyPacket>(packetData);
-            MyPlayer.PlayerType = res.PlayerType;
+            MyPlayer.PlayerType = res.PlayerStoneType;
 
           
 
@@ -230,34 +230,34 @@ namespace csharp_test_client
 
             if (res.p1 == MyPlayer.Id)
             {
-                if (MyPlayer.PlayerType == PLYAER_TYPE.BLACK)
+                if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
                 {
-                    OtherPlayer.SetPlayer(res.p2, PLYAER_TYPE.WHITE);
+                    OtherPlayer.SetPlayer(res.p2, STONE_TYPE.WHITE);
                 }
                 else
                 {
-                    OtherPlayer.SetPlayer(res.p2, PLYAER_TYPE.BLACK);
+                    OtherPlayer.SetPlayer(res.p2, STONE_TYPE.BLACK);
 
                 }
             }
             else
             {
-                if (MyPlayer.PlayerType == PLYAER_TYPE.BLACK)
+                if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
                 {
-                    OtherPlayer.SetPlayer(res.p1, PLYAER_TYPE.WHITE);
+                    OtherPlayer.SetPlayer(res.p1, STONE_TYPE.WHITE);
                 }
                 else
                 {
-                    OtherPlayer.SetPlayer(res.p1, PLYAER_TYPE.BLACK);
+                    OtherPlayer.SetPlayer(res.p1, STONE_TYPE.BLACK);
 
                 }
 
             }
 
             
-            bool myTurn = MyPlayer.PlayerType == PLYAER_TYPE.BLACK ? true : false;
+            bool myTurn = MyPlayer.PlayerType == STONE_TYPE.BLACK ? true : false;
 
-            StartGame(MyPlayer.turn, MyPlayer.Id, OtherPlayer.Id);
+            StartGame(myTurn, MyPlayer.Id, OtherPlayer.Id);
 
             DevLog.Write($"게임 시작. 흑돌 플레이어: {MyPlayer.Id}");
         }
@@ -267,11 +267,11 @@ namespace csharp_test_client
         {
             var responsePkt =  MemoryPackSerializer.Deserialize<ResPutOMok>(packetData);
 
-            if(responsePkt.Result != (short)ERROR_CODE.NONE) 
-            {
+            //if(responsePkt.Result != (short)ERROR_CODE.NONE) 
+            //{
 
-                DevLog.Write($"오목 놓기 실패: {responsePkt.Result}");
-            }
+                //DevLog.Write($"오목 놓기 실패: {responsePkt.Result}");
+            //}
 
 
             //TODO 방금 놓은 오목 정보를 취소 시켜야 한다
@@ -280,11 +280,32 @@ namespace csharp_test_client
 
         void PacketProcess_PutMokNotify(byte[] packetData)
         {
-            int temp = 100;
 
             var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
+            var cur = notifyPkt.mok;
             입력된돌그리기(notifyPkt.PosX, notifyPkt.PosY);
+
+            if (cur == MyPlayer.PlayerType)
+            {
+                IsMyTurn = false;
+            }
+            else
+            {
+                IsMyTurn = true;
+            }
+
+
+            if (cur == STONE_TYPE.WHITE)
+            {
+                curPlayer = STONE_TYPE.BLACK;
+            }
+            else
+            {
+                curPlayer = STONE_TYPE.WHITE;
+
+            }
+
 
             DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY}");// 알:{notifyPkt.Mok}");
         }

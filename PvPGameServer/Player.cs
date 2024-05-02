@@ -12,7 +12,7 @@ public class Player
     public string UserID { get; private set; }
     public string NetSessionID { get; private set; }
     
-    public PLYAER_TYPE PlayerType { get; private set; }
+    public STONE_TYPE PlayerType { get; private set; }
 
 
     bool IsTurn { get; set; } = false;
@@ -20,7 +20,7 @@ public class Player
     int PassCount { get; set; } = 0;      //넘어간거
 
 
-    public Player(string netSessionID,string userID,PLYAER_TYPE type)
+    public Player(string netSessionID,string userID,STONE_TYPE type)
     {
         UserID = userID;
         NetSessionID = netSessionID;

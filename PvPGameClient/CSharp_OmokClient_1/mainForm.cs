@@ -403,11 +403,18 @@ namespace csharp_test_client
         }
 
        
-        void SendPacketOmokPut(int x, int y)
+        void SendPacketOmokPut(object sender, MouseEventArgs e)
         {
+            if (!IsMyTurn)
+            {
+                return;
+            }
+            int x = (e.X - 시작위치 + 10) / 눈금크기;
+            int y = (e.Y - 시작위치 + 10) / 눈금크기;
+
             var temp = new ReqPutOMok
             {
-               
+                mok = curPlayer,
                 PosX = x,
                 PosY = y
             };
@@ -421,7 +428,16 @@ namespace csharp_test_client
         private void btn_GameStartClick(object sender, EventArgs e)
         {
             //PostSendPacket(PACKET_ID.GAME_START_REQ, null);
-            StartGame(MyPlayer.turn, MyPlayer.Id,OtherPlayer.Id);
+            if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
+            {
+
+                StartGame(true, MyPlayer.Id, OtherPlayer.Id);
+            }
+            else
+            {
+                StartGame(false, MyPlayer.Id, OtherPlayer.Id);
+
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
