@@ -24,8 +24,11 @@ public class Room
 
     public GameBoard board = null;
 
-    //방 만들어진 시간저장
-    //
+    //방 만들어진 시간저장, 조사할때 너무 길게 시작을 안했으면 빼
+    DateTime RoomStartTime;     //방찻는데 플레이 안하고 있으면 조사대상임
+                                //방은 이미 다 만들어진 상태임, 유저2명들어왔을때를 시작으로 할까??
+    DateTime GameStartTime;     //게임시작플레이시간 너무 오래걸리면 조사대상임
+
 
 
     public void Init(int index, int number, int maxUserCount)
@@ -99,7 +102,13 @@ public class Room
     {
         return board;
     }
- 
+
+    public void GameStart()
+    {
+        GameStartTime = DateTime.Now;
+        board.GameStart();
+    }
+
 
     public void NotifyPacketUserList(string userNetSessionID)
     {
@@ -199,9 +208,7 @@ public class Room
 
         MainServer.MainLogger.Debug("GameStart- Success");
 
-        //게임시작보내고 타이머 돌려야함??
-        board.GameStart();
-
+        GameStart();
     }
 }
 

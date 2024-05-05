@@ -100,8 +100,7 @@ namespace csharp_test_client
 
             OmokLogic.StartGame();
             
-            //if (AI모드 == true && 컴퓨터돌 == 돌종류.흑돌)
-            //컴퓨터두기();
+   
 
             panel1.Invalidate();
         }
@@ -113,73 +112,14 @@ namespace csharp_test_client
             MyPlayerName = "";
             백돌플레이어Name = "";
             흑돌플레이어Name = "";
+
+            //리스트박스도 처리하고 해야함
+
+            //너무 바로지워지눈데??            
+            panel1.Invalidate();
+
         }
 
-
-        /*void 한수무르기()
-        {
-            st.Pop();
-            바둑판[현재돌x좌표, 현재돌y좌표] = (int)돌종류.없음;
-
-            if (st.Count != 0)
-            {
-                현재돌x좌표 = st.Peek().X;
-                현재돌y좌표 = st.Peek().Y;
-            }
-            else
-            {
-                현재돌x좌표 = 현재돌y좌표 = -1;
-            }
-        }*/
-
-        /*void 무르기(object sender, EventArgs e)
-        {
-            if (!게임종료 && st.Count != 0)
-            {
-                무르기요청.Play();
-
-                if (MessageBox.Show("한 수 무르시겠습니까?", "무르기", MessageBoxButtons.YesNo) == DialogResult.Yes) // MessageBox 띄워서 무르기 여부 확인하고 예를 누르면
-                {
-                    if (AI모드)
-                    {
-                        한수무르기();
-                        한수무르기();
-                    }
-
-                    else
-                    {
-                        한수무르기();
-                        흑돌차례 = !흑돌차례;
-                    }
-
-
-                    panel1.Invalidate();
-                }
-            }
-        }*/
-
-
-        /*void AI흑돌(object sender, EventArgs e)
-        {
-            if (AI모드 == false || 컴퓨터돌 == 돌종류.백돌)
-            {
-                컴퓨터돌 = 돌종류.흑돌;
-                AI모드 = true;
-                
-                StartGame();
-            }
-        }*/
-
-        /*void AI백돌(object sender, EventArgs e)
-        {
-            if (AI모드 == false || 컴퓨터돌 == 돌종류.흑돌)
-            {
-                컴퓨터돌 = 돌종류.백돌;
-                AI모드 = true;
-
-                StartGame();
-            }
-        }*/
 
         void DisableAIMode()
         {
@@ -228,6 +168,11 @@ namespace csharp_test_client
 
                 현재턴_플레이어_정보();
             }
+            else
+            {
+                //게임보드판 리셋해야하는거아님?????
+            }
+            
         }
         void 입력된돌그리기(int x, int y)
         {

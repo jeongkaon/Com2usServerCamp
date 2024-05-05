@@ -43,7 +43,10 @@ public class OmokRule
 
     public void EndGame()
     {
-        게임종료 = true;
+        Array.Clear(바둑판, 0, 바둑판크기 * 바둑판크기);
+        바둑판.ClearAll();
+            게임종료 = true;
+
     }
 
     public int 바둑판알(int x, int y)

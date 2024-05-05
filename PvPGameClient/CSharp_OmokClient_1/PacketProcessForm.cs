@@ -39,6 +39,7 @@ namespace csharp_test_client
             PacketFuncDic.Add((int)PACKET_ID.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
 
             PacketFuncDic.Add((int)PACKET_ID.NTF_TIMEOUT_OMOK, PacketProcess_TimeOutNotify);
+            PacketFuncDic.Add((ushort)PACKET_ID.NTR_WINNER_OMOK, PacketProcess_EndOmokNotify);
 
             //PacketFuncDic.Add((ushort)PACKET_ID.NTF_END_GAME, PacketProcess_EndOmokNotify);
         }
@@ -334,11 +335,11 @@ namespace csharp_test_client
         }
         void PacketProcess_EndOmokNotify(byte[] packetData)
         {
-            //var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfEndOmok>(packetData);
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NtfOmokWinner>(packetData);
 
             EndGame();
 
-            //DevLog.Write($"오목 GameOver: Win: {notifyPkt.WinUserID}");
+            DevLog.Write($"오목 GameOver: Win: {notifyPkt.UserId}");
         }
     }
 }
