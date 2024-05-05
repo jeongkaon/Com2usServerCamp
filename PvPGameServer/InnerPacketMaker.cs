@@ -30,25 +30,52 @@ public class InnerPacketMaker
 
     public static MemoryPackBinaryRequestInfo MakeNTFInConnectOrDisConnectClientPacket(bool isConnect, string sessionID)
     {
-        var memoryPakcPacket = new MemoryPackBinaryRequestInfo(null);
-        memoryPakcPacket.Data = new byte[PacketHeadInfo.HeaderSize];
+        var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+        memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
         if (isConnect)
         {
-            PacketHeadInfo.WritePacketId(memoryPakcPacket.Data, (UInt16)PACKET_ID.NTF_IN_CONNECT_CLIENT);
+            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_CONNECT_CLIENT);
         }
         else
         {
-            PacketHeadInfo.WritePacketId(memoryPakcPacket.Data, (UInt16)PACKET_ID.NTF_IN_DISCONNECT_CLIENT);
+            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_DISCONNECT_CLIENT);
         }
 
-        memoryPakcPacket.SessionID = sessionID;
-        return memoryPakcPacket;
+        memoryPackPacket.SessionID = sessionID;
+        return memoryPackPacket;
     }
 
-}
-   
+    public static MemoryPackBinaryRequestInfo MakeNTFInnerUserCheckPacket()
+    {
+        {
+            var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+            memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
+
+            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTR_IN_CHECK);
+
+            return memoryPackPacket;
+
+        }
+    }
+
+    public static MemoryPackBinaryRequestInfo MakeNTFInnerRoomCheckPacket()
+    {
+        {
+            var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+            memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
+
+
+            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_ROOMCHECK);
+
+            return memoryPackPacket;
+
+        }
+    }
+
+
+}
 [MemoryPackable]
 public partial class PKTInternalNtfRoomLeave : PacketHeader
 {

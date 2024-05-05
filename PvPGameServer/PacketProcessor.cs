@@ -67,6 +67,7 @@ public class PacketProcessor
         PacketHandler.DistributeInnerPacket = InsertPacket;
 
         CommonPacketHandler.Init(UserMgr);
+        CommonPacketHandler.SetCheckCount(UserMgr.GetMaxUserCount() / 4);
         CommonPacketHandler.RegistPacketHandler(PacketHandlerMap);
 
         RoomPacketHandler.Init(UserMgr);

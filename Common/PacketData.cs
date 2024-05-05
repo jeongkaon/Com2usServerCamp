@@ -203,6 +203,13 @@ public partial class NftPutOmok : PacketHeader
 }
 
 [MemoryPackable]
+public partial class NtfTimeOut : PacketHeader
+{
+    public string UserId { get; set; }
+
+}
+
+[MemoryPackable]
 public partial class NtfOmokWinner : PacketHeader
 {
     public string UserId { get; set; }
@@ -217,4 +224,18 @@ public partial class PvPMatchingResult : PacketHeader
     public Int32 RoomNumber;
     public Int32 Index;
     public string Token;
+}
+
+
+//하트비트
+[MemoryPackable]
+public partial class ReqHeartBeatPacket : PacketHeader
+{
+}
+
+[MemoryPackable]
+public partial class ResHeartBeatPacket : PacketHeader
+{
+    public short Result { get; set; }
+
 }

@@ -66,10 +66,19 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_CHAT, RequestChat);
         packetHandlerMap.Add((int)PACKET_ID.REQ_READY_GAME, RequestGameReadyPacket);
 
+        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOMCHECK, TestNTR_IN_CHECK);
+
 
     }
 
+    public void TestNTR_IN_CHECK(MemoryPackBinaryRequestInfo requestData)
+    {
+        //여기서 방 조사 하면된다.
+        //방 - 쪼개서 조사하면된다.
 
+        Console.WriteLine("Inner User check Timer run... - Test in... RoomPacektHandler...");
+
+    }
     public void RequestRoomEnter(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;

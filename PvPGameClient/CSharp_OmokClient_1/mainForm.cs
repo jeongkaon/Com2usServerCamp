@@ -8,8 +8,9 @@ using System.Net.Sockets;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
+using Windows.Media.Core;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-
 #pragma warning disable CA1416
 
 
@@ -18,6 +19,13 @@ namespace csharp_test_client
     [SupportedOSPlatform("windows10.0.177630")]
     public partial class mainForm : Form
     {
+        //하트비트용 타이머 
+        System.Windows.Forms.Timer hbTimer;
+
+        
+     
+
+
         ClientSimpleTcp Network = new ClientSimpleTcp();
 
         bool IsNetworkThreadRunning = false;
@@ -30,6 +38,7 @@ namespace csharp_test_client
         ConcurrentQueue<byte[]> RecvPacketQueue = new ConcurrentQueue<byte[]>();
         ConcurrentQueue<byte[]> SendPacketQueue = new ConcurrentQueue<byte[]>();
 
+        //얘는 또 머야
         System.Windows.Forms.Timer dispatcherUITimer = new();
 
         public static Player MyPlayer = new Player();
@@ -39,6 +48,17 @@ namespace csharp_test_client
         public mainForm()
         {
             InitializeComponent();
+            hbTimer = new System.Windows.Forms.Timer();
+            hbTimer.Interval = 1000;
+            hbTimer.Tick += HeartBeatTimer;
+        }
+        void HeartBeatTimer(object sender, EventArgs e)
+        {
+            var packet = MemoryPackSerializer.Serialize(new ReqHeartBeatPacket());
+            PostSendPacket(PACKET_ID.REQ_HEARTBEAT, packet);
+            DevLog.Write($"하트비트 PING 전달");
+
+
         }
 
         private void mainForm_Load(object sender, EventArgs e)
@@ -65,6 +85,8 @@ namespace csharp_test_client
             DevLog.Write("프로그램 시작 !!!", LOG_LEVEL.INFO);
         }
 
+
+      
         private void mainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             IsNetworkThreadRunning = false;
@@ -73,6 +95,8 @@ namespace csharp_test_client
             Network.Close();
         }
 
+
+        
         private void btnConnect_Click(object sender, EventArgs e)
         {
             string address = textBoxIP.Text;
@@ -86,9 +110,15 @@ namespace csharp_test_client
 
             if (Network.Connect(address, port))
             {
+                //여기부터 TIMER 세팅해서 시작하자
                 labelStatus.Text = string.Format("{0}. 서버에 접속 중", DateTime.Now);
                 btnConnect.Enabled = false;
                 btnDisconnect.Enabled = true;
+
+                //접속할때부터 하트비트 보내는게 좋을듯?? 
+                //->오래 방 입장안하면 끊어버려야하기때문.
+                hbTimer.Start();
+
 
                 DevLog.Write($"서버에 접속 중", LOG_LEVEL.INFO);
             }
@@ -471,4 +501,7 @@ namespace csharp_test_client
 
  
     }
+
+
+    
 }

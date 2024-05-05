@@ -29,6 +29,16 @@ public class GameBoard
         NetworkSendFunc = func;
     }
 
+    
+    //여기를 수정해야한다!
+    public void CheckTime()
+    {
+        //경과시간 체크하기
+
+    }
+
+
+
     public string GetUserIdByPlayerType(STONE_TYPE type)
     {
 
@@ -75,13 +85,16 @@ public class GameBoard
     {
         board[x, y] = (byte)cur;
         CurType = cur;
-   
+
+        NotifyPutOmok(x, y);
+
         if (CheckBoardEnd(x, y) == true)
         {
             var ID = GetUserIdByPlayerType(CurType);
+            //색으로 보내주는게 더 나을지도??
             NotifyWinner(ID);
+            ClearBoard();
         }
-        NotifyPutOmok(x,y);
     }
 
     public void NotifyPutOmok(int x, int y)
