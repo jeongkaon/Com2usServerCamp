@@ -40,9 +40,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     private void InnerCheckTimer(object? state)
     {
-        //이 패킷 받은 핸들러에서 하트비트, 방조사 하는고임.
 
-      //  Console.WriteLine("Inner User check Timer run... - Mainserver");
         MemoryPackBinaryRequestInfo[] packet =
         {
             InnerPacketMaker.MakeNTFInnerUserCheckPacket(),
@@ -112,13 +110,24 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
         MainPacketProcessor = new PacketProcessor();
         MainPacketProcessor.NeworktSendFunc = SendData;
+        MainPacketProcessor.ForceSession = ForceSession;
+
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
         return ERROR_CODE.NONE;
 
     }
 
-
+    public bool ForceSession(string sessionId)
+    {
+        var session = GetAppSessionByID(sessionId);
+        if (session == null)
+        {
+            return false;
+        }
+        session.Close();
+        return true;
+    }
 
     void Distribute(MemoryPackBinaryRequestInfo reqPacket)
     {
@@ -159,6 +168,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(true, session.SessionID);
         Distribute(packet);
+
     }
 
     void OnClosed(ClientSession session, CloseReason reason)

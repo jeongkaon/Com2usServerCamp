@@ -13,6 +13,7 @@ public class PacketProcessor
     System.Threading.Thread ProcessThread = null;
 
     public Func<string, byte[], bool> NeworktSendFunc;
+    public Func<string, bool> ForceSession;
 
     BufferBlock<MemoryPackBinaryRequestInfo> msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 
@@ -64,7 +65,9 @@ public class PacketProcessor
     void RegistPacketHandlers()
     {
         PacketHandler.NetworkSendFunc = NeworktSendFunc;
+        PacketHandler.ForceSession = ForceSession;
         PacketHandler.DistributeInnerPacket = InsertPacket;
+        UserMgr.SetDistributeInnerPacket(InsertPacket);
 
         CommonPacketHandler.Init(UserMgr);
         CommonPacketHandler.SetCheckCount(UserMgr.GetMaxUserCount() / 4);
@@ -74,7 +77,6 @@ public class PacketProcessor
         RoomPacketHandler.SetRoomList(RoomList);
         RoomPacketHandler.RegistPacketHandler(PacketHandlerMap);
 
-        //게임핸들러 초기화해줘야함
         GamePacketHandler.Init(UserMgr);
         GamePacketHandler.RegistPacketHandler(PacketHandlerMap);
         GamePacketHandler.SetRoomList(RoomList);

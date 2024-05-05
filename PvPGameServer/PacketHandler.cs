@@ -9,6 +9,8 @@ namespace PvPGameServer;
 public class PacketHandler
 {
     public static Func<string, byte[], bool> NetworkSendFunc;
+    public static Func<string, bool> ForceSession;
+
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
     protected UserManager UserMgr = null;

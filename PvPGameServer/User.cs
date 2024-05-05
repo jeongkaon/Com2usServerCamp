@@ -12,27 +12,21 @@ public class User
     string SessionID;
     string UserID;
 
-
-
-
     public bool Used = false;        //사용되는 유저인지 확인해야한다.
-                                 //커넥트,디스커넥트 할때 바꿔줘야한다
+                                    //커넥트,디스커넥트 할때 바꿔줘야한다
 
     //heartbeat위한 시간
     int TimeSpan;               
 
     DateTime hbTime = new DateTime();
 
-
-
-
-
-
+    
     public int RoomNumber { get; private set; } = -1;
 
     public void InitTimeSpan(int timespan)
     {
         TimeSpan = timespan;    
+        
     }
 
     public void Set(UInt64 sequence, string sessionID, string userID, DateTime ping)
@@ -42,10 +36,9 @@ public class User
         UserID = userID;
         Used = true;
 
-
-        // 하트비트위한 구현 여기다가 
         hbTime= ping;
-        InitTimeSpan(100000);   // 밀리세컨드 단위로 해야하나??
+        //테스트로 일단 20초로세팅
+        InitTimeSpan(20000);   
 
 
     }
@@ -57,11 +50,9 @@ public class User
 
     public bool CheckHeartBeatTime(DateTime curTime)
     {
-        //언제호출하는거밍?
-
         var diff = curTime - hbTime;
         
-        if(diff.Microseconds > TimeSpan)
+        if(diff.TotalMilliseconds > TimeSpan)
         {
             return false;
         }
@@ -71,7 +62,6 @@ public class User
 
     public void DisconnectUser()
     {
-        //Used를 false로 만들기 위해사용
         Used = false;
     }
 
@@ -82,21 +72,20 @@ public class User
 
     public string ID()
     {
-
         return UserID;
     }
-
+    public string SessionId()
+    {
+        return SessionID;
+    }
     public void EnteredRoom(int roomNumber)
     {
         RoomNumber = roomNumber;
-
-
     }
 
     public void LeaveRoom()
     {
         RoomNumber = -1;
-
     }
 
     public int GetRoomNumber()

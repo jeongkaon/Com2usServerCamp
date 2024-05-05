@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace PvPGameServer;
 
@@ -13,28 +14,24 @@ public class UserManager
     UInt64 UserSequenceNumber = 0; 
 
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
-
     User[] UserArr;
-                        //이름 이거로 해??
-                        //used중인 user 저장하고 있는 배열
-                        //UserMapd이랑 따로 쓰는 이유가 머임?
-                        //sessionid 이용해서 찾기 쉽게하려고 딕셔너리도 쓰나?
 
+    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
     public void Init(int maxUserCount)
     {
         MaxUserCount = maxUserCount;
         UserArr = new User[MaxUserCount];
     }
+    public void SetDistributeInnerPacket(Action<MemoryPackBinaryRequestInfo> action)
+    {
+        DistributeInnerPacket = action;
 
-  
-    
-
+    }
     public void AddToEmptyArray(User newUser)
     {
         for (int i = 0; i < UserArr.Length; i++)
         {
-   
             if (UserArr[i] != null && UserArr[i].Used == true)
             {
                 continue;
@@ -50,7 +47,6 @@ public class UserManager
     {
         if(endIdx > MaxUserCount)
         {
-            //4로 안나눠 떨어지는 경우임
             endIdx = MaxUserCount;
         }
 
@@ -58,18 +54,18 @@ public class UserManager
 
         for(int i=beginIdx; i < endIdx; i++)
         {
-            if (UserArr[i]== null)
+            if (UserArr[i]== null || UserArr[i].Used ==false)
             {   
-                //null인경우는 그뒤에 아무것도 없다.
                 return;
             }
             if (false == UserArr[i].CheckHeartBeatTime(CurTime))
             {
-                //TODO
-                //접속끊어버려야한다.
+                var interanlpacket = InnerPacketMaker.MakeNTFInnerUserForceClosePacket(UserArr[i].SessionId());
+                DistributeInnerPacket(interanlpacket);
             }
         }
     }
+
 
     public ERROR_CODE AddUser(string userID, string sessionID)
     {
@@ -113,6 +109,7 @@ public class UserManager
         UserMap.TryGetValue(sessionID, out user);
         return user;
     }
+    
     bool IsFullUserCount()
     {
         return MaxUserCount <= UserMap.Count();

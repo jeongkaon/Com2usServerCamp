@@ -45,15 +45,17 @@ namespace csharp_test_client
         public mainForm()
         {
             InitializeComponent();
-            hbTimer = new System.Windows.Forms.Timer();
-            hbTimer.Interval = 1000;
-            hbTimer.Tick += HeartBeatTimer;
+
+            //체크하느라 잠시 줄쳐놓섹임
+            //hbTimer = new System.Windows.Forms.Timer();
+            //hbTimer.Interval = 1000;
+            //hbTimer.Tick += HeartBeatTimer;
+            hbTimer = null;
         }
         void HeartBeatTimer(object sender, EventArgs e)
         {
             var packet = MemoryPackSerializer.Serialize(new ReqHeartBeatPacket());
             PostSendPacket(PACKET_ID.REQ_HEARTBEAT, packet);
-            //DevLog.Write($"하트비트 PING 전달");
 
 
         }

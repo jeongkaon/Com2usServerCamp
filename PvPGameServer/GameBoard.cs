@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -15,8 +16,9 @@ public class GameBoard
     byte[,] board = new byte[19, 19];
     Dictionary<STONE_TYPE, Player> PlayerList = null;
     STONE_TYPE CurType = STONE_TYPE.NONE;
+ 
+    DateTime TimeoutCheckTime;
 
-    Timer TimeOutCheckTimer = null;
     
     public static Func<string, byte[], bool> NetworkSendFunc;
     public GameBoard(int roomNumber, Func<string, byte[], bool> func)
@@ -42,9 +44,8 @@ public class GameBoard
     public void GameStart()
     {
         CurType = STONE_TYPE.BLACK;
+        SetTimeoutCheckTime(DateTime.Now);
 
-        //확인 위해 10초로 짧게 설정해놓음
-        TimeOutCheckTimer = new Timer(TimeOutCheck, null, 10000, 10000);
     }
     public void EndGame(string id)
     {
@@ -53,27 +54,27 @@ public class GameBoard
 
     }
 
-    public void TimeOutCheck(object? state)
+    public bool TimeOutCheck(DateTime time, int TimeSpan)
     {
-        // 이 함수 불렸으면 타임아웃이다.
-        if (PlayerList[CurType].CheckPassCount())
+
+        var diff = time - TimeoutCheckTime;
+        if (diff.TotalMilliseconds> TimeSpan)
         {
-            //게임끝해줘야한다.
-            //승자를 알려주자.
-            
+            //턴체크한다.
+            //턴주기보다 길면 재껴야함
+            //타임 아웃되었으니까 true반환
+            return true;
         }
-        NotifyTimeOut();
-        TurnChange();
-    }
-    public void StopCheckTiemer()
-    {
-        TimeOutCheckTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+        return false;
+        
 
     }
-    public void RestartCheckTimer()
-    {
-        TimeOutCheckTimer.Change(10000, 10000);
 
+
+    public void SetTimeoutCheckTime(DateTime time)
+    {
+        TimeoutCheckTime = time;
     }
 
     public void TurnChange()
@@ -86,6 +87,10 @@ public class GameBoard
         {
             CurType = STONE_TYPE.BLACK;
         }
+
+        //턴체인지되면 그때부터 제한시간 걸리는거임
+        SetTimeoutCheckTime(DateTime.Now);
+
 
     }
     public bool CheckIsFull()
@@ -115,15 +120,12 @@ public class GameBoard
             EndGame(PlayerList[CurType].UserID);
             return;
         }
-        StopCheckTiemer();
+
         TurnChange();
-        RestartCheckTimer();
 
     }
     public void ClearBoard()
     {
-        TimeOutCheckTimer.Dispose();
-        TimeOutCheckTimer = null;
         board.Initialize();
         PlayerList.Clear();
 
@@ -162,9 +164,9 @@ public class GameBoard
 
         Broadcast("", sendPacket);
 
+        //TODO
         //내부로도 보내서 usermagr에서 승리카운트 올려??
-        //DB도 연결해야하눈데??
-        //일단 클라부터 해결하자
+        //DB도 연결??
 
     }
 
@@ -172,10 +174,10 @@ public class GameBoard
     {
         var packet = new NtfTimeOut()
         {
-            mok = CurType
+            Usertype = CurType
         };
 
-        var sendPacket = MemoryPackSerializer.Serialize(packet);
+        var sendPacket = MemoryPackSerializer.Serialize(packet); 
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_TIMEOUT_OMOK);
 
         Broadcast("", sendPacket);

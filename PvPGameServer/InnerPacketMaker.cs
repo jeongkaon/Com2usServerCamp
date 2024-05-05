@@ -48,30 +48,40 @@ public class InnerPacketMaker
 
     public static MemoryPackBinaryRequestInfo MakeNTFInnerUserCheckPacket()
     {
-        {
-            var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
-            memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
+        var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+        memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
 
-            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTR_IN_CHECK);
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTR_IN_CHECK);
 
-            return memoryPackPacket;
+        return memoryPackPacket;
 
-        }
     }
 
+    public static MemoryPackBinaryRequestInfo MakeNTFInnerUserForceClosePacket(string SessionId)
+    {
+        var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+        memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
+
+
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_FORCEDISCONNECT_CLIENT);
+        memoryPackPacket.SessionID = SessionId;
+
+        return memoryPackPacket;
+
+    }
     public static MemoryPackBinaryRequestInfo MakeNTFInnerRoomCheckPacket()
     {
-        {
-            var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
-            memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
+
+        var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+        memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
 
-            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_ROOMCHECK);
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_ROOMCHECK);
 
-            return memoryPackPacket;
+        return memoryPackPacket;
 
-        }
+
     }
 
 

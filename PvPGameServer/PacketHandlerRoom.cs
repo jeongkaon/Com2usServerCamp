@@ -2,6 +2,7 @@
 using MemoryPack;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -14,10 +15,21 @@ public class PacketHandlerRoom : PacketHandler
     List<Room> RoomList = null;
     int RoomNumberStart;
 
+    int StartCheckRoomNumber = 0;
+    int CheckRoomNumberCount;
+    int MaxRoomCheckCount;
+
+    //TEST위해 10초로 일단 설정
+    int span = 10000;
+
+
     public void SetRoomList(List<Room> roomList)
     {
         RoomList = roomList;
         RoomNumberStart = RoomList[0].Number;
+        MaxRoomCheckCount = RoomList.Count();
+        CheckRoomNumberCount = MaxRoomCheckCount / 4;
+
     }
 
     Room GetRoom(int roomNum)
@@ -66,30 +78,53 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_CHAT, RequestChat);
         packetHandlerMap.Add((int)PACKET_ID.REQ_READY_GAME, RequestGameReadyPacket);
 
-        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOMCHECK, TestNTR_IN_CHECK);
+        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOMCHECK, 이너패킷방체크이름멀로짓지);
 
 
     }
 
-    public void TestNTR_IN_CHECK(MemoryPackBinaryRequestInfo requestData)
+    public void 이너패킷방체크이름멀로짓지(MemoryPackBinaryRequestInfo requestData)
     {
-        //여기서 방 조사 하면된다.
-        //방도 한번에 조사하지 말고 쪼개서 조사하면된다.
-        
-        /*  방조사
-         *  
-         * 1.2명이 다들어갓는데 게임시작을 안하는 경우
-         *      RoomUser클래스에 입장시간 추가할까? 레디시간 추가할까?
-         * 2. player에 턴 시작시간 기록할까?
-         *      게임이 시작되었는데 게임한판최대시간 안넘었는지도 조사해야한다.
-         */
+        int EndCheckRoomNumber = StartCheckRoomNumber + CheckRoomNumberCount;
+        if (EndCheckRoomNumber > MaxRoomCheckCount)
+        {
+            EndCheckRoomNumber = MaxRoomCheckCount;
+        }
+
+        for (int i= StartCheckRoomNumber; i< EndCheckRoomNumber; ++i)
+        {
+            var room = GetRoom(i);
+            var curTime = DateTime.Now;
+            //1.게임 시작 안하는 경우 - 입장은 했는데 게임시작을 안하는 경우
+            //유저의 입장시간과 체크타임 텀이 긴경우체크
+            if (room.IsNotStartGame(curTime))
+            {
+                //TODO
+                //너무 긴 경우 쫒아내던가 해야함
+            }
 
 
-          // 방 조사해야할것
-        //  2명 들어갔는데 ready시간이 너무 길지 않은지
-        //
+            //2.턴체크
+            if (room.IsTimeOutInBoard(curTime, 10000))
+            {
+                room.NftToBoardTimeout();
+            }
 
-        //Console.WriteLine("Inner User check Timer run... - Test in... RoomPacektHandler...");
+            //3.전체 게임시간 너무 긴경우 
+            if (room.IsTooLongGameTime(curTime,10000))
+            {
+                //TODO
+                //게임너무긴경우 처리해야한다.
+            }
+
+        }
+
+        StartCheckRoomNumber += CheckRoomNumberCount;
+
+        if (StartCheckRoomNumber >= RoomList.Count())
+        {
+            StartCheckRoomNumber = 0;
+        }
 
     }
     public void RequestRoomEnter(MemoryPackBinaryRequestInfo packetData)

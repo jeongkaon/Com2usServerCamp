@@ -22,14 +22,14 @@ public class Room
 
     public static Func<string, byte[], bool> NetworkSendFunc;
 
-    public GameBoard board = null;
+    GameBoard board = null;
 
     //방 만들어진 시간저장, 조사할때 너무 길게 시작을 안했으면 빼
     DateTime RoomStartTime;     //방찻는데 플레이 안하고 있으면 조사대상임
                                 //방은 이미 다 만들어진 상태임, 유저2명들어왔을때를 시작으로 할까??
     DateTime GameStartTime;     //게임시작플레이시간 너무 오래걸리면 조사대상임
 
-
+    
 
     public void Init(int index, int number, int maxUserCount)
     {
@@ -52,7 +52,32 @@ public class Room
         return false;
     }
 
+    
+    public bool IsNotStartGame(DateTime cur)
+    {
+        //게임시작 안하는 경우..
+        return false;
+    }
 
+    public bool IsTimeOutInBoard(DateTime cur, int TimeSpan)
+    {
+        return board.TimeOutCheck(cur, TimeSpan);
+    }
+    public void NftToBoardTimeout()
+    {
+        board.NotifyTimeOut();
+        board.TurnChange();
+    }
+    public bool IsTooLongGameTime(DateTime cur, int TimeSpan)
+    {
+        var diff = cur - GameStartTime;
+
+        if (diff.TotalMilliseconds > TimeSpan)
+        {
+            return true;
+        }
+        return false;
+    }
 
     public bool AddUser(string userId, string netSessionId)
     {
@@ -108,6 +133,8 @@ public class Room
         GameStartTime = DateTime.Now;
         board.GameStart();
     }
+
+
 
 
     public void NotifyPacketUserList(string userNetSessionID)
@@ -172,6 +199,8 @@ public class Room
         {
             if (user.NetSessionID == SessionId)
             {
+                //레디타임도 저장해야하나?
+                user.ReadyTime = DateTime.Now;
                 var packet = new ResGameReadyPacket();
 
                 //게임플레이 누른 플레이어에게 어떤 돌타입인지 알려주려고 넣은거임
@@ -217,11 +246,16 @@ public class RoomUser
     public string UserID { get; private set; }
     public string NetSessionID { get; private set; }
 
-    
+    public DateTime AcceptTime { get; set; }
+
+    public DateTime ReadyTime { get; set; }
 
     public void Set(string userID, string netSessionID)
     {
         UserID = userID;
         NetSessionID = netSessionID;
+
+        //룸유저가 입장한 시간을 저장한다.
+        AcceptTime = DateTime.Now;
     }
 }
