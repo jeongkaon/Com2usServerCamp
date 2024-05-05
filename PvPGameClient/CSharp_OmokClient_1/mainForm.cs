@@ -46,10 +46,9 @@ namespace csharp_test_client
         {
             InitializeComponent();
 
-            //체크하느라 잠시 줄쳐놓섹임
-            //hbTimer = new System.Windows.Forms.Timer();
-            //hbTimer.Interval = 1000;
-            //hbTimer.Tick += HeartBeatTimer;
+            hbTimer = new System.Windows.Forms.Timer();
+            hbTimer.Interval = 1000;
+            hbTimer.Tick += HeartBeatTimer;
             hbTimer = null;
         }
         void HeartBeatTimer(object sender, EventArgs e)
