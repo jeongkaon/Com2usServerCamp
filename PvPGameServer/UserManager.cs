@@ -59,7 +59,8 @@ public class UserManager
         for(int i=beginIdx; i < endIdx; i++)
         {
             if (UserArr[i]== null)
-            {
+            {   
+                //null인경우는 그뒤에 아무것도 없다.
                 return;
             }
             if (false == UserArr[i].CheckHeartBeatTime(CurTime))

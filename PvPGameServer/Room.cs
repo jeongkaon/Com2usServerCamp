@@ -24,6 +24,10 @@ public class Room
 
     public GameBoard board = null;
 
+    //방 만들어진 시간저장
+    //
+
+
     public void Init(int index, int number, int maxUserCount)
     {
         Index = index;
@@ -161,10 +165,12 @@ public class Room
             {
                 var packet = new ResGameReadyPacket();
 
+                //게임플레이 누른 플레이어에게 어떤 돌타입인지 알려주려고 넣은거임
                 packet.PlayerStoneType = board.SetPlayer(SessionId, user.UserID);
 
                 var sendPacket = MemoryPackSerializer.Serialize(packet);
                 PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_READY_GAME);
+
                 NetworkSendFunc(SessionId, sendPacket);
 
             }
@@ -193,7 +199,8 @@ public class Room
 
         MainServer.MainLogger.Debug("GameStart- Success");
 
-
+        //게임시작보내고 타이머 돌려야함??
+        board.GameStart();
 
     }
 }
@@ -203,7 +210,7 @@ public class RoomUser
     public string UserID { get; private set; }
     public string NetSessionID { get; private set; }
 
-
+    
 
     public void Set(string userID, string netSessionID)
     {

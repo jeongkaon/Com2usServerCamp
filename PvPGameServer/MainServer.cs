@@ -32,9 +32,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
     {
-        //타이머 설정도 해야함
-
-
         NewSessionConnected += new SessionHandler<ClientSession>(OnConnected);
         SessionClosed += new SessionHandler<ClientSession, CloseReason>(OnClosed);
         NewRequestReceived += new RequestHandler<ClientSession, MemoryPackBinaryRequestInfo>(OnPacketReceived);
@@ -45,7 +42,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         //이 패킷 받은 핸들러에서 하트비트, 방조사 하는고임.
 
-        Console.WriteLine("Inner User check Timer run... - Mainserver");
+      //  Console.WriteLine("Inner User check Timer run... - Mainserver");
         MemoryPackBinaryRequestInfo[] packet =
         {
             InnerPacketMaker.MakeNTFInnerUserCheckPacket(),

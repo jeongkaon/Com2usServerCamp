@@ -74,9 +74,22 @@ public class PacketHandlerRoom : PacketHandler
     public void TestNTR_IN_CHECK(MemoryPackBinaryRequestInfo requestData)
     {
         //여기서 방 조사 하면된다.
-        //방 - 쪼개서 조사하면된다.
+        //방도 한번에 조사하지 말고 쪼개서 조사하면된다.
+        
+        /*  방조사
+         *  
+         * 1.2명이 다들어갓는데 게임시작을 안하는 경우
+         *      RoomUser클래스에 입장시간 추가할까? 레디시간 추가할까?
+         * 2. player에 턴 시작시간 기록할까?
+         *      게임이 시작되었는데 게임한판최대시간 안넘었는지도 조사해야한다.
+         */
 
-        Console.WriteLine("Inner User check Timer run... - Test in... RoomPacektHandler...");
+
+          // 방 조사해야할것
+        //  2명 들어갔는데 ready시간이 너무 길지 않은지
+        //
+
+        //Console.WriteLine("Inner User check Timer run... - Test in... RoomPacektHandler...");
 
     }
     public void RequestRoomEnter(MemoryPackBinaryRequestInfo packetData)

@@ -22,9 +22,6 @@ namespace csharp_test_client
         //하트비트용 타이머 
         System.Windows.Forms.Timer hbTimer;
 
-        
-     
-
 
         ClientSimpleTcp Network = new ClientSimpleTcp();
 
@@ -56,7 +53,7 @@ namespace csharp_test_client
         {
             var packet = MemoryPackSerializer.Serialize(new ReqHeartBeatPacket());
             PostSendPacket(PACKET_ID.REQ_HEARTBEAT, packet);
-            DevLog.Write($"하트비트 PING 전달");
+            //DevLog.Write($"하트비트 PING 전달");
 
 
         }
@@ -281,7 +278,7 @@ namespace csharp_test_client
         {
             if (Network.IsConnected() == false)
             {
-                DevLog.Write("서버 연결이 되어 있지 않습니다", LOG_LEVEL.ERROR);
+                //DevLog.Write("서버 연결이 되어 있지 않습니다", LOG_LEVEL.ERROR);
                 return;
             }
 

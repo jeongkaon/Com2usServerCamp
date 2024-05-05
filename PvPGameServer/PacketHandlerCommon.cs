@@ -27,12 +27,12 @@ public class PacketHandlerCommon : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_DISCONNECT_CLIENT, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PACKET_ID.REQ_HEARTBEAT, ReqHeartBeatPacket);
 
-        packetHandlerMap.Add((int)PACKET_ID.NTR_IN_CHECK, TestNTR_IN_CHECK);
+        packetHandlerMap.Add((int)PACKET_ID.NTR_IN_CHECK, NotifyInUserCheck);
 
 
 
     }
-    public void TestNTR_IN_CHECK(MemoryPackBinaryRequestInfo requestData)
+    public void NotifyInUserCheck(MemoryPackBinaryRequestInfo requestData)
     {
         //User 조사
         //valid한 유저인지를 조사해야함
@@ -53,7 +53,7 @@ public class PacketHandlerCommon : PacketHandler
 
 
 
-        Console.WriteLine("Inner User check Timer run... - Test in... CommonPacektHandler...");
+      //  Console.WriteLine("Inner User check Timer run... - Test in... CommonPacektHandler...");
 
     }
 
@@ -142,7 +142,7 @@ public class PacketHandlerCommon : PacketHandler
 
         var sendData = MemoryPackSerializer.Serialize(temp);
         PacketHeadInfo.Write(sendData, PACKET_ID.RES_HEARTBEAT);
-        Console.WriteLine("하트비트 퐁전달");
+       // Console.WriteLine("하트비트 퐁전달");
         NetworkSendFunc(sessionId, sendData);
 
     }

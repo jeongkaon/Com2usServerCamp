@@ -24,6 +24,7 @@ public class PacketHandlerGame : PacketHandler
     }
     public void ReqOmokPut(MemoryPackBinaryRequestInfo packetData)
     {
+        
 
         var sessionId = packetData.SessionID;
         var reqData = MemoryPackSerializer.Deserialize<ReqPutOMok>(packetData.Data);

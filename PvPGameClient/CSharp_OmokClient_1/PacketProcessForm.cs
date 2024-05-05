@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Notifications;
@@ -36,6 +37,9 @@ namespace csharp_test_client
             PacketFuncDic.Add((int)PACKET_ID.RES_PUT_OMOK, PacketProcess_PutMokResponse);
 
             PacketFuncDic.Add((int)PACKET_ID.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
+
+            PacketFuncDic.Add((int)PACKET_ID.NTF_TIMEOUT_OMOK, PacketProcess_TimeOutNotify);
+
             //PacketFuncDic.Add((ushort)PACKET_ID.NTF_END_GAME, PacketProcess_EndOmokNotify);
         }
 
@@ -277,15 +281,8 @@ namespace csharp_test_client
             //TODO 방금 놓은 오목 정보를 취소 시켜야 한다
         }
         
-
-        void PacketProcess_PutMokNotify(byte[] packetData)
+        void ChangeTurn(STONE_TYPE cur)
         {
-
-            var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
-
-            var cur = notifyPkt.mok;
-            입력된돌그리기(notifyPkt.PosX, notifyPkt.PosY);
-
             if (cur == MyPlayer.PlayerType)
             {
                 IsMyTurn = false;
@@ -307,10 +304,34 @@ namespace csharp_test_client
             }
 
 
+        }
+
+        void PacketProcess_PutMokNotify(byte[] packetData)
+        {
+
+            var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
+
+            var cur = notifyPkt.mok;
+            입력된돌그리기(notifyPkt.PosX, notifyPkt.PosY);
+
+            ChangeTurn(cur);
+
+
+
             DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY}");// 알:{notifyPkt.Mok}");
         }
         
+        void PacketProcess_TimeOutNotify(byte[] packetData)
+        {
+            var temp = MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
+            //목 색깔이 자기거랑 똑같으면 턴바꾸고 아니면 갸욷ㄴ다.
+            ChangeTurn(temp.mok);
+     
+
+            DevLog.Write($"타임아웃패킷 받음 {temp.mok}이 타임아웃됨 나는{MyPlayer.PlayerType}임");// 알:{notifyPkt.Mok}");
+
+        }
         void PacketProcess_EndOmokNotify(byte[] packetData)
         {
             //var notifyPkt =  MemoryPackSerializer.Deserialize<PKTNtfEndOmok>(packetData);

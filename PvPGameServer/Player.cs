@@ -15,7 +15,6 @@ public class Player
     public STONE_TYPE PlayerType { get; private set; }
 
 
-    bool IsTurn { get; set; } = false;
 
     int PassCount { get; set; } = 0;      //넘어간거
 
@@ -30,6 +29,17 @@ public class Player
         PassCount = 0;
     }
 
+    public bool CheckPassCount()
+    {
+        ++PassCount;
+
+        if(PassCount == 6) 
+        {
+            return true;
+        }
+
+        return false;
+    }
  
 
 }

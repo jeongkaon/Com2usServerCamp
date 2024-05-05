@@ -205,7 +205,7 @@ public partial class NftPutOmok : PacketHeader
 [MemoryPackable]
 public partial class NtfTimeOut : PacketHeader
 {
-    public string UserId { get; set; }
+    public STONE_TYPE UserId { get; set; }
 
 }
 
