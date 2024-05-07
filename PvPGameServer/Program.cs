@@ -21,7 +21,6 @@ while (true)
         ConsoleKeyInfo key = Console.ReadKey(true);
         if(key.KeyChar == 'q')
         {
-          //  Console.WriteLine("Server Terminate...");
             ServerApp.StopServer();
             break;
         }

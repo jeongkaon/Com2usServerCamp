@@ -12,8 +12,7 @@ public class User
     string SessionID;
     string UserID;
 
-    public bool Used = false;        //사용되는 유저인지 확인해야한다.
-                                    //커넥트,디스커넥트 할때 바꿔줘야한다
+    public bool Used = false;       
 
     //heartbeat위한 시간
     int TimeSpan;               

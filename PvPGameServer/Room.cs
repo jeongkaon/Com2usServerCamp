@@ -60,50 +60,32 @@ public class Room
             return ERROR_CODE.NONE;
         }
 
-        //이미 방대기상태가 긴상태임
+        //이미 방대기상태가 긴상태
         //1명만 입장한 상태
         if (RoomUserList.Count() ==1 )
         {
-            //1명인상태인데 어케 하지?
-            Console.WriteLine("1명만 입장한상태");
             return ERROR_CODE.ROONCHECK_INPUT_ONEPLYAER;
-
         }
 
-        //Room시간을 어디 기준으로 할건지 정해야한다.
-
-        //이제 2명인상태임
-        //2-1. 2명 다 레디를 안하는 경우S
-        //걍 킥해보리자
-        foreach(var user in RoomUserList)
+        //2-1. 2명 다 레디를 안하는 경우
+        //TODO_나가게하기
+        foreach (var user in RoomUserList)
         {
             if(user.isReady == false)
             {
-                //나가버려라
             }
         }
 
         if (board.ReadyPlayerCount() == 0)
         {
-            Console.WriteLine("2명은 입장했는데 아무도 ready안한상태");
-            //이건 쉬움 걍 둘다 킥해
-
             return ERROR_CODE.ROOMCHECK_TWOPLAYERS_NOTREADY;
         }
 
-        //2-2  한명만 레디를 하는 경우
         if (board.ReadyPlayerCount() == 1)
         {
-            Console.WriteLine("2명은 입장했는데 한명만 ready한상태");
-            //한명만 킥해?
             return ERROR_CODE.ROOMCHECK_ONEPLYAER_NOTREADY;
         }           
         
-
-
-
-
-
         return ERROR_CODE.NONE;
     }
 
@@ -252,7 +234,6 @@ public class Room
         {
             if (user.NetSessionID == SessionId)
             {
-                //레디타임도 저장해야하나?
                 user.ReadyTime = DateTime.Now;
                 user.isReady = true;
                 var packet = new ResGameReadyPacket();
@@ -267,7 +248,6 @@ public class Room
             }
         }
 
-        //board에서 인원수 체크하기
         if (board.ReadyPlayerCount()==2)
         {
             NotifyPlayersGameStart();

@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace PvPGameServer.Repository;
 
-internal class RedisDB
+public class RedisDB
 {
 }

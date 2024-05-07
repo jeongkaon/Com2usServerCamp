@@ -15,7 +15,7 @@ public class UserManager
 
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
     
-    User[] UserArr;     //얘도 이름 바꾸고 시픈데..
+    User[] UserArr;     
 
 
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;

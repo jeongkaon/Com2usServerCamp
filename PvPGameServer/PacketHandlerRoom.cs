@@ -106,18 +106,7 @@ public class PacketHandlerRoom : PacketHandler
             //유저의 입장시간과 체크타임 텀이 긴경우체크
             var res = room.IsNotStartGame(curTime, span);
 
-  
-            //if (room.IsNotStartGame(curTime)!= ERROR_CODE.NONE)
-            //{
-            //    //TODO
-            //    //너무 긴 경우 쫒아내던가 해야함
-            //    //leaveroomuser쓰면될듯??
-                
-            //    //
-            //}
-
-
-            //2.턴체크 - 1명일때는 안해도됨, 근데 한명일때는 이미 위에서 걸러짐
+            //2.턴체크
             if (room.IsTimeOutInBoard(curTime, 10000))
             {
                 room.NftToBoardTimeout();

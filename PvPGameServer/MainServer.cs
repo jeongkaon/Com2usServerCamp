@@ -89,7 +89,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
             CreateComponent();
 
-
             timer = new Timer(InnerCheckTimer, null, 0, serverOption.InnerCheckTime / 4);
 
             MainLogger.Debug("서버 생성 성공");
