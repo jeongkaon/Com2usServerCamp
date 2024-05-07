@@ -24,8 +24,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     PacketProcessor MainPacketProcessor = new PacketProcessor();
     RoomManager RoomMgr = new RoomManager();
 
-    //타이머하나 두고 -> 이너패킷 핸들러에게 전달한다.
-    //MainPacketProcessor -> 여기서 패킷핸들러들에게 할당해서 방조사/하트비트 체크한다.
     Timer timer = null;
 
 
@@ -68,6 +66,8 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             ReceiveBufferSize = option.ReceiveBufferSize,
             SendBufferSize = option.SendBufferSize
         };
+
+       
     }
 
     public void CreateAndStartServer()
@@ -88,7 +88,9 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             }
 
             CreateComponent();
-            timer = new Timer(InnerCheckTimer, null, 0, 1000);
+
+
+            timer = new Timer(InnerCheckTimer, null, 0, serverOption.InnerCheckTime / 4);
 
             MainLogger.Debug("서버 생성 성공");
 
@@ -110,7 +112,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
         MainPacketProcessor = new PacketProcessor();
         MainPacketProcessor.NeworktSendFunc = SendData;
-        MainPacketProcessor.ForceSession = ForceSession;
+        MainPacketProcessor.ForceSession = ForceDisconnectSession;
 
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
@@ -118,7 +120,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     }
 
-    public bool ForceSession(string sessionId)
+    public bool ForceDisconnectSession(string sessionId)
     {
         var session = GetAppSessionByID(sessionId);
         if (session == null)
@@ -170,7 +172,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         Distribute(packet);
 
     }
-
     void OnClosed(ClientSession session, CloseReason reason)
     {
         MainLogger.Info($"세션 번호 {session.SessionID} 접속해제: {reason.ToString()}");

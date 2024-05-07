@@ -14,7 +14,9 @@ public class UserManager
     UInt64 UserSequenceNumber = 0; 
 
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
-    User[] UserArr;
+    
+    User[] UserArr;     //얘도 이름 바꾸고 시픈데..
+
 
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
@@ -58,10 +60,13 @@ public class UserManager
             {   
                 return;
             }
+
             if (false == UserArr[i].CheckHeartBeatTime(CurTime))
             {
                 var interanlpacket = InnerPacketMaker.MakeNTFInnerUserForceClosePacket(UserArr[i].SessionId());
                 DistributeInnerPacket(interanlpacket);
+
+                RemoveUser(UserArr[i].SessionId());
             }
         }
     }

@@ -56,22 +56,15 @@ public class GameBoard
 
     public bool TimeOutCheck(DateTime time, int TimeSpan)
     {
-
         var diff = time - TimeoutCheckTime;
         if (diff.TotalMilliseconds> TimeSpan)
         {
-            //턴체크한다.
-            //턴주기보다 길면 재껴야함
-            //타임 아웃되었으니까 true반환
             return true;
         }
 
         return false;
         
-
     }
-
-
     public void SetTimeoutCheckTime(DateTime time)
     {
         TimeoutCheckTime = time;
@@ -88,16 +81,14 @@ public class GameBoard
             CurType = STONE_TYPE.BLACK;
         }
 
-        //턴체인지되면 그때부터 제한시간 걸리는거임
         SetTimeoutCheckTime(DateTime.Now);
 
-
     }
-    public bool CheckIsFull()
+    public int ReadyPlayerCount()
     {
-        return (PlayerList.Count == 2);
-
+        return PlayerList.Count();
     }
+
     public void CheckBaord(STONE_TYPE cur, int x, int y)
     {
         if (cur != CurType)

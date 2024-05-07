@@ -25,8 +25,7 @@ public class Room
     GameBoard board = null;
 
     //방 만들어진 시간저장, 조사할때 너무 길게 시작을 안했으면 빼
-    DateTime RoomStartTime;     //방찻는데 플레이 안하고 있으면 조사대상임
-                                //방은 이미 다 만들어진 상태임, 유저2명들어왔을때를 시작으로 할까??
+    DateTime RoomStartTime;     //한명이 들어오면 체크
     DateTime GameStartTime;     //게임시작플레이시간 너무 오래걸리면 조사대상임
 
     
@@ -38,7 +37,6 @@ public class Room
         MaxUserCount = maxUserCount;
 
         board = new GameBoard(Number, NetworkSendFunc);
-
     }
 
 
@@ -53,10 +51,60 @@ public class Room
     }
 
     
-    public bool IsNotStartGame(DateTime cur)
+    public ERROR_CODE IsNotStartGame(DateTime cur, int span)
     {
-        //게임시작 안하는 경우..
-        return false;
+        var diff = cur - RoomStartTime;
+
+        if(diff.TotalMilliseconds <= span)
+        {
+            return ERROR_CODE.NONE;
+        }
+
+        //이미 방대기상태가 긴상태임
+        //1명만 입장한 상태
+        if (RoomUserList.Count() ==1 )
+        {
+            //1명인상태인데 어케 하지?
+            Console.WriteLine("1명만 입장한상태");
+            return ERROR_CODE.ROONCHECK_INPUT_ONEPLYAER;
+
+        }
+
+        //Room시간을 어디 기준으로 할건지 정해야한다.
+
+        //이제 2명인상태임
+        //2-1. 2명 다 레디를 안하는 경우S
+        //걍 킥해보리자
+        foreach(var user in RoomUserList)
+        {
+            if(user.isReady == false)
+            {
+                //나가버려라
+            }
+        }
+
+        if (board.ReadyPlayerCount() == 0)
+        {
+            Console.WriteLine("2명은 입장했는데 아무도 ready안한상태");
+            //이건 쉬움 걍 둘다 킥해
+
+            return ERROR_CODE.ROOMCHECK_TWOPLAYERS_NOTREADY;
+        }
+
+        //2-2  한명만 레디를 하는 경우
+        if (board.ReadyPlayerCount() == 1)
+        {
+            Console.WriteLine("2명은 입장했는데 한명만 ready한상태");
+            //한명만 킥해?
+            return ERROR_CODE.ROOMCHECK_ONEPLYAER_NOTREADY;
+        }           
+        
+
+
+
+
+
+        return ERROR_CODE.NONE;
     }
 
     public bool IsTimeOutInBoard(DateTime cur, int TimeSpan)
@@ -86,9 +134,15 @@ public class Room
             return false;
         }
 
+        if (RoomUserList.Count() == 0)
+        {
+            RoomStartTime = DateTime.Now;   
+        }
+
         var roomUser = new RoomUser();
         roomUser.Set(userId, netSessionId);
         RoomUserList.Add(roomUser);
+       
 
         return true;
     }
@@ -194,16 +248,15 @@ public class Room
 
     public void SetRoomUserBeReady(string SessionId)
     {
-        //2명밖에 없으니까 그냥 foreach쓸까?, 아님 함수타고 드러가???
         foreach (var user in RoomUserList)
         {
             if (user.NetSessionID == SessionId)
             {
                 //레디타임도 저장해야하나?
                 user.ReadyTime = DateTime.Now;
+                user.isReady = true;
                 var packet = new ResGameReadyPacket();
 
-                //게임플레이 누른 플레이어에게 어떤 돌타입인지 알려주려고 넣은거임
                 packet.PlayerStoneType = board.SetPlayer(SessionId, user.UserID);
 
                 var sendPacket = MemoryPackSerializer.Serialize(packet);
@@ -215,7 +268,7 @@ public class Room
         }
 
         //board에서 인원수 체크하기
-        if (board.CheckIsFull())
+        if (board.ReadyPlayerCount()==2)
         {
             NotifyPlayersGameStart();
 
@@ -250,12 +303,13 @@ public class RoomUser
 
     public DateTime ReadyTime { get; set; }
 
+    public bool isReady { get; set; }   
+
     public void Set(string userID, string netSessionID)
     {
         UserID = userID;
         NetSessionID = netSessionID;
 
-        //룸유저가 입장한 시간을 저장한다.
         AcceptTime = DateTime.Now;
     }
 }

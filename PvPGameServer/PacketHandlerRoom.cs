@@ -78,12 +78,12 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_CHAT, RequestChat);
         packetHandlerMap.Add((int)PACKET_ID.REQ_READY_GAME, RequestGameReadyPacket);
 
-        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOMCHECK, 이너패킷방체크이름멀로짓지);
+        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOMCHECK, CheckInRoomState);
 
 
     }
 
-    public void 이너패킷방체크이름멀로짓지(MemoryPackBinaryRequestInfo requestData)
+    public void CheckInRoomState(MemoryPackBinaryRequestInfo requestData)
     {
         int EndCheckRoomNumber = StartCheckRoomNumber + CheckRoomNumberCount;
         if (EndCheckRoomNumber > MaxRoomCheckCount)
@@ -94,17 +94,30 @@ public class PacketHandlerRoom : PacketHandler
         for (int i= StartCheckRoomNumber; i< EndCheckRoomNumber; ++i)
         {
             var room = GetRoom(i);
-            var curTime = DateTime.Now;
-            //1.게임 시작 안하는 경우 - 입장은 했는데 게임시작을 안하는 경우
-            //유저의 입장시간과 체크타임 텀이 긴경우체크
-            if (room.IsNotStartGame(curTime))
+
+            if (room.CurrentUserCount() == 0)
             {
-                //TODO
-                //너무 긴 경우 쫒아내던가 해야함
+                continue;
             }
 
+            var curTime = DateTime.Now;
 
-            //2.턴체크
+            //1.게임 시작 안하는 경우 - 입장은 했는데 게임시작을 안하는 경우
+            //유저의 입장시간과 체크타임 텀이 긴경우체크
+            var res = room.IsNotStartGame(curTime, span);
+
+  
+            //if (room.IsNotStartGame(curTime)!= ERROR_CODE.NONE)
+            //{
+            //    //TODO
+            //    //너무 긴 경우 쫒아내던가 해야함
+            //    //leaveroomuser쓰면될듯??
+                
+            //    //
+            //}
+
+
+            //2.턴체크 - 1명일때는 안해도됨, 근데 한명일때는 이미 위에서 걸러짐
             if (room.IsTimeOutInBoard(curTime, 10000))
             {
                 room.NftToBoardTimeout();
@@ -327,9 +340,6 @@ public class PacketHandlerRoom : PacketHandler
         room.SetRoomUserBeReady(sessionID);
 
         MainServer.MainLogger.Debug("Room Game Ready Recv - Success");
-
-
-
     }
 
 
