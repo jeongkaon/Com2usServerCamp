@@ -52,7 +52,7 @@ public class InnerPacketMaker
         memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
 
-        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTR_IN_CHECK);
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTR_IN_USERCHECK);
 
         return memoryPackPacket;
 

@@ -24,12 +24,8 @@ public class Room
 
     GameBoard board = null;
 
-    //방 만들어진 시간저장, 조사할때 너무 길게 시작을 안했으면 빼
-    DateTime RoomStartTime;     //한명이 들어오면 체크
-    DateTime GameStartTime;     //게임시작플레이시간 너무 오래걸리면 조사대상임
-
-    
-
+    DateTime RoomStartTime;     //한명이 들어오면 체크?
+    DateTime GameStartTime;     
     public void Init(int index, int number, int maxUserCount)
     {
         Index = index;
@@ -51,6 +47,7 @@ public class Room
     }
 
     
+    //이함수는 더 생각해봐야한다.!!!
     public ERROR_CODE IsNotStartGame(DateTime cur, int span)
     {
         var diff = cur - RoomStartTime;
@@ -89,24 +86,39 @@ public class Room
         return ERROR_CODE.NONE;
     }
 
-    public bool IsTimeOutInBoard(DateTime cur, int TimeSpan)
+    public void CheckTimeOutPlayerTurn(DateTime cur, int TimeSpan)
     {
-        return board.TimeOutCheck(cur, TimeSpan);
+        if (true == board.TimeOutCheck(cur, TimeSpan))
+        {
+            NftBoardTurnTimeout();
+        }
     }
-    public void NftToBoardTimeout()
+
+
+    public void NftBoardTurnTimeout()
     {
         board.NotifyTimeOut();
+
+        var stone = board.CheckPassCount();
+        if(stone != STONE_TYPE.NONE)
+        {
+            board.EndGame(stone);
+            return;
+        }
+
         board.TurnChange();
+
+
     }
-    public bool IsTooLongGameTime(DateTime cur, int TimeSpan)
+
+    public void CheckTooLongGameTime(DateTime cur, int TimeSpan)
     {
         var diff = cur - GameStartTime;
 
         if (diff.TotalMilliseconds > TimeSpan)
         {
-            return true;
+            board.NotifyWinner(STONE_TYPE.NONE);
         }
-        return false;
     }
 
     public bool AddUser(string userId, string netSessionId)
@@ -169,9 +181,6 @@ public class Room
         GameStartTime = DateTime.Now;
         board.GameStart();
     }
-
-
-
 
     public void NotifyPacketUserList(string userNetSessionID)
     {

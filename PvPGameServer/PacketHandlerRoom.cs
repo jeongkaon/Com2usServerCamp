@@ -77,7 +77,6 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOM_LEAVE, NotifyLeaveInternal);
         packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_CHAT, RequestChat);
         packetHandlerMap.Add((int)PACKET_ID.REQ_READY_GAME, RequestGameReadyPacket);
-
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOMCHECK, CheckInRoomState);
 
 
@@ -95,30 +94,21 @@ public class PacketHandlerRoom : PacketHandler
         {
             var room = GetRoom(i);
 
-            if (room.CurrentUserCount() == 0)
+            if (room.CurrentUserCount() == 0 || room.CheckIsFull() ==false )
             {
                 continue;
             }
 
             var curTime = DateTime.Now;
 
+            //TODO - 
             //1.게임 시작 안하는 경우 - 입장은 했는데 게임시작을 안하는 경우
             //유저의 입장시간과 체크타임 텀이 긴경우체크
-            var res = room.IsNotStartGame(curTime, span);
 
-            //2.턴체크
-            if (room.IsTimeOutInBoard(curTime, 10000))
-            {
-                room.NftToBoardTimeout();
-            }
+            room.CheckTimeOutPlayerTurn(curTime, 10000 / 2);
 
-            //3.전체 게임시간 너무 긴경우 
-            if (room.IsTooLongGameTime(curTime,10000))
-            {
-                //TODO
-                //게임너무긴경우 처리해야한다.
-            }
-
+            room.CheckTooLongGameTime(curTime, 10000);
+     
         }
 
         StartCheckRoomNumber += CheckRoomNumberCount;

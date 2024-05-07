@@ -37,7 +37,8 @@ public class PacketHandlerCommon : PacketHandler
     {
         int endIdx = UserCheckStartIndex + MaxUserCheckCount;
      
-        UserMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
+        var value = UserMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
+
 
         UserCheckStartIndex += endIdx;
         if(UserCheckStartIndex >= MaxUserCheckCount)
@@ -114,14 +115,11 @@ public class PacketHandlerCommon : PacketHandler
     }
     public void ReqHeartBeatPacket(MemoryPackBinaryRequestInfo recvData)
     {
-        //하트비트 받았으면 
         var sessionID = recvData.SessionID;
 
         var user = UserMgr.GetUser(sessionID);
         if (user != null)
         {
-            //유저 없다고 알려줘야하나? 일단 넘겨~
-            //ResHeartBeatPacket(ERROR_CODE.)
             user.UpdateHeartBeatTime(DateTime.Now);
             ResHeartBeatPacket(ERROR_CODE.NONE, sessionID);
 
@@ -166,6 +164,7 @@ public class PacketHandlerCommon : PacketHandler
         NetworkSendFunc(sessionID, sendData);
     }
 
+    //강종하고 있었으면 만약 방에 사람이 있으면 알려줘야한다
 
     
 

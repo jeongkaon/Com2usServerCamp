@@ -79,28 +79,24 @@ namespace csharp_test_client
         void StartGame(bool isMyTurn, string myPlayerName, string otherPlayerName)
         {
             MyPlayerName = MyPlayer.Id;
+            IsMyTurn = isMyTurn;
 
-            if(MyPlayer.PlayerType == STONE_TYPE.BLACK)
+            if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
             {
                 흑돌플레이어Name = MyPlayer.Id;
                 백돌플레이어Name = OtherPlayer.Id;
-                IsMyTurn = true;
 
             }
             else
             {
                 흑돌플레이어Name = OtherPlayer.Id;
                 백돌플레이어Name = MyPlayer.Id;
-                IsMyTurn = false;
             }
-            IsMyTurn = isMyTurn;
 
             전x좌표 = 전y좌표 = -1;
             시작효과음.Play();
 
             OmokLogic.StartGame();
-            
-   
 
             panel1.Invalidate();
         }
@@ -109,13 +105,13 @@ namespace csharp_test_client
         {
             OmokLogic.EndGame();
 
-            MyPlayerName = "";
             백돌플레이어Name = "";
             흑돌플레이어Name = "";
 
             //리스트박스도 처리하고 해야함
 
-            //너무 바로지워지눈데??            
+            //너무 바로지워지눈데??
+            
             panel1.Invalidate();
 
         }
@@ -176,6 +172,7 @@ namespace csharp_test_client
         }
         void 입력된돌그리기(int x, int y)
         {
+
             Graphics g = panel1.CreateGraphics();
 
             Rectangle r = new Rectangle(시작위치 + 눈금크기 * x - 돌크기 / 2,
@@ -194,7 +191,6 @@ namespace csharp_test_client
             }
 
 
-            
         }
         void 돌그리기(int x, int y)
         {
@@ -261,7 +257,7 @@ namespace csharp_test_client
                 g.DrawString($"PlayerName: {흑돌플레이어Name }", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 600);
             }
 
-            else                 // 다음 돌 표시(흰 돌)
+            if (curPlayer == STONE_TYPE.WHITE)
             {
                 str = "현재 턴 돌";
                 g.FillEllipse(흰색, 시작위치 + 100, 599, 돌크기, 돌크기);

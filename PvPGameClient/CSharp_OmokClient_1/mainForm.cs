@@ -49,6 +49,8 @@ namespace csharp_test_client
             hbTimer = new System.Windows.Forms.Timer();
             hbTimer.Interval = 1000;
             hbTimer.Tick += HeartBeatTimer;
+
+            //hbTimer = null;
         }
         void HeartBeatTimer(object sender, EventArgs e)
         {

@@ -15,7 +15,7 @@ public class User
     public bool Used = false;       
 
     //heartbeat위한 시간
-    int TimeSpan;               
+    int HbTimeSpan;               
 
     DateTime hbTime = new DateTime();
 
@@ -24,7 +24,7 @@ public class User
 
     public void InitTimeSpan(int timespan)
     {
-        TimeSpan = timespan;    
+        HbTimeSpan = timespan;    
         
     }
 
@@ -36,6 +36,7 @@ public class User
         Used = true;
 
         hbTime= ping;
+
         //테스트로 일단 20초로세팅
         InitTimeSpan(20000);   
 
@@ -51,7 +52,7 @@ public class User
     {
         var diff = curTime - hbTime;
         
-        if(diff.TotalMilliseconds > TimeSpan)
+        if(diff.TotalMilliseconds > HbTimeSpan)
         {
             return false;
         }

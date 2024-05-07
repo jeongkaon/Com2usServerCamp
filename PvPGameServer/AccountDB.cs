@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PvPGameServer.Repository;
-
-public class RedisDB
+namespace PvPGameServer;
+public class AccountDB
 {
 }

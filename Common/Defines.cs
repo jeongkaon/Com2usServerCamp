@@ -121,8 +121,8 @@ public enum PACKET_ID : int
     SC_IN_ROOM_ENTER = 8032,
 
     NTF_IN_ROOM_LEAVE = 8036,
-    
-    NTR_IN_CHECK = 8037,
+
+    NTR_IN_USERCHECK = 8037,
     NTF_IN_ROOMCHECK = 8038,
 
 

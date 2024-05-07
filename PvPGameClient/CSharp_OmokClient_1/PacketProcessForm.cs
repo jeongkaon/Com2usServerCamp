@@ -57,7 +57,7 @@ namespace csharp_test_client
             }
             else
             {
-                DevLog.Write("Unknown Packet Id: " + packetID);
+                //DevLog.Write("Unknown Packet Id: " + packetID);
             }
         }
 
@@ -232,6 +232,7 @@ namespace csharp_test_client
         {
 
             var res = MemoryPackSerializer.Deserialize<NftGameStartPacket>(packetData);
+            curPlayer = STONE_TYPE.BLACK;
 
             if (res.p1 == MyPlayer.Id)
             {
@@ -260,7 +261,7 @@ namespace csharp_test_client
             }
 
             
-            bool myTurn = MyPlayer.PlayerType == STONE_TYPE.BLACK ? true : false;
+            bool myTurn = (MyPlayer.PlayerType == STONE_TYPE.BLACK) ? true : false;
 
             StartGame(myTurn, MyPlayer.Id, OtherPlayer.Id);
 
@@ -313,6 +314,8 @@ namespace csharp_test_client
             var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
             var cur = notifyPkt.mok;
+            //현재턴_플레이어_정보();
+
             입력된돌그리기(notifyPkt.PosX, notifyPkt.PosY);
 
             ChangeTurn(cur);
@@ -328,7 +331,7 @@ namespace csharp_test_client
 
             //목 색깔이 자기거랑 똑같으면 턴바꾸고 아니면 갸욷ㄴ다.
             ChangeTurn(temp.mok);
-     
+
 
             DevLog.Write($"타임아웃패킷 받음 {temp.mok}이 타임아웃됨 나는{MyPlayer.PlayerType}임");// 알:{notifyPkt.Mok}");
 
@@ -336,10 +339,13 @@ namespace csharp_test_client
         void PacketProcess_EndOmokNotify(byte[] packetData)
         {
             var notifyPkt =  MemoryPackSerializer.Deserialize<NtfOmokWinner>(packetData);
+            IsMyTurn = false;
+
+            //이긴거 돌타입으로온다.
 
             EndGame();
 
-            DevLog.Write($"오목 GameOver: Win: {notifyPkt.UserId}");
+            DevLog.Write($"오목 GameOver: Win: {notifyPkt.WinStone}");
         }
     }
 }

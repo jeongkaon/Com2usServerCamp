@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PvPGameServer;
 
@@ -19,7 +20,9 @@ public class GameBoard
  
     DateTime TimeoutCheckTime;
 
-    
+    //걍DB테스트임
+    GameDB db = new GameDB();
+
     public static Func<string, byte[], bool> NetworkSendFunc;
     public GameBoard(int roomNumber, Func<string, byte[], bool> func)
     {
@@ -47,18 +50,23 @@ public class GameBoard
         SetTimeoutCheckTime(DateTime.Now);
 
     }
-    public void EndGame(string id)
+    public void EndGame(STONE_TYPE win)
     {
-        NotifyWinner(id);
+        NotifyWinner(win);
         ClearBoard();
-
     }
 
     public bool TimeOutCheck(DateTime time, int TimeSpan)
     {
+        if(CurType == STONE_TYPE.NONE)
+        {
+            return false;
+        }
+
         var diff = time - TimeoutCheckTime;
         if (diff.TotalMilliseconds> TimeSpan)
         {
+            PlayerList[CurType].AddPassCount();
             return true;
         }
 
@@ -89,6 +97,17 @@ public class GameBoard
         return PlayerList.Count();
     }
 
+    public STONE_TYPE CheckPassCount()
+    {
+        var player = PlayerList[CurType];
+        if(player.CheckPassCount() == true)
+        {
+            return player.PlayerType;
+        }
+        return STONE_TYPE.NONE;
+
+    }
+
     public void CheckBaord(STONE_TYPE cur, int x, int y)
     {
         if (cur != CurType)
@@ -108,7 +127,7 @@ public class GameBoard
 
         if (CheckBoardEnd(x, y) == true)
         {
-            EndGame(PlayerList[CurType].UserID);
+            EndGame(CurType);
             return;
         }
 
@@ -117,9 +136,9 @@ public class GameBoard
     }
     public void ClearBoard()
     {
-        board.Initialize();
+        Array.Clear(board, 0, board.Length);
         PlayerList.Clear();
-
+        CurType = STONE_TYPE.NONE;
     }
 
     public void NotifyPutOmok(int x, int y)
@@ -136,28 +155,21 @@ public class GameBoard
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
 
         Broadcast("", sendPacket);
-
-
-
-
-
     }
 
-    public void NotifyWinner(string id)
+    public void NotifyWinner(STONE_TYPE win)
     {
+        db.UpdateWinScore("kaon");
+
         var packet = new NtfOmokWinner()
         {
-            UserId = id
+            WinStone = win
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTR_WINNER_OMOK);
 
         Broadcast("", sendPacket);
-
-        //TODO
-        //내부로도 보내서 usermagr에서 승리카운트 올려??
-        //DB도 연결??
 
     }
 
@@ -193,7 +205,7 @@ public class GameBoard
     {
         const int TestCount = 2;
 
-        if (CheckCol(x, y) == TestCount)        // 같은 돌 개수가 5개면 (6목이상이면 게임 계속) 
+        if (CheckCol(x, y) == TestCount)        
         {
             return true;
         }

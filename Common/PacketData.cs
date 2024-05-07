@@ -212,7 +212,8 @@ public partial class NtfTimeOut : PacketHeader
 [MemoryPackable]
 public partial class NtfOmokWinner : PacketHeader
 {
-    public string UserId { get; set; }
+   // public string UserId { get; set; }
+   public STONE_TYPE WinStone { get; set; } 
 
 }
 
