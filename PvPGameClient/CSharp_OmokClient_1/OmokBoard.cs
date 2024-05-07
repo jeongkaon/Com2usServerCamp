@@ -110,7 +110,8 @@ namespace csharp_test_client
 
             //리스트박스도 처리하고 해야함
 
-            //너무 바로지워지눈데??            
+            //너무 바로지워지눈데??
+            
             panel1.Invalidate();
 
         }
@@ -188,7 +189,6 @@ namespace csharp_test_client
                 g.FillEllipse(흰색, r);
 
             }
-
 
 
         }

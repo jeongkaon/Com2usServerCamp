@@ -305,7 +305,6 @@ namespace csharp_test_client
 
             }
 
-            현재턴_플레이어_정보();
 
         }
 
@@ -315,7 +314,7 @@ namespace csharp_test_client
             var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
             var cur = notifyPkt.mok;
-            현재턴_플레이어_정보();
+            //현재턴_플레이어_정보();
 
             입력된돌그리기(notifyPkt.PosX, notifyPkt.PosY);
 
@@ -342,9 +341,11 @@ namespace csharp_test_client
             var notifyPkt =  MemoryPackSerializer.Deserialize<NtfOmokWinner>(packetData);
             IsMyTurn = false;
 
+            //이긴거 돌타입으로온다.
+
             EndGame();
 
-            DevLog.Write($"오목 GameOver: Win: {notifyPkt.UserId}");
+            DevLog.Write($"오목 GameOver: Win: {notifyPkt.WinStone}");
         }
     }
 }

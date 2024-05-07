@@ -24,12 +24,8 @@ public class Room
 
     GameBoard board = null;
 
-    //방 만들어진 시간저장, 조사할때 너무 길게 시작을 안했으면 빼
-    DateTime RoomStartTime;     //한명이 들어오면 체크
-    DateTime GameStartTime;     //게임시작플레이시간 너무 오래걸리면 조사대상임
-
-    
-
+    DateTime RoomStartTime;     //한명이 들어오면 체크?
+    DateTime GameStartTime;     
     public void Init(int index, int number, int maxUserCount)
     {
         Index = index;
@@ -111,19 +107,19 @@ public class Room
     {
         if (true == board.TimeOutCheck(cur, TimeSpan))
         {
-            NftToBoardTimeout();
+            NftBoardTurnTimeout();
         }
     }
 
 
-    public void NftToBoardTimeout()
+    public void NftBoardTurnTimeout()
     {
         board.NotifyTimeOut();
 
-        var id = board.이름머라하지();
-        if(id != null)
+        var stone = board.CheckPassCount();
+        if(stone != STONE_TYPE.NONE)
         {
-            board.EndGame(id);
+            board.EndGame(stone);
             return;
         }
 
@@ -132,15 +128,14 @@ public class Room
 
     }
 
-    public bool IsTooLongGameTime(DateTime cur, int TimeSpan)
+    public void CheckTooLongGameTime(DateTime cur, int TimeSpan)
     {
         var diff = cur - GameStartTime;
 
         if (diff.TotalMilliseconds > TimeSpan)
         {
-            return true;
+            board.NotifyWinner(STONE_TYPE.NONE);
         }
-        return false;
     }
 
     public bool AddUser(string userId, string netSessionId)
@@ -204,9 +199,6 @@ public class Room
         board.GameStart();
     }
 
-
-
-
     public void NotifyPacketUserList(string userNetSessionID)
     {
         var packet = new NtfRoomUserList();
@@ -268,7 +260,6 @@ public class Room
         {
             if (user.NetSessionID == SessionId)
             {
-                //레디타임도 저장해야하나?
                 user.ReadyTime = DateTime.Now;
                 user.isReady = true;
                 var packet = new ResGameReadyPacket();
@@ -283,7 +274,6 @@ public class Room
             }
         }
 
-        //board에서 인원수 체크하기
         if (board.ReadyPlayerCount()==2)
         {
             NotifyPlayersGameStart();

@@ -20,7 +20,9 @@ public class GameBoard
  
     DateTime TimeoutCheckTime;
 
-    
+    //걍DB테스트임
+    GameDB db = new GameDB();
+
     public static Func<string, byte[], bool> NetworkSendFunc;
     public GameBoard(int roomNumber, Func<string, byte[], bool> func)
     {
@@ -48,14 +50,10 @@ public class GameBoard
         SetTimeoutCheckTime(DateTime.Now);
 
     }
-    public void EndGame(string id)
+    public void EndGame(STONE_TYPE win)
     {
-        //TODO - 로그처리해야한다.
-        //승리,패 결과 DB로 넘겨야하나??
-
-        NotifyWinner(id);
+        NotifyWinner(win);
         ClearBoard();
-
     }
 
     public bool TimeOutCheck(DateTime time, int TimeSpan)
@@ -68,7 +66,6 @@ public class GameBoard
         var diff = time - TimeoutCheckTime;
         if (diff.TotalMilliseconds> TimeSpan)
         {
-            //올려주고
             PlayerList[CurType].AddPassCount();
             return true;
         }
@@ -100,14 +97,14 @@ public class GameBoard
         return PlayerList.Count();
     }
 
-    public string 이름머라하지()
+    public STONE_TYPE CheckPassCount()
     {
-        var user = PlayerList[CurType];
-        if(user.CheckPassCount() == true)
+        var player = PlayerList[CurType];
+        if(player.CheckPassCount() == true)
         {
-            return user.UserID;
+            return player.PlayerType;
         }
-        return null;
+        return STONE_TYPE.NONE;
 
     }
 
@@ -130,7 +127,7 @@ public class GameBoard
 
         if (CheckBoardEnd(x, y) == true)
         {
-            EndGame(PlayerList[CurType].UserID);
+            EndGame(CurType);
             return;
         }
 
@@ -158,29 +155,21 @@ public class GameBoard
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
 
         Broadcast("", sendPacket);
-
-
-
-
-
     }
 
-    public void NotifyWinner(string id)
+    public void NotifyWinner(STONE_TYPE win)
     {
+        db.UpdateWinScore("kaon");
+
         var packet = new NtfOmokWinner()
         {
-            UserId = id
+            WinStone = win
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTR_WINNER_OMOK);
 
         Broadcast("", sendPacket);
-
-
-        //TODO
-        //내부로도 보내서 usermagr에서 승리카운트 올려??
-        //DB도 연결??
 
     }
 
@@ -192,7 +181,6 @@ public class GameBoard
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(packet); 
-        //이거 받은 클라가 턴바꾸는거임.
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_TIMEOUT_OMOK);
 
         Broadcast("", sendPacket);
@@ -217,7 +205,7 @@ public class GameBoard
     {
         const int TestCount = 2;
 
-        if (CheckCol(x, y) == TestCount)        // 같은 돌 개수가 5개면 (6목이상이면 게임 계속) 
+        if (CheckCol(x, y) == TestCount)        
         {
             return true;
         }

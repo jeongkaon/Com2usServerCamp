@@ -27,33 +27,29 @@ public class PacketHandlerCommon : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_CONNECT_CLIENT, NotifyInConnectClient);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_DISCONNECT_CLIENT, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PACKET_ID.REQ_HEARTBEAT, ReqHeartBeatPacket);
-
-        //얘도 NTR_IN_CHECK이름 바꿔야할거같은데??? 서버에 들어온 user들 체크하는거
-        packetHandlerMap.Add((int)PACKET_ID.NTR_IN_CHECK, NotifyInUserCheck);
+        packetHandlerMap.Add((int)PACKET_ID.NTR_IN_USERCHECK, NotifyInUserCheck);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_FORCEDISCONNECT_CLIENT, NotifyInForceDisConnectClient);
 
 
     }
     public void NotifyInUserCheck(MemoryPackBinaryRequestInfo requestData)
     {
-        //문제 있으면 강종해야함
-
-        //User 조사
-        //valid한 유저인지를 조사해야함
-
-        //user mgr 리스트에 들어가서 하트비트 체크하면된다.
         int endIdx = UserCheckStartIndex + MaxUserCheckCount;
      
-        UserMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
+        var value = UserMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
 
+        //강종당한 user가 만약 방에 들어있었으면 방에 있는사람들한테도 알려줘야한다.
+        if(value.Item2 != -1)
+        {
+            var internalPacket = InnerPacketMaker.MakeNTFInnerRoomLeavePacket(value.Item1, value.Item2, value.Item3);
+            DistributeInnerPacket(internalPacket);
+        }
 
         UserCheckStartIndex += endIdx;
         if(UserCheckStartIndex >= MaxUserCheckCount)
         {
             UserCheckStartIndex = 0;
         }
-
-
     }
 
     public void NotifyInConnectClient(MemoryPackBinaryRequestInfo requestData)
@@ -81,11 +77,8 @@ public class PacketHandlerCommon : PacketHandler
     }
     public void NotifyInForceDisConnectClient(MemoryPackBinaryRequestInfo requestData)
     {
-        //같이 게임하고 있는 상대한테도 알려줘야하나???
-        //강종하면 방에 들어있는 사람은???
         var sessionID = requestData.SessionID;
         ForceSession(sessionID);
-
     }
 
     public void ReqLoginPacket(MemoryPackBinaryRequestInfo recvData)
@@ -127,7 +120,6 @@ public class PacketHandlerCommon : PacketHandler
     }
     public void ReqHeartBeatPacket(MemoryPackBinaryRequestInfo recvData)
     {
-        //하트비트 받았으면 
         var sessionID = recvData.SessionID;
 
         var user = UserMgr.GetUser(sessionID);
@@ -176,10 +168,6 @@ public class PacketHandlerCommon : PacketHandler
 
         NetworkSendFunc(sessionID, sendData);
     }
-
-    //강종하고 있었으면 만약 방에 사람이 있으면 알려줘야한다
-
-    
 
 }
 

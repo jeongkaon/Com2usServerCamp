@@ -15,8 +15,7 @@ public class UserManager
 
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
     
-    User[] UserArr;     //얘도 이름 바꾸고 시픈데..
-
+    User[] UserArr;   
 
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
@@ -45,20 +44,20 @@ public class UserManager
 
     }
 
-    public void CheckHeartBeat(int beginIdx, int endIdx)
+    public (string, int, string) CheckHeartBeat(int beginIdx, int endIdx)
     {
-        if(endIdx > MaxUserCount)
+        if (endIdx > MaxUserCount)
         {
             endIdx = MaxUserCount;
         }
 
         var CurTime = DateTime.Now;
 
-        for(int i=beginIdx; i < endIdx; i++)
+        for (int i = beginIdx; i < endIdx; i++)
         {
-            if (UserArr[i]== null || UserArr[i].Used ==false)
-            {   
-                return;
+            if (UserArr[i] == null || UserArr[i].Used == false)
+            {
+                return (null, -1, null);
             }
 
             if (false == UserArr[i].CheckHeartBeatTime(CurTime))
@@ -66,9 +65,17 @@ public class UserManager
                 var interanlpacket = InnerPacketMaker.MakeNTFInnerUserForceClosePacket(UserArr[i].SessionId());
                 DistributeInnerPacket(interanlpacket);
 
-                RemoveUser(UserArr[i].SessionId());
+                var id = UserArr[i].SessionId();
+                (string, int, string) value = (UserArr[i].SessionId(), UserArr[i].RoomNumber, UserArr[i].ID());
+
+                RemoveUser(id);
+
+                return value;
+
             }
         }
+
+        return (null, 0, null);
     }
 
 
