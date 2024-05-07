@@ -133,8 +133,6 @@ public class PacketHandlerCommon : PacketHandler
         var user = UserMgr.GetUser(sessionID);
         if (user != null)
         {
-            //유저 없다고 알려줘야하나? 일단 넘겨~
-            //ResHeartBeatPacket(ERROR_CODE.)
             user.UpdateHeartBeatTime(DateTime.Now);
             ResHeartBeatPacket(ERROR_CODE.NONE, sessionID);
 

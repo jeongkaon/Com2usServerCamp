@@ -104,28 +104,31 @@ public class PacketHandlerRoom : PacketHandler
 
             //1.게임 시작 안하는 경우 - 입장은 했는데 게임시작을 안하는 경우
             //유저의 입장시간과 체크타임 텀이 긴경우체크
-            var res = room.IsNotStartGame(curTime, span);
-            //이거걸러야함
 
-  
+            //이거 아직 구현안되어잉ㅆ어서 주석처리 ㄱㄱ 테스트할동안 개빡치게자꾸뜸
+
+            //var res = room.IsNotStartGame(curTime, span);
+            //이거걸러야함
             //if (room.IsNotStartGame(curTime)!= ERROR_CODE.NONE)
             //{
             //    //TODO
             //    //너무 긴 경우 쫒아내던가 해야함
             //    //leaveroomuser쓰면될듯??
-                
+
             //    //
             //}
-
-
-            //2.턴체크 - 1명일때는 안해도됨, 근데 한명일때는 이미 위에서 걸러짐
-            if (room.IsTimeOutInBoard(curTime, 10000/2))
+            if (room.CheckIsFull() == false)
             {
-                room.NftToBoardTimeout();
+                continue;
             }
 
+
+            //2.턴체크 - 1명일때는 안해도됨, 근데 한명일때는 이미 위에서 걸러야함
+            room.CheckTimeOutPlayerTurn(curTime, 10000 / 2);
+  
             //3.전체 게임시간 너무 긴경우 
-            if (room.IsTooLongGameTime(curTime,10000))
+            //TODO_게임플레이시간 정해서 변수로해서 넣어야함
+            if (true == room.IsTooLongGameTime(curTime,10000))
             {
                 //TODO
                 //게임너무긴경우 처리해야한다.

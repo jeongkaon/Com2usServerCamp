@@ -50,6 +50,9 @@ public class GameBoard
     }
     public void EndGame(string id)
     {
+        //TODO - 로그처리해야한다.
+        //승리,패 결과 DB로 넘겨야하나??
+
         NotifyWinner(id);
         ClearBoard();
 
@@ -57,6 +60,11 @@ public class GameBoard
 
     public bool TimeOutCheck(DateTime time, int TimeSpan)
     {
+        if(CurType == STONE_TYPE.NONE)
+        {
+            return false;
+        }
+
         var diff = time - TimeoutCheckTime;
         if (diff.TotalMilliseconds> TimeSpan)
         {

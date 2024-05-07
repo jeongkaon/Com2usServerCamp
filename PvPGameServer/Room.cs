@@ -51,6 +51,7 @@ public class Room
     }
 
     
+    //이함수는 더 생각해봐야한다.!!!
     public ERROR_CODE IsNotStartGame(DateTime cur, int span)
     {
         var diff = cur - RoomStartTime;
@@ -64,17 +65,16 @@ public class Room
         //1명만 입장한 상태
         if (RoomUserList.Count() ==1 )
         {
-            //1명인상태인데 어케 하지?
+            //한명만 접속 + 대기가 긴 상태...
             Console.WriteLine("1명만 입장한상태");
             return ERROR_CODE.ROONCHECK_INPUT_ONEPLYAER;
 
         }
 
-        //Room시간을 어디 기준으로 할건지 정해야한다.
 
         //이제 2명인상태임
         //2-1. 2명 다 레디를 안하는 경우S
-        //걍 킥해보리자
+        //이렇게 날려버리는 경우 -> 
         foreach(var user in RoomUserList)
         {
             if(user.isReady == false)
@@ -107,15 +107,15 @@ public class Room
         return ERROR_CODE.NONE;
     }
 
-    public bool IsTimeOutInBoard(DateTime cur, int TimeSpan)
+    public void CheckTimeOutPlayerTurn(DateTime cur, int TimeSpan)
     {
-        var res = board.TimeOutCheck(cur, TimeSpan);
-        if(res == true)
+        if (true == board.TimeOutCheck(cur, TimeSpan))
         {
-            //passcount 증가시켜줘야함
+            NftToBoardTimeout();
         }
-        return res;
     }
+
+
     public void NftToBoardTimeout()
     {
         board.NotifyTimeOut();
