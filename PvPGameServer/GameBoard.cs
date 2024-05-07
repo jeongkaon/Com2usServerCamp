@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PvPGameServer;
 
@@ -59,6 +60,8 @@ public class GameBoard
         var diff = time - TimeoutCheckTime;
         if (diff.TotalMilliseconds> TimeSpan)
         {
+            //올려주고
+            PlayerList[CurType].AddPassCount();
             return true;
         }
 
@@ -89,6 +92,17 @@ public class GameBoard
         return PlayerList.Count();
     }
 
+    public string 이름머라하지()
+    {
+        var user = PlayerList[CurType];
+        if(user.CheckPassCount() == true)
+        {
+            return user.UserID;
+        }
+        return null;
+
+    }
+
     public void CheckBaord(STONE_TYPE cur, int x, int y)
     {
         if (cur != CurType)
@@ -117,9 +131,9 @@ public class GameBoard
     }
     public void ClearBoard()
     {
-        board.Initialize();
+        Array.Clear(board, 0, board.Length);
         PlayerList.Clear();
-
+        CurType = STONE_TYPE.NONE;
     }
 
     public void NotifyPutOmok(int x, int y)
@@ -155,6 +169,7 @@ public class GameBoard
 
         Broadcast("", sendPacket);
 
+
         //TODO
         //내부로도 보내서 usermagr에서 승리카운트 올려??
         //DB도 연결??
@@ -169,6 +184,7 @@ public class GameBoard
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(packet); 
+        //이거 받은 클라가 턴바꾸는거임.
         PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_TIMEOUT_OMOK);
 
         Broadcast("", sendPacket);

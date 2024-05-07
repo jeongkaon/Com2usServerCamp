@@ -105,6 +105,7 @@ public class PacketHandlerRoom : PacketHandler
             //1.게임 시작 안하는 경우 - 입장은 했는데 게임시작을 안하는 경우
             //유저의 입장시간과 체크타임 텀이 긴경우체크
             var res = room.IsNotStartGame(curTime, span);
+            //이거걸러야함
 
   
             //if (room.IsNotStartGame(curTime)!= ERROR_CODE.NONE)
@@ -118,7 +119,7 @@ public class PacketHandlerRoom : PacketHandler
 
 
             //2.턴체크 - 1명일때는 안해도됨, 근데 한명일때는 이미 위에서 걸러짐
-            if (room.IsTimeOutInBoard(curTime, 10000))
+            if (room.IsTimeOutInBoard(curTime, 10000/2))
             {
                 room.NftToBoardTimeout();
             }

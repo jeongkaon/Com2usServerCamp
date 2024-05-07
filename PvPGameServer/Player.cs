@@ -16,7 +16,7 @@ public class Player
 
 
 
-    int PassCount { get; set; } = 0;      //넘어간거
+   int PassCount { get; set; } = 0;      //넘어간거
 
 
     public Player(string netSessionID,string userID,STONE_TYPE type)
@@ -29,11 +29,15 @@ public class Player
         PassCount = 0;
     }
 
-    public bool CheckPassCount()
+    public void AddPassCount()
     {
         ++PassCount;
+    }
 
-        if(PassCount == 6) 
+    public bool CheckPassCount()
+    {
+        const int testcount = 3;
+        if (PassCount == testcount) 
         {
             return true;
         }

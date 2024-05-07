@@ -109,13 +109,29 @@ public class Room
 
     public bool IsTimeOutInBoard(DateTime cur, int TimeSpan)
     {
-        return board.TimeOutCheck(cur, TimeSpan);
+        var res = board.TimeOutCheck(cur, TimeSpan);
+        if(res == true)
+        {
+            //passcount 증가시켜줘야함
+        }
+        return res;
     }
     public void NftToBoardTimeout()
     {
         board.NotifyTimeOut();
+
+        var id = board.이름머라하지();
+        if(id != null)
+        {
+            board.EndGame(id);
+            return;
+        }
+
         board.TurnChange();
+
+
     }
+
     public bool IsTooLongGameTime(DateTime cur, int TimeSpan)
     {
         var diff = cur - GameStartTime;
