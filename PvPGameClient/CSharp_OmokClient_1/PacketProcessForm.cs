@@ -22,26 +22,25 @@ namespace csharp_test_client
             //PacketFuncDic.Add(PacketId.PacketId_ERROR_NTF, PacketProcess_ErrorNotify);
 
             //여기다가 추가하면된다.
-            PacketFuncDic.Add((int)PacketId.RES_LOGIN, PacketProcess_Loginin);
+            PacketFuncDic.Add((int)PacketId.ResLogin, PacketProcess_Loginin);
 
-            PacketFuncDic.Add((int)PacketId.RES_ROOM_ENTER, PacketProcess_RoomEnterResponse);
-            PacketFuncDic.Add((int)PacketId.NTF_ROOM_USER_LIST, PacketProcess_RoomUserListNotify);
-            PacketFuncDic.Add((int)PacketId.NTF_ROOM_NEW_USER, PacketProcess_RoomNewUserNotify);
-            PacketFuncDic.Add((int)PacketId.RES_ROOM_LEAVE, PacketProcess_RoomLeaveResponse);
-            PacketFuncDic.Add((int)PacketId.NTF_ROOM_LEAVE_USER, PacketProcess_RoomLeaveUserNotify);
+            PacketFuncDic.Add((int)PacketId.ResRoomEnter, PacketProcess_RoomEnterResponse);
+            PacketFuncDic.Add((int)PacketId.NftRoomUserList, PacketProcess_RoomUserListNotify);
+            PacketFuncDic.Add((int)PacketId.NtfRoomNewUser, PacketProcess_RoomNewUserNotify);
+            PacketFuncDic.Add((int)PacketId.ResRoomLeave, PacketProcess_RoomLeaveResponse);
+            PacketFuncDic.Add((int)PacketId.NtfRoomLeaveUser, PacketProcess_RoomLeaveUserNotify);
             //PacketFuncDic.Add((int)PacketId.NTF_ROOM_CHAT, PacketProcess_RoomChatResponse);
-            PacketFuncDic.Add((int)PacketId.NTF_ROOM_CHAT, PacketProcess_RoomChatNotify);
-            PacketFuncDic.Add((int)PacketId.RES_READY_GAME, PacketProcess_ReadyOmokResponse);
-            PacketFuncDic.Add((int)PacketId.NTR_READY_GAME, PacketProcess_ReadyOmokNotify);
-            PacketFuncDic.Add((int)PacketId.NTF_START_GAME, PacketProcess_StartOmokNotify);
-            PacketFuncDic.Add((int)PacketId.RES_PUT_OMOK, PacketProcess_PutMokResponse);
+            PacketFuncDic.Add((int)PacketId.NtfRoomChat, PacketProcess_RoomChatNotify);
+            PacketFuncDic.Add((int)PacketId.ResReadyGame, PacketProcess_ReadyOmokResponse);
+            PacketFuncDic.Add((int)PacketId.NtfReadGame, PacketProcess_ReadyOmokNotify);
+            PacketFuncDic.Add((int)PacketId.NtfStartGame, PacketProcess_StartOmokNotify);
+            PacketFuncDic.Add((int)PacketId.ResPutOmok, PacketProcess_PutMokResponse);
 
-            PacketFuncDic.Add((int)PacketId.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
+            PacketFuncDic.Add((int)PacketId.NtfPutOmok, PacketProcess_PutMokNotify);
 
-            PacketFuncDic.Add((int)PacketId.NTF_TIMEOUT_OMOK, PacketProcess_TimeOutNotify);
-            PacketFuncDic.Add((ushort)PacketId.NTR_WINNER_OMOK, PacketProcess_EndOmokNotify);
+            PacketFuncDic.Add((int)PacketId.NtrTimeOutOmok, PacketProcess_TimeOutNotify);
+            PacketFuncDic.Add((ushort)PacketId.NtrWinnerOmok, PacketProcess_EndOmokNotify);
 
-            //PacketFuncDic.Add((ushort)PacketId.NTF_END_GAME, PacketProcess_EndOmokNotify);
         }
 
         void PacketProcess(byte[] packet)
@@ -99,7 +98,7 @@ namespace csharp_test_client
             /*var responsePkt = new MatchUserResPacket();
             responsePkt.FromBytes(bodyData);
 
-            if((ERROR_CODE)responsePkt.Result != ERROR_CODE.ERROR_NONE)
+            if((ERROR_CODE)responsePkt.Result != ERROR_CODE.ERROR_None)
             {
                 DevLog.Write($"Put Stone Error : {(ERROR_CODE)responsePkt.Result}");
             }
@@ -232,36 +231,36 @@ namespace csharp_test_client
         {
 
             var res = MemoryPackSerializer.Deserialize<NftGameStartPacket>(packetData);
-            curPlayer = STONE_TYPE.BLACK;
+            curPlayer = StoneType.Black;
 
             if (res.p1 == MyPlayer.Id)
             {
-                if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
+                if (MyPlayer.PlayerType == StoneType.Black)
                 {
-                    OtherPlayer.SetPlayer(res.p2, STONE_TYPE.WHITE);
+                    OtherPlayer.SetPlayer(res.p2, StoneType.White);
                 }
                 else
                 {
-                    OtherPlayer.SetPlayer(res.p2, STONE_TYPE.BLACK);
+                    OtherPlayer.SetPlayer(res.p2, StoneType.Black);
 
                 }
             }
             else
             {
-                if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
+                if (MyPlayer.PlayerType == StoneType.Black)
                 {
-                    OtherPlayer.SetPlayer(res.p1, STONE_TYPE.WHITE);
+                    OtherPlayer.SetPlayer(res.p1, StoneType.White);
                 }
                 else
                 {
-                    OtherPlayer.SetPlayer(res.p1, STONE_TYPE.BLACK);
+                    OtherPlayer.SetPlayer(res.p1, StoneType.Black);
 
                 }
 
             }
 
             
-            bool myTurn = (MyPlayer.PlayerType == STONE_TYPE.BLACK) ? true : false;
+            bool myTurn = (MyPlayer.PlayerType == StoneType.Black) ? true : false;
 
             StartGame(myTurn, MyPlayer.Id, OtherPlayer.Id);
 
@@ -273,7 +272,7 @@ namespace csharp_test_client
         {
             var responsePkt =  MemoryPackSerializer.Deserialize<ResPutOMok>(packetData);
 
-            //if(responsePkt.Result != (short)ERROR_CODE.NONE) 
+            //if(responsePkt.Result != (short)ERROR_CODE.None) 
             //{
 
                 //DevLog.Write($"오목 놓기 실패: {responsePkt.Result}");
@@ -283,7 +282,7 @@ namespace csharp_test_client
             //TODO 방금 놓은 오목 정보를 취소 시켜야 한다
         }
         
-        void ChangeTurn(STONE_TYPE cur)
+        void ChangeTurn(StoneType cur)
         {
             if (cur == MyPlayer.PlayerType)
             {
@@ -295,13 +294,13 @@ namespace csharp_test_client
             }
 
 
-            if (cur == STONE_TYPE.WHITE)
+            if (cur == StoneType.White)
             {
-                curPlayer = STONE_TYPE.BLACK;
+                curPlayer = StoneType.Black;
             }
             else
             {
-                curPlayer = STONE_TYPE.WHITE;
+                curPlayer = StoneType.White;
 
             }
 

@@ -9,13 +9,13 @@ namespace OmokClient;
 public class Player
 {
     public string Id { get; set; }
-    public STONE_TYPE PlayerType { get; set; }
+    public StoneType PlayerType { get; set; }
 
     //turnpublic bool turn = false;
 
     public int PlayRoom = -1;
 
-    public void SetPlayer(string id, STONE_TYPE type)
+    public void SetPlayer(string id, StoneType type)
     {
         Id = id;
         PlayerType = type;

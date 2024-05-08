@@ -15,8 +15,10 @@ public class GameBoard
 {
     const int Size = 19;
 
-    byte[,] _board = new byte[Size, Size];                  
-    Dictionary<StoneType, Player> _playerList = null;   //딕셔너리사용 과함. 다른 자료구조로 바꾸자
+    byte[,] _board = new byte[Size, Size];
+    List<Player> _players = null;
+
+    //Dictionary<StoneType, Player> _playerList = null;   
     StoneType _curType = StoneType.None;
     DateTime _timeoutCheckTime;
 
@@ -27,19 +29,19 @@ public class GameBoard
     {
         RoomNumber = roomNumber;
         NetworkSendFunc = func;
-        _playerList = new Dictionary<StoneType, Player>();
+        _players = new List<Player>();
     }
     public StoneType SetPlayer(string sessionId, string userId)
     {
-        if (_playerList.Count() == 0)
+        if (_players.Count() == 0)
         {
-            _playerList.Add(StoneType.Black, new Player(sessionId, userId, StoneType.Black));
+            _players.Add(new Player(sessionId, userId, StoneType.Black));
             return StoneType.Black;
 
         }
         else
         {
-            _playerList.Add(StoneType.White, new Player(sessionId, userId, StoneType.Black));
+            _players.Add(new Player(sessionId, userId, StoneType.White));
             return StoneType.White;
         }
     }
@@ -65,7 +67,8 @@ public class GameBoard
         var diff = time - _timeoutCheckTime;
         if (diff.TotalMilliseconds> tmeSpan)
         {
-            _playerList[_curType].AddPassCount();
+            int idx = (int)_curType - 1;
+            _players[idx].AddPassCount();
             return true;
         }
 
@@ -93,12 +96,12 @@ public class GameBoard
     }
     public int ReadyPlayerCount()
     {
-        return _playerList.Count();
+        return _players.Count();
     }
 
     public StoneType CheckPassCount()
     {
-        var player = _playerList[_curType];
+        var player = _players[(int)_curType-1];
         if(player.CheckPassCount() == true)
         {
             return player._playerType;
@@ -136,7 +139,7 @@ public class GameBoard
     public void ClearBoard()
     {
         Array.Clear(_board, 0, _board.Length);
-        _playerList.Clear();
+        _players.Clear();
         _curType = StoneType.None;
     }
 
@@ -185,14 +188,14 @@ public class GameBoard
 
     public void Broadcast(string excludeNetSessionID, byte[] sendPacket)
     {
-        foreach (var player in _playerList)
+        foreach (var player in _players)
         {
-            if (player.Value._netSessionId == excludeNetSessionID)
+            if (player._netSessionId == excludeNetSessionID)
             {
                 continue;
             }
 
-            NetworkSendFunc(player.Value._netSessionId, sendPacket);
+            NetworkSendFunc(player._netSessionId, sendPacket);
         }
     }
 

@@ -55,7 +55,7 @@ namespace csharp_test_client
         void HeartBeatTimer(object sender, EventArgs e)
         {
             var packet = MemoryPackSerializer.Serialize(new ReqHeartBeatPacket());
-            PostSendPacket(PacketId.REQ_HEARTBEAT, packet);
+            PostSendPacket(PacketId.ReqHeartBeat, packet);
 
 
         }
@@ -350,7 +350,7 @@ namespace csharp_test_client
 
             MyPlayer.Id = loginReq.UserID;
                         
-            PostSendPacket(PacketId.REQ_LOGIN, packet);     
+            PostSendPacket(PacketId.ReqLogin, packet);     
             DevLog.Write($"로그인 요청:  {textBoxUserID.Text}, {textBoxUserPW.Text}");
 
         }
@@ -368,13 +368,13 @@ namespace csharp_test_client
             };
             var packet = MemoryPackSerializer.Serialize(temp);
 
-            PostSendPacket(PacketId.REQ_ROOM_ENTER, packet);
+            PostSendPacket(PacketId.ReqRoomEnter, packet);
             DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번");
         }
 
         private void btn_RoomLeave_Click(object sender, EventArgs e)
         {
-            PostSendPacket(PacketId.REQ_ROOM_LEAVE, new byte[PacketHeadInfo.HeaderSize]);
+            PostSendPacket(PacketId.ReqRoomLeave, new byte[PacketHeadInfo.HeaderSize]);
             RemoveRoomUserList(textBoxUserID.Text);
 
             DevLog.Write($"방 퇴장 요청:  {textBoxUserID.Text} 번");
@@ -393,7 +393,7 @@ namespace csharp_test_client
 
             var sendPacketData = MemoryPackSerializer.Serialize(requestPkt);
 
-            PostSendPacket(PacketId.REQ_ROOM_CHAT, sendPacketData);
+            PostSendPacket(PacketId.ReqRoomChat, sendPacketData);
 
             DevLog.Write($"방 채팅 요청");
         }
@@ -411,7 +411,7 @@ namespace csharp_test_client
             };
             var packet = MemoryPackSerializer.Serialize(temp);
 
-            PostSendPacket(PacketId.REQ_READY_GAME, packet);
+            PostSendPacket(PacketId.ReqReadyGame, packet);
 
             DevLog.Write($"게임 준비 완료 요청");
         }
@@ -449,7 +449,7 @@ namespace csharp_test_client
             };
 
             var packet = MemoryPackSerializer.Serialize(temp);
-            PostSendPacket(PacketId.REQ_PUT_OMOK, packet);
+            PostSendPacket(PacketId.ReqPutOmok, packet);
 
             DevLog.Write($"put stone 요청 : x  [ {x} ], y: [ {y} ] ");
         }
@@ -457,7 +457,7 @@ namespace csharp_test_client
         private void btn_GameStartClick(object sender, EventArgs e)
         {
             //PostSendPacket(PacketId.GAME_START_REQ, null);
-            if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
+            if (MyPlayer.PlayerType == StoneType.Black)
             {
 
                 StartGame(true, MyPlayer.Id, OtherPlayer.Id);
