@@ -25,7 +25,7 @@
       <HintPath>..\Common\bin\Debug\net8.0\Common.dll</HintPath>
     </Reference>
     <Reference Include="SuperSocketLite">
-      <HintPath>..\..\StudyC-Server\net8.0\SuperSocketLite.dll</HintPath>
+      <HintPath>..\net8.0\SuperSocketLite.dll</HintPath>
     </Reference>
 	<None Update="NLog.config">
 		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
