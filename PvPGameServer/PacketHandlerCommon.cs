@@ -27,10 +27,8 @@ public class PacketHandlerCommon : PacketHandler
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_CONNECT_CLIENT, NotifyInConnectClient);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_DISCONNECT_CLIENT, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PACKET_ID.REQ_HEARTBEAT, ReqHeartBeatPacket);
-
-        packetHandlerMap.Add((int)PACKET_ID.NTR_IN_CHECK, NotifyInUserCheck);
+        packetHandlerMap.Add((int)PACKET_ID.NTR_IN_USERCHECK, NotifyInUserCheck);
         packetHandlerMap.Add((int)PACKET_ID.NTF_IN_FORCEDISCONNECT_CLIENT, NotifyInForceDisConnectClient);
-
 
     }
     public void NotifyInUserCheck(MemoryPackBinaryRequestInfo requestData)
@@ -164,9 +162,6 @@ public class PacketHandlerCommon : PacketHandler
         NetworkSendFunc(sessionID, sendData);
     }
 
-    //강종하고 있었으면 만약 방에 사람이 있으면 알려줘야한다
-
-    
 
 }
 

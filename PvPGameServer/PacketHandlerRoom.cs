@@ -107,7 +107,7 @@ public class PacketHandlerRoom : PacketHandler
 
             room.CheckTimeOutPlayerTurn(curTime, 10000 / 2);
 
-            room.CheckTooLongGameTime(curTime, 10000);
+            room.CheckTooLongGameTime(curTime, 100000);
      
         }
 
