@@ -9,12 +9,12 @@
       "OmokClient/1.0.0": {
         "dependencies": {
           "CloudStructures": "3.2.0",
+          "Common": "1.0.0",
           "MemoryPack": "1.21.1",
           "MessagePack": "2.5.140",
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.Windows.Compatibility": "8.0.0",
           "Z.ExtensionMethods": "2.1.1",
-          "Common": "1.0.0.0",
           "runtimepack.Microsoft.Windows.SDK.NET.Ref": "10.0.17763.31"
         },
         "runtime": {
@@ -794,12 +794,12 @@
           }
         }
       },
-      "Common/1.0.0.0": {
+      "Common/1.0.0": {
+        "dependencies": {
+          "MemoryPack": "1.21.1"
+        },
         "runtime": {
-          "Common.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
+          "Common.dll": {}
         }
       }
     }
@@ -1305,8 +1305,8 @@
       "path": "z.extensionmethods/2.1.1",
       "hashPath": "z.extensionmethods.2.1.1.nupkg.sha512"
     },
-    "Common/1.0.0.0": {
-      "type": "reference",
+    "Common/1.0.0": {
+      "type": "project",
       "serviceable": false,
       "sha512": ""
     }

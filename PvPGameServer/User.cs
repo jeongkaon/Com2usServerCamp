@@ -8,34 +8,34 @@ namespace PvPGameServer;
 
 public class User
 {
-    UInt64 SequenceNumber = 0;
-    string SessionID;
-    string UserID;
+    UInt64 _sequenceNumber = 0;
+    string _sessionId;
+    string _userId;
 
-    public bool Used = false;       
+    public bool _used = false;       
 
     //heartbeat위한 시간
-    int HbTimeSpan;               
+    int _hbTimeSpan;               
 
-    DateTime hbTime = new DateTime();
+    DateTime _hbTime = new DateTime();
 
     
     public int RoomNumber { get; private set; } = -1;
 
     public void InitTimeSpan(int timespan)
     {
-        HbTimeSpan = timespan;    
+        _hbTimeSpan = timespan;    
         
     }
 
     public void Set(UInt64 sequence, string sessionID, string userID, DateTime ping)
     {
-        SequenceNumber = sequence;
-        SessionID = sessionID;
-        UserID = userID;
-        Used = true;
+        _sequenceNumber = sequence;
+        _sessionId = sessionID;
+        _userId = userID;
+        _used = true;
 
-        hbTime= ping;
+        _hbTime= ping;
 
         //테스트로 일단 20초로세팅
         InitTimeSpan(20000);   
@@ -45,14 +45,14 @@ public class User
 
     public void UpdateHeartBeatTime(DateTime curTime)
     {
-        hbTime = curTime;
+        _hbTime = curTime;
     }
 
     public bool CheckHeartBeatTime(DateTime curTime)
     {
-        var diff = curTime - hbTime;
+        var diff = curTime - _hbTime;
         
-        if(diff.TotalMilliseconds > HbTimeSpan)
+        if(diff.TotalMilliseconds > _hbTimeSpan)
         {
             return false;
         }
@@ -62,21 +62,21 @@ public class User
 
     public void DisconnectUser()
     {
-        Used = false;
+        _used = false;
     }
 
     public bool IsConfirm(string netSessionID)
     {
-        return SessionID == netSessionID;
+        return _sessionId == netSessionID;
     }
 
     public string ID()
     {
-        return UserID;
+        return _userId;
     }
     public string SessionId()
     {
-        return SessionID;
+        return _sessionId;
     }
     public void EnteredRoom(int roomNumber)
     {
@@ -93,7 +93,7 @@ public class User
         return RoomNumber;
     }
 
-    public bool IsStateLogin() { return SequenceNumber != 0; }
+    public bool IsStateLogin() { return _sequenceNumber != 0; }
 
     public bool IsStateRoom() { return RoomNumber != -1; }
 

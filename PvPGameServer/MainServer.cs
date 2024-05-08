@@ -24,7 +24,9 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     PacketProcessor MainPacketProcessor = new PacketProcessor();
     RoomManager RoomMgr = new RoomManager();
 
-    Timer timer = null;
+    Timer RoomCheckTimer = null; 
+    Timer UserCheckTimer = null;
+
 
 
     public MainServer()
@@ -36,19 +38,16 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     }
 
-    private void InnerCheckTimer(object? state)
+    void InnerRoomCheckTimer(object? state)
     {
+        MemoryPackBinaryRequestInfo packet = InnerPacketMaker.MakeNTFInnerRoomCheckPacket();
+        Distribute(packet);
+    }
 
-        MemoryPackBinaryRequestInfo[] packet =
-        {
-            InnerPacketMaker.MakeNTFInnerUserCheckPacket(),
-            InnerPacketMaker.MakeNTFInnerRoomCheckPacket()
-
-        };
-
-        Distribute(packet[0]);
-        Distribute(packet[1]);
-
+    void InnerUserCheckTimer(object? state)
+    {
+        MemoryPackBinaryRequestInfo packet = InnerPacketMaker.MakeNTFInnerUserCheckPacket();
+        Distribute(packet);
     }
 
     public void InitConfig(PvPServerOption option)
@@ -89,7 +88,8 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
             CreateComponent();
 
-            timer = new Timer(InnerCheckTimer, null, 0, serverOption.InnerCheckTime / 4);
+            RoomCheckTimer = new Timer(InnerRoomCheckTimer, null, 0, serverOption.UserCheckTime);
+            UserCheckTimer = new Timer(InnerUserCheckTimer, null, 0, serverOption.RoomCheckTime);
 
             MainLogger.Debug("서버 생성 성공");
 
@@ -103,7 +103,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         }
     }
 
-    public ERROR_CODE CreateComponent()
+    public ErrorCode CreateComponent()
     {
         Room.NetworkSendFunc = SendData;
 
@@ -115,7 +115,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
-        return ERROR_CODE.NONE;
+        return ErrorCode.None;
 
     }
 
@@ -186,6 +186,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         reqInfo.SessionID = session.SessionID;
         Distribute(reqInfo);
     }
+   
 
 }
 

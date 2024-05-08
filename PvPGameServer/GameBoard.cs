@@ -13,60 +13,61 @@ namespace PvPGameServer;
 
 public class GameBoard
 {
+    const int Size = 19;
+
+    byte[,] _board = new byte[Size, Size];
+    List<Player> _players = null;
+
+    StoneType _curType = StoneType.None;
+    DateTime _timeoutCheckTime;
+
     public int RoomNumber;
-    byte[,] board = new byte[19, 19];
-    Dictionary<STONE_TYPE, Player> PlayerList = null;
-    STONE_TYPE CurType = STONE_TYPE.NONE;
- 
-    DateTime TimeoutCheckTime;
-
-    //걍DB테스트임
-    GameDB db = new GameDB();
-
     public static Func<string, byte[], bool> NetworkSendFunc;
+
     public GameBoard(int roomNumber, Func<string, byte[], bool> func)
     {
         RoomNumber = roomNumber;
         NetworkSendFunc = func;
-        PlayerList = new Dictionary<STONE_TYPE, Player>();
+        _players = new List<Player>();
     }
-    public STONE_TYPE SetPlayer(string sessionId, string userId)
+    public StoneType SetPlayer(string sessionId, string userId)
     {
-        if (PlayerList.Count() == 0)
+        if (_players.Count() == 0)
         {
-            PlayerList.Add(STONE_TYPE.BLACK, new Player(sessionId, userId, STONE_TYPE.BLACK));
-            return STONE_TYPE.BLACK;
+            _players.Add(new Player(sessionId, userId, StoneType.Black));
+            return StoneType.Black;
 
         }
         else
         {
-            PlayerList.Add(STONE_TYPE.WHITE, new Player(sessionId, userId, STONE_TYPE.BLACK));
-            return STONE_TYPE.WHITE;
+            _players.Add(new Player(sessionId, userId, StoneType.White));
+            return StoneType.White;
         }
     }
     public void GameStart()
     {
-        CurType = STONE_TYPE.BLACK;
+        _curType = StoneType.Black;
         SetTimeoutCheckTime(DateTime.Now);
 
     }
-    public void EndGame(STONE_TYPE win)
+    public void EndGame(StoneType win)
     {
         NotifyWinner(win);
         ClearBoard();
     }
 
-    public bool TimeOutCheck(DateTime time, int TimeSpan)
+    public bool TimeOutCheck(DateTime time, int tmeSpan)
     {
-        if(CurType == STONE_TYPE.NONE)
+        if(_curType == StoneType.None)
         {
             return false;
         }
 
-        var diff = time - TimeoutCheckTime;
-        if (diff.TotalMilliseconds> TimeSpan)
+        var diff = time - _timeoutCheckTime;
+        if (diff.TotalMilliseconds> tmeSpan)
         {
-            PlayerList[CurType].AddPassCount();
+            int idx = (int)_curType - 1;
+            _players[idx].AddPassCount();
             return true;
         }
 
@@ -75,18 +76,18 @@ public class GameBoard
     }
     public void SetTimeoutCheckTime(DateTime time)
     {
-        TimeoutCheckTime = time;
+        _timeoutCheckTime = time;
     }
 
     public void TurnChange()
     {
-        if (CurType == STONE_TYPE.BLACK)
+        if (_curType == StoneType.Black)
         {
-            CurType = STONE_TYPE.WHITE;
+            _curType = StoneType.White;
         }
         else
         {
-            CurType = STONE_TYPE.BLACK;
+            _curType = StoneType.Black;
         }
 
         SetTimeoutCheckTime(DateTime.Now);
@@ -94,40 +95,40 @@ public class GameBoard
     }
     public int ReadyPlayerCount()
     {
-        return PlayerList.Count();
+        return _players.Count();
     }
 
-    public STONE_TYPE CheckPassCount()
+    public StoneType CheckPassCount()
     {
-        var player = PlayerList[CurType];
+        var player = _players[(int)_curType-1];
         if(player.CheckPassCount() == true)
         {
-            return player.PlayerType;
+            return player._playerType;
         }
-        return STONE_TYPE.NONE;
+        return StoneType.None;
 
     }
 
-    public void CheckBaord(STONE_TYPE cur, int x, int y)
+    public void CheckBaord(StoneType cur, int x, int y)
     {
-        if (cur != CurType)
+        if (cur != _curType)
         {
             return;
         }
 
-        if (board[x, y] != 0)
+        if (_board[x, y] != 0)
         {
             return;
         }
 
-        board[x, y] = (byte)cur;
+        _board[x, y] = (byte)cur;
 
         NotifyPutOmok(x, y);
 
 
         if (CheckBoardEnd(x, y) == true)
         {
-            EndGame(CurType);
+            EndGame(_curType);
             return;
         }
 
@@ -136,9 +137,9 @@ public class GameBoard
     }
     public void ClearBoard()
     {
-        Array.Clear(board, 0, board.Length);
-        PlayerList.Clear();
-        CurType = STONE_TYPE.NONE;
+        Array.Clear(_board, 0, _board.Length);
+        _players.Clear();
+        _curType = StoneType.None;
     }
 
     public void NotifyPutOmok(int x, int y)
@@ -146,28 +147,26 @@ public class GameBoard
 
         var packet = new NftPutOmok()
         {
-            mok = CurType,
+            mok = _curType,
             PosX = x,
             PosY = y
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_PUT_OMOK);
+        PacketHeadInfo.Write(sendPacket, PacketId.NtfPutOmok);
 
         Broadcast("", sendPacket);
     }
 
-    public void NotifyWinner(STONE_TYPE win)
+    public void NotifyWinner(StoneType win)
     {
-        db.UpdateWinScore("kaon");
-
         var packet = new NtfOmokWinner()
         {
             WinStone = win
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTR_WINNER_OMOK);
+        PacketHeadInfo.Write(sendPacket, PacketId.NtrWinnerOmok);
 
         Broadcast("", sendPacket);
 
@@ -177,25 +176,25 @@ public class GameBoard
     {
         var packet = new NtfTimeOut()
         {
-            Usertype = CurType
+            Usertype = _curType
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(packet); 
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_TIMEOUT_OMOK);
+        PacketHeadInfo.Write(sendPacket, PacketId.NtrTimeOutOmok);
 
         Broadcast("", sendPacket);
     }
 
     public void Broadcast(string excludeNetSessionID, byte[] sendPacket)
     {
-        foreach (var player in PlayerList)
+        foreach (var player in _players)
         {
-            if (player.Value.NetSessionID == excludeNetSessionID)
+            if (player._netSessionId == excludeNetSessionID)
             {
                 continue;
             }
 
-            NetworkSendFunc(player.Value.NetSessionID, sendPacket);
+            NetworkSendFunc(player._netSessionId, sendPacket);
         }
     }
 
@@ -233,7 +232,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (x + i <= 18 && board[x + i, y] == board[x, y])
+            if (x + i <= 18 && _board[x + i, y] == _board[x, y])
                 SameCount++;
 
             else
@@ -242,7 +241,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (x - i >= 0 && board[x - i, y] == board[x, y])
+            if (x - i >= 0 && _board[x - i, y] == _board[x, y])
                 SameCount++;
 
             else
@@ -257,7 +256,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (y + i <= 18 && board[x, y + i] == board[x, y])
+            if (y + i <= 18 && _board[x, y + i] == _board[x, y])
                 SameCount++;
 
             else
@@ -266,7 +265,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (y - i >= 0 && board[x, y - i] == board[x, y])
+            if (y - i >= 0 && _board[x, y - i] == _board[x, y])
                 SameCount++;
 
             else
@@ -282,7 +281,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (x + i <= 18 && y - i >= 0 && board[x + i, y - i] == board[x, y])
+            if (x + i <= 18 && y - i >= 0 && _board[x + i, y - i] == _board[x, y])
                 SameCount++;
 
             else
@@ -291,7 +290,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (x - i >= 0 && y + i <= 18 && board[x - i, y + i] == board[x, y])
+            if (x - i >= 0 && y + i <= 18 && _board[x - i, y + i] == _board[x, y])
                 SameCount++;
 
             else
@@ -306,7 +305,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (x + i <= 18 && y + i <= 18 && board[x + i, y + i] == board[x, y])
+            if (x + i <= 18 && y + i <= 18 && _board[x + i, y + i] == _board[x, y])
                 SameCount++;
 
             else
@@ -315,7 +314,7 @@ public class GameBoard
 
         for (int i = 1; i <= 5; i++)
         {
-            if (x - i >= 0 && y - i >= 0 && board[x - i, y - i] == board[x, y])
+            if (x - i >= 0 && y - i >= 0 && _board[x - i, y - i] == _board[x, y])
                 SameCount++;
 
             else

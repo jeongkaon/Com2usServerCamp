@@ -40,10 +40,11 @@ public class PvPServerOption
     public int RoomStartNumber { get; set; } = 0;
 
     //방조사, 하트비트체크 시간관련
-    [Option("innerCheckTime", Required = true, HelpText = "RoomStartNumber")]
-    public int InnerCheckTime { get; set; } = 1000;
+    [Option("userCheckTime", Required = true, HelpText = "UserCheckTime")]
+    public int UserCheckTime { get; set; } = 250;
 
-
+    [Option("roomCheckTime", Required = true, HelpText = "RoomCheckTime")]
+    public int RoomCheckTime { get; set; } = 1000;
 
 
 

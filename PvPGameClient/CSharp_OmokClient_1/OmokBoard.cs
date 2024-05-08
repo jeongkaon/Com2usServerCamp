@@ -40,7 +40,7 @@ namespace csharp_test_client
         
         bool IsMyTurn = false;
 
-        STONE_TYPE curPlayer = STONE_TYPE.BLACK;
+        StoneType curPlayer = StoneType.Black;
         
         private bool AI모드 = true;
         private OmokRule.돌종류 컴퓨터돌;
@@ -81,7 +81,7 @@ namespace csharp_test_client
             MyPlayerName = MyPlayer.Id;
             IsMyTurn = isMyTurn;
 
-            if (MyPlayer.PlayerType == STONE_TYPE.BLACK)
+            if (MyPlayer.PlayerType == StoneType.Black)
             {
                 흑돌플레이어Name = MyPlayer.Id;
                 백돌플레이어Name = OtherPlayer.Id;
@@ -179,7 +179,7 @@ namespace csharp_test_client
                 시작위치 + 눈금크기 * y - 돌크기 / 2, 돌크기, 돌크기);
 
 
-            if (curPlayer == STONE_TYPE.BLACK)
+            if (curPlayer == StoneType.Black)
             {
                 g.FillEllipse(검은색, r);
 
@@ -248,7 +248,7 @@ namespace csharp_test_client
             string str;
             Font 글꼴 = new Font("HY견고딕", 15);
 
-            if (curPlayer == STONE_TYPE.BLACK)       
+            if (curPlayer == StoneType.Black)       
             {
                 str = "현재 턴 돌";
                 g.FillEllipse(검은색, 시작위치 + 100, 599, 돌크기, 돌크기);
@@ -257,7 +257,7 @@ namespace csharp_test_client
                 g.DrawString($"PlayerName: {흑돌플레이어Name }", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 600);
             }
 
-            if (curPlayer == STONE_TYPE.WHITE)
+            if (curPlayer == StoneType.White)
             {
                 str = "현재 턴 돌";
                 g.FillEllipse(흰색, 시작위치 + 100, 599, 돌크기, 돌크기);
@@ -317,13 +317,13 @@ namespace csharp_test_client
             if (isNotify == false)
             {
                 IsMyTurn = false;
-                if(curPlayer == STONE_TYPE.BLACK)
+                if(curPlayer == StoneType.Black)
                 {
-                    curPlayer = STONE_TYPE.WHITE;
+                    curPlayer = StoneType.White;
                 }
                 else
                 {
-                    curPlayer = STONE_TYPE.BLACK;
+                    curPlayer = StoneType.Black;
 
                 }
                 //SendPacketOmokPut(x, y);

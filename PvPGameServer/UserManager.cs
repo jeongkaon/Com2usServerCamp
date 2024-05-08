@@ -12,14 +12,17 @@ public class UserManager
 {
     int MaxUserCount;
     UInt64 UserSequenceNumber = 0; 
-
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
-    
     User[] UserArr;     
-
 
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
+
+    void InnerUserCheckTimer(object? state)
+    {
+        MemoryPackBinaryRequestInfo packet = InnerPacketMaker.MakeNTFInnerRoomCheckPacket();
+        DistributeInnerPacket(packet);
+    }
     public void Init(int maxUserCount)
     {
         MaxUserCount = maxUserCount;
@@ -34,7 +37,7 @@ public class UserManager
     {
         for (int i = 0; i < UserArr.Length; i++)
         {
-            if (UserArr[i] != null && UserArr[i].Used == true)
+            if (UserArr[i] != null && UserArr[i]._used == true)
             {
                 continue;
             }
@@ -56,7 +59,7 @@ public class UserManager
 
         for (int i = beginIdx; i < endIdx; i++)
         {
-            if (UserArr[i] == null || UserArr[i].Used == false)
+            if (UserArr[i] == null || UserArr[i]._used == false)
             {
                 return (null, -1, null);
             }
@@ -80,46 +83,46 @@ public class UserManager
     }
 
 
-    public ERROR_CODE AddUser(string userID, string sessionID)
+    public ErrorCode AddUser(string userId, string sessionId)
     {
         if (IsFullUserCount())
         {
-            return ERROR_CODE.LOGIN_FULL_USER_COUNT;
+            return ErrorCode.LoginFullUserCount;
         }
 
-        if (UserMap.ContainsKey(sessionID))
+        if (UserMap.ContainsKey(sessionId))
         {
-            return ERROR_CODE.ADD_USER_DUPLICATION;
+            return ErrorCode.AddUserDuplication;
         }
 
 
         ++UserSequenceNumber;
 
         var user = new User();
-        user.Set(UserSequenceNumber, sessionID, userID, DateTime.Now);
+        user.Set(UserSequenceNumber, sessionId, userId, DateTime.Now);
         
-        UserMap.Add(sessionID, user);
+        UserMap.Add(sessionId, user);
         AddToEmptyArray(user);
 
-        return ERROR_CODE.NONE;
+        return ErrorCode.None;
     }
 
-    public ERROR_CODE RemoveUser(string sessionID)
+    public ErrorCode RemoveUser(string sessionId)
     {
-        UserMap[sessionID].DisconnectUser();
+        UserMap[sessionId].DisconnectUser();
 
-        if (UserMap.Remove(sessionID) == false)
+        if (UserMap.Remove(sessionId) == false)
         {
-            return ERROR_CODE.REMOVE_USER_SEARCH_FAILURE_USER_ID;
+            return ErrorCode.RemoveUserSearchFailureUserId;
         }
 
-        return ERROR_CODE.NONE;
+        return ErrorCode.None;
     }
 
-    public User GetUser(string sessionID)
+    public User GetUser(string sessionId)
     {
         User user = null;
-        UserMap.TryGetValue(sessionID, out user);
+        UserMap.TryGetValue(sessionId, out user);
         return user;
     }
     

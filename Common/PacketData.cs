@@ -34,7 +34,7 @@ public struct PacketHeadInfo
         pos += 1;
     }
 
-    public static void Write(byte[] packetData, PACKET_ID packetId, byte type = 0)
+    public static void Write(byte[] packetData, PacketId packetId, byte type = 0)
     {
         var pos = PacketHeaderMemorypacStartPos;
 
@@ -164,7 +164,7 @@ public partial class ReqGameReadyPacket : PacketHeader
 [MemoryPackable]
 public partial class ResGameReadyPacket : PacketHeader
 {
-    public STONE_TYPE PlayerStoneType { get; set; }
+    public StoneType PlayerStoneType { get; set; }
 
 }
 
@@ -181,7 +181,7 @@ public partial class NftGameStartPacket : PacketHeader
 [MemoryPackable]
 public partial class ReqPutOMok : PacketHeader
 {
-    public STONE_TYPE mok { get; set; }
+    public StoneType mok { get; set; }
     public int PosX { get; set; }
     public int PosY { get; set; }
 
@@ -197,7 +197,7 @@ public partial class ResPutOMok : PacketHeader
 public partial class NftPutOmok : PacketHeader
 {
 
-    public STONE_TYPE mok { get; set; }
+    public StoneType mok { get; set; }
     public int PosX { get; set; }
     public int PosY { get; set; }
 }
@@ -205,7 +205,7 @@ public partial class NftPutOmok : PacketHeader
 [MemoryPackable]
 public partial class NtfTimeOut : PacketHeader
 {
-    public STONE_TYPE Usertype { get; set; }
+    public StoneType Usertype { get; set; }
 
 }
 
@@ -213,7 +213,7 @@ public partial class NtfTimeOut : PacketHeader
 public partial class NtfOmokWinner : PacketHeader
 {
    // public string UserId { get; set; }
-   public STONE_TYPE WinStone { get; set; } 
+   public StoneType WinStone { get; set; } 
 
 }
 

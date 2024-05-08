@@ -18,8 +18,7 @@ public class PacketHandlerGame : PacketHandler
 
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-       //게임 관련 옮겨야함
-        packetHandlerMap.Add((int)PACKET_ID.REQ_PUT_OMOK, ReqOmokPut);
+        packetHandlerMap.Add((int)PacketId.ReqPutOmok, ReqOmokPut);
 
     }
     public void ReqOmokPut(MemoryPackBinaryRequestInfo packetData)
@@ -28,9 +27,8 @@ public class PacketHandlerGame : PacketHandler
 
         var sessionId = packetData.SessionID;
         var reqData = MemoryPackSerializer.Deserialize<ReqPutOMok>(packetData.Data);
-        var user = UserMgr.GetUser(sessionId);
+        var user = _userMgr.GetUser(sessionId);
         var board = RoomList[user.GetRoomNumber()].GetGameBoard();
-
         board.CheckBaord(reqData.mok, reqData.PosX, reqData.PosY);
     }
 

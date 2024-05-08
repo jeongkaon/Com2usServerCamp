@@ -13,11 +13,11 @@ public class PacketHandler
 
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
-    protected UserManager UserMgr = null;
+    protected UserManager _userMgr = null;
 
 
     public void Init(UserManager userMgr)
     {
-        UserMgr = userMgr;
+        _userMgr = userMgr;
     }
 }

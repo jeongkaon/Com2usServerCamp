@@ -12,25 +12,23 @@ namespace PvPGameServer;
 public class Room
 {
     public const int InvalidRoomNumber = -1;
-
     public  int Index {  get; set; }
     public int Number { get; private set; }
 
-    int MaxUserCount = 2;
-
-    List<RoomUser> RoomUserList = new List<RoomUser>();
-
-    public static Func<string, byte[], bool> NetworkSendFunc;
-
+    int _maxUserCount = 2;
+    List<RoomUser> _roomUserList = new List<RoomUser>();
     GameBoard board = null;
 
-    DateTime RoomStartTime;     //한명이 들어오면 체크?
-    DateTime GameStartTime;     
+    DateTime _roomStartTime;     //한명이 들어오면 체크?
+    DateTime _gameStartTime;   
+    
+    public static Func<string, byte[], bool> NetworkSendFunc;
+
     public void Init(int index, int number, int maxUserCount)
     {
         Index = index;
         Number = number;
-        MaxUserCount = maxUserCount;
+        _maxUserCount = maxUserCount;
 
         board = new GameBoard(Number, NetworkSendFunc);
     }
@@ -39,7 +37,7 @@ public class Room
     public bool CheckIsFull()
     {
         
-        if(RoomUserList.Count() == MaxUserCount)
+        if(_roomUserList.Count() == _maxUserCount)
         {
             return true;
         }
@@ -48,47 +46,47 @@ public class Room
 
     
     //이함수는 더 생각해봐야한다.!!!
-    public ERROR_CODE IsNotStartGame(DateTime cur, int span)
+    public ErrorCode IsNotStartGame(DateTime cur, int span)
     {
-        var diff = cur - RoomStartTime;
+        var diff = cur - _roomStartTime;
 
         if(diff.TotalMilliseconds <= span)
         {
-            return ERROR_CODE.NONE;
+            return ErrorCode.None;
         }
 
         //이미 방대기상태가 긴상태
         //1명만 입장한 상태
-        if (RoomUserList.Count() ==1 )
+        if (_roomUserList.Count() ==1 )
         {
-            return ERROR_CODE.ROONCHECK_INPUT_ONEPLYAER;
+            return ErrorCode.RoomCheckInputOnePlayer;
         }
 
         //2-1. 2명 다 레디를 안하는 경우
         //TODO_나가게하기
-        foreach (var user in RoomUserList)
+        foreach (var user in _roomUserList)
         {
-            if(user.isReady == false)
+            if(user.IsReady == false)
             {
             }
         }
 
         if (board.ReadyPlayerCount() == 0)
         {
-            return ERROR_CODE.ROOMCHECK_TWOPLAYERS_NOTREADY;
+            return ErrorCode.RoomCheckTwoPlayersNotReady;
         }
 
         if (board.ReadyPlayerCount() == 1)
         {
-            return ERROR_CODE.ROOMCHECK_ONEPLYAER_NOTREADY;
+            return ErrorCode.RoomCheckOnePlayerNotReady;
         }           
         
-        return ERROR_CODE.NONE;
+        return ErrorCode.None;
     }
 
-    public void CheckTimeOutPlayerTurn(DateTime cur, int TimeSpan)
+    public void CheckTimeOutPlayerTurn(DateTime cur, int timeSpan)
     {
-        if (true == board.TimeOutCheck(cur, TimeSpan))
+        if (true == board.TimeOutCheck(cur, timeSpan))
         {
             NftBoardTurnTimeout();
         }
@@ -100,7 +98,7 @@ public class Room
         board.NotifyTimeOut();
 
         var stone = board.CheckPassCount();
-        if(stone != STONE_TYPE.NONE)
+        if(stone != StoneType.None)
         {
             board.EndGame(stone);
             return;
@@ -111,13 +109,18 @@ public class Room
 
     }
 
-    public void CheckTooLongGameTime(DateTime cur, int TimeSpan)
+    public void CheckTooLongGameTime(DateTime cur, int timeSpan)
     {
-        var diff = cur - GameStartTime;
-
-        if (diff.TotalMilliseconds > TimeSpan)
+        //GameStart아직 호출전인데 초기값 빼버리면 무조건 통과라 일단 막음
+        if(_gameStartTime.Equals(DateTime.MinValue))
         {
-            board.NotifyWinner(STONE_TYPE.NONE);
+            return;
+        }
+        var diff = cur - _gameStartTime;
+
+        if (diff.TotalMilliseconds > timeSpan)
+        {
+            board.NotifyWinner(StoneType.None);
         }
     }
 
@@ -128,47 +131,47 @@ public class Room
             return false;
         }
 
-        if (RoomUserList.Count() == 0)
+        if (_roomUserList.Count() == 0)
         {
-            RoomStartTime = DateTime.Now;   
+            _roomStartTime = DateTime.Now;   
         }
 
         var roomUser = new RoomUser();
         roomUser.Set(userId, netSessionId);
-        RoomUserList.Add(roomUser);
+        _roomUserList.Add(roomUser);
        
 
         return true;
     }
-    public void RemoveUser(string netSessionID)
+    public void RemoveUser(string netSessionId)
     {
-        var index = RoomUserList.FindIndex(x => x.NetSessionID == netSessionID);
-        RoomUserList.RemoveAt(index);
+        var index = _roomUserList.FindIndex(x => x.NetSessionId == netSessionId);
+        _roomUserList.RemoveAt(index);
     }
 
     public bool RemoveUser(RoomUser user)
     {
-        return RoomUserList.Remove(user);
+        return _roomUserList.Remove(user);
     }
 
-    public RoomUser GetUser(string userID)
+    public RoomUser GetUser(string userId)
     {
-        return RoomUserList.Find(x => x.UserID == userID);
+        return _roomUserList.Find(x => x.UserId == userId);
     }
 
     public RoomUser GetUserByNetSessionId(string netSessionID)
     {
-        return RoomUserList.Find(x => x.NetSessionID == netSessionID);
+        return _roomUserList.Find(x => x.NetSessionId == netSessionID);
     }
 
     public int CurrentUserCount()
     {
-        return RoomUserList.Count();
+        return _roomUserList.Count();
     }
     
     (string ,string ) GetAllPlayerId()
     {
-        return (RoomUserList[0].UserID, RoomUserList[1].UserID);
+        return (_roomUserList[0].UserId, _roomUserList[1].UserId);
     }
     
     public GameBoard GetGameBoard()
@@ -178,36 +181,36 @@ public class Room
 
     public void GameStart()
     {
-        GameStartTime = DateTime.Now;
+        _gameStartTime = DateTime.Now;
         board.GameStart();
     }
 
-    public void NotifyPacketUserList(string userNetSessionID)
+    public void NotifyPacketUserList(string userNetSessionId)
     {
         var packet = new NtfRoomUserList();
-        foreach (var user in RoomUserList)
+        foreach (var user in _roomUserList)
         {
-            packet.UserIDList.Add(user.UserID);
+            packet.UserIDList.Add(user.UserId);
         }
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_USER_LIST);
+        PacketHeadInfo.Write(sendPacket, PacketId.NftRoomUserList);
 
-        NetworkSendFunc(userNetSessionID, sendPacket);
+        NetworkSendFunc(userNetSessionId, sendPacket);
     }
 
-    public void NofifyPacketNewUser(string newUserNetSessionID, string newUserID)
+    public void NofifyPacketNewUser(string newUserNetSessionId, string newUserId)
     {
         var packet = new NtfRoomNewUser();
-        packet.UserID = newUserID;
+        packet.UserID = newUserId;
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_NEW_USER);
+        PacketHeadInfo.Write(sendPacket, PacketId.NtfRoomNewUser);
 
-        Broadcast(newUserNetSessionID, sendPacket);
+        Broadcast(newUserNetSessionId, sendPacket);
     }
 
-    public void NotifyPacketLeaveUser(string userID)
+    public void NotifyPacketLeaveUser(string userId)
     {
         if (CurrentUserCount() == 0)
         {
@@ -215,42 +218,42 @@ public class Room
         }
 
         var packet = new NtfRoomLeaveUser();
-        packet.UserID = userID;
+        packet.UserID = userId;
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_LEAVE_USER);
+        PacketHeadInfo.Write(sendPacket, PacketId.NtfRoomLeaveUser);
 
         Broadcast("", sendPacket);
 
     }
 
-    public void Broadcast(string excludeNetSessionID, byte[] sendPacket)
+    public void Broadcast(string excludeNetSessionId, byte[] sendPacket)
     {
-        foreach (var user in RoomUserList)
+        foreach (var user in _roomUserList)
         {
-            if (user.NetSessionID == excludeNetSessionID)
+            if (user.NetSessionId == excludeNetSessionId)
             {
                 continue;
             }
 
-            NetworkSendFunc(user.NetSessionID, sendPacket);
+            NetworkSendFunc(user.NetSessionId, sendPacket);
         }
     }
 
     public void SetRoomUserBeReady(string SessionId)
     {
-        foreach (var user in RoomUserList)
+        foreach (var user in _roomUserList)
         {
-            if (user.NetSessionID == SessionId)
+            if (user.NetSessionId == SessionId)
             {
                 user.ReadyTime = DateTime.Now;
-                user.isReady = true;
+                user.IsReady = true;
                 var packet = new ResGameReadyPacket();
 
-                packet.PlayerStoneType = board.SetPlayer(SessionId, user.UserID);
+                packet.PlayerStoneType = board.SetPlayer(SessionId, user.UserId);
 
                 var sendPacket = MemoryPackSerializer.Serialize(packet);
-                PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_READY_GAME);
+                PacketHeadInfo.Write(sendPacket, PacketId.ResReadyGame);
 
                 NetworkSendFunc(SessionId, sendPacket);
 
@@ -273,7 +276,7 @@ public class Room
         packet.p2 = players.Item2;
 
         var sendPacket = MemoryPackSerializer.Serialize(packet);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_START_GAME);
+        PacketHeadInfo.Write(sendPacket, PacketId.NtfStartGame);
 
         Broadcast("", sendPacket);
 
@@ -285,19 +288,19 @@ public class Room
 
 public class RoomUser
 {
-    public string UserID { get; private set; }
-    public string NetSessionID { get; private set; }
+    public string UserId { get; private set; }
+    public string NetSessionId { get; private set; }
 
     public DateTime AcceptTime { get; set; }
 
     public DateTime ReadyTime { get; set; }
 
-    public bool isReady { get; set; }   
+    public bool IsReady { get; set; }   
 
-    public void Set(string userID, string netSessionID)
+    public void Set(string userId, string netSessionId)
     {
-        UserID = userID;
-        NetSessionID = netSessionID;
+        UserId = userId;
+        NetSessionId = netSessionId;
 
         AcceptTime = DateTime.Now;
     }
