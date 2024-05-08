@@ -25,6 +25,8 @@
         /// <summary>
         /// 디자이너 지원에 필요한 메서드입니다. 
         /// 이 메서드의 내용을 코드 편집기로 수정하지 마세요.
+        /// 
+        /// 
         /// </summary>
         private void InitializeComponent()
         {
@@ -119,8 +121,8 @@
             // checkBoxLocalHostIP
             // 
             this.checkBoxLocalHostIP.AutoSize = true;
-            this.checkBoxLocalHostIP.Checked = true;
-            this.checkBoxLocalHostIP.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxLocalHostIP.Checked = false;
+            this.checkBoxLocalHostIP.CheckState = System.Windows.Forms.CheckState.Unchecked;
             this.checkBoxLocalHostIP.Location = new System.Drawing.Point(282, 18);
             this.checkBoxLocalHostIP.Name = "checkBoxLocalHostIP";
             this.checkBoxLocalHostIP.Size = new System.Drawing.Size(103, 16);
@@ -135,7 +137,7 @@
             this.textBoxIP.Name = "textBoxIP";
             this.textBoxIP.Size = new System.Drawing.Size(87, 21);
             this.textBoxIP.TabIndex = 11;
-            this.textBoxIP.Text = "0.0.0.0";
+            this.textBoxIP.Text = "34.64.232.76";
             this.textBoxIP.WordWrap = false;
             // 
             // label9
