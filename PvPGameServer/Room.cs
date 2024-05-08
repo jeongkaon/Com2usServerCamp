@@ -17,7 +17,7 @@ public class Room
 
     int _maxUserCount = 2;
     List<RoomUser> _roomUserList = new List<RoomUser>();
-    GameBoard board = null;
+    GameBoard _board = null;
 
     DateTime _roomStartTime;     //한명이 들어오면 체크?
     DateTime _gameStartTime;   
@@ -30,7 +30,7 @@ public class Room
         Number = number;
         _maxUserCount = maxUserCount;
 
-        board = new GameBoard(Number, NetworkSendFunc);
+        _board = new GameBoard(Number, NetworkSendFunc);
     }
 
 
@@ -71,12 +71,12 @@ public class Room
             }
         }
 
-        if (board.ReadyPlayerCount() == 0)
+        if (_board.ReadyPlayerCount() == 0)
         {
             return ErrorCode.RoomCheckTwoPlayersNotReady;
         }
 
-        if (board.ReadyPlayerCount() == 1)
+        if (_board.ReadyPlayerCount() == 1)
         {
             return ErrorCode.RoomCheckOnePlayerNotReady;
         }           
@@ -86,7 +86,7 @@ public class Room
 
     public void CheckTimeOutPlayerTurn(DateTime cur, int timeSpan)
     {
-        if (true == board.TimeOutCheck(cur, timeSpan))
+        if (true == _board.TimeOutCheck(cur, timeSpan))
         {
             NftBoardTurnTimeout();
         }
@@ -95,16 +95,16 @@ public class Room
 
     public void NftBoardTurnTimeout()
     {
-        board.NotifyTimeOut();
+        _board.NotifyTimeOut();
 
-        var stone = board.CheckPassCount();
+        var stone = _board.CheckPassCount();
         if(stone != StoneType.None)
         {
-            board.EndGame(stone);
+            _board.EndGame(stone);
             return;
         }
 
-        board.TurnChange();
+        _board.TurnChange();
 
 
     }
@@ -120,7 +120,7 @@ public class Room
 
         if (diff.TotalMilliseconds > timeSpan)
         {
-            board.NotifyWinner(StoneType.None);
+            _board.NotifyWinner(StoneType.None);
         }
     }
 
@@ -176,13 +176,13 @@ public class Room
     
     public GameBoard GetGameBoard()
     {
-        return board;
+        return _board;
     }
 
     public void GameStart()
     {
         _gameStartTime = DateTime.Now;
-        board.GameStart();
+        _board.GameStart();
     }
 
     public void NotifyPacketUserList(string userNetSessionId)
@@ -250,7 +250,7 @@ public class Room
                 user.IsReady = true;
                 var packet = new ResGameReadyPacket();
 
-                packet.PlayerStoneType = board.SetPlayer(SessionId, user.UserId);
+                packet.PlayerStoneType = _board.SetPlayer(SessionId, user.UserId);
 
                 var sendPacket = MemoryPackSerializer.Serialize(packet);
                 PacketHeadInfo.Write(sendPacket, PacketId.ResReadyGame);
@@ -260,7 +260,7 @@ public class Room
             }
         }
 
-        if (board.ReadyPlayerCount()==2)
+        if (_board.ReadyPlayerCount()==2)
         {
             NotifyPlayersGameStart();
 

@@ -12,36 +12,32 @@ namespace PvPGameServer;
 
 public class PacketHandlerRoom : PacketHandler
 {
-    List<Room> RoomList = null;
-    int RoomNumberStart;
+    List<Room> _roomList = null;
+    int _roomNumberStart;
 
-    int StartCheckRoomNumber = 0;
-    int CheckRoomNumberCount;
-    int MaxRoomCheckCount;
-
-    //TEST위해 10초로 일단 설정
-    int span = 10000;
-
+    int _startCheckRoomNumber = 0;
+    int _checkRoomNumberCount;
+    int _maxRoomCheckCount;
 
     public void SetRoomList(List<Room> roomList)
     {
-        RoomList = roomList;
-        RoomNumberStart = RoomList[0].Number;
-        MaxRoomCheckCount = RoomList.Count();
-        CheckRoomNumberCount = MaxRoomCheckCount / 4;
+        _roomList = roomList;
+        _roomNumberStart = _roomList[0].Number;
+        _maxRoomCheckCount = _roomList.Count();
+        _checkRoomNumberCount = _maxRoomCheckCount / 4;
 
     }
 
     Room GetRoom(int roomNum)
     {
-        var idx = roomNum - RoomNumberStart;
+        var idx = roomNum - _roomNumberStart;
 
-        if (idx < 0 || idx >=RoomList.Count())
+        if (idx < 0 || idx >=_roomList.Count())
         {
             return null;
         }
 
-        return RoomList[idx];
+        return _roomList[idx];
     }
     (bool, Room, RoomUser) CheckRoomAndRoomUser(string userSessionId)
     {
@@ -84,43 +80,31 @@ public class PacketHandlerRoom : PacketHandler
 
     public void CheckInRoomState(MemoryPackBinaryRequestInfo requestData)
     {
-        int EndCheckRoomNumber = StartCheckRoomNumber + CheckRoomNumberCount;
-        if (EndCheckRoomNumber > MaxRoomCheckCount)
+        int EndCheckRoomNumber = _startCheckRoomNumber + _checkRoomNumberCount;
+        if (EndCheckRoomNumber > _maxRoomCheckCount)
         {
-            EndCheckRoomNumber = MaxRoomCheckCount;
+            EndCheckRoomNumber = _maxRoomCheckCount;
         }
 
-        for (int i= StartCheckRoomNumber; i< EndCheckRoomNumber; ++i)
+        for (int i= _startCheckRoomNumber; i< EndCheckRoomNumber; ++i)
         {
             var room = GetRoom(i);
-
-            //|| room.CheckIsFull() ==false이거 테스트용이라 넣음-> 입장은 했는데 게임시작을 안하는 경우
-            //이거 구현하면 지워야한다.
             if (room.CurrentUserCount() == 0 || room.CheckIsFull()==false  )
             {
                 continue;
             }
-
             var curTime = DateTime.Now;
 
-            //TODO - 
-            //1.게임 시작 안하는 경우 -
-            //유저의 입장시간과 체크타임 텀이 긴경우체크
-            //TEST용 시간 바꿔야함!
             int testspan = 10000; //10초
             room.CheckTimeOutPlayerTurn(curTime, testspan);
-            
-            //1초 1000, 60초(1분) 60000,  10분 600000
-            
             room.CheckTooLongGameTime(curTime, 600000);
-     
         }
 
-        StartCheckRoomNumber += CheckRoomNumberCount;
+        _startCheckRoomNumber += _checkRoomNumberCount;
 
-        if (StartCheckRoomNumber >= RoomList.Count())
+        if (_startCheckRoomNumber >= _roomList.Count())
         {
-            StartCheckRoomNumber = 0;
+            _startCheckRoomNumber = 0;
         }
 
     }

@@ -8,7 +8,7 @@ namespace PvPGameServer;
 
 public class RoomManager
 {
-    List<Room> RoomList = new List<Room>();
+    List<Room> _roomList = new List<Room>();
 
     public void CreateRooms(PvPServerOption option)
     {
@@ -22,13 +22,13 @@ public class RoomManager
             var room = new Room();
             room.Init(i, roomNumber, maxUserCount);
 
-            RoomList.Add(room);
+            _roomList.Add(room);
         }
 
     }
 
     public List<Room> GetRooms()
     {
-        return RoomList;
+        return _roomList;
     }
 }
