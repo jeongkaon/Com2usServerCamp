@@ -20,7 +20,7 @@ public class GameDB
     QueryFactory QueryFactory;
 
     const string connectionString =
-        "Server=127.0.0.1;user=root;Password=0000;Database=game_db;Pooling=true;Min Pool Size=0;Max Pool Size=100;AllowUserVariables=True;";
+        "Server=127.0.0.1;com2us=root;Password=0000;Database=game_db;Pooling=true;Min Pool Size=0;Max Pool Size=100;AllowUserVariables=True;";
     public GameDB()
     {
         Open();
