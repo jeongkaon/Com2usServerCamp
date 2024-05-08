@@ -103,7 +103,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         }
     }
 
-    public ERROR_CODE CreateComponent()
+    public ErrorCode CreateComponent()
     {
         Room.NetworkSendFunc = SendData;
 
@@ -115,7 +115,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
-        return ERROR_CODE.NONE;
+        return ErrorCode.None;
 
     }
 
@@ -186,6 +186,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         reqInfo.SessionID = session.SessionID;
         Distribute(reqInfo);
     }
+   
 
 }
 

@@ -6,16 +6,7 @@ using System.Threading.Tasks;
 
 namespace PvPGameServer;
 
-public class DBProcessor
+public class DBHandler
 {
-    bool isThreadRunning = false;
-    System.Threading.Thread[] GameDBThread = null;
-
-    GameDB gamedb = null;
-
-    
-
-
-
 
 }

@@ -12,18 +12,15 @@ public class UserManager
 {
     int MaxUserCount;
     UInt64 UserSequenceNumber = 0; 
-
-    Dictionary<string, User> UserMap = new Dictionary<string, User>();
-    
-    User[] UserArr;     
-
+    Dictionary<string, User> _userMap = new Dictionary<string, User>();
+    User[] _userArr;     
 
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
     public void Init(int maxUserCount)
     {
         MaxUserCount = maxUserCount;
-        UserArr = new User[MaxUserCount];
+        _userArr = new User[MaxUserCount];
     }
     public void SetDistributeInnerPacket(Action<MemoryPackBinaryRequestInfo> action)
     {
@@ -32,14 +29,14 @@ public class UserManager
     }
     public void AddToEmptyArray(User newUser)
     {
-        for (int i = 0; i < UserArr.Length; i++)
+        for (int i = 0; i < _userArr.Length; i++)
         {
-            if (UserArr[i] != null && UserArr[i].Used == true)
+            if (_userArr[i] != null && _userArr[i]._used == true)
             {
                 continue;
             }
 
-            UserArr[i] = newUser;
+            _userArr[i] = newUser;
             return;
         }
 
@@ -56,18 +53,18 @@ public class UserManager
 
         for (int i = beginIdx; i < endIdx; i++)
         {
-            if (UserArr[i] == null || UserArr[i].Used == false)
+            if (_userArr[i] == null || _userArr[i]._used == false)
             {
                 return (null, -1, null);
             }
 
-            if (false == UserArr[i].CheckHeartBeatTime(CurTime))
+            if (false == _userArr[i].CheckHeartBeatTime(CurTime))
             {
-                var interanlpacket = InnerPacketMaker.MakeNTFInnerUserForceClosePacket(UserArr[i].SessionId());
+                var interanlpacket = InnerPacketMaker.MakeNTFInnerUserForceClosePacket(_userArr[i].SessionId());
                 DistributeInnerPacket(interanlpacket);
 
-                var id = UserArr[i].SessionId();
-                (string, int, string) value = (UserArr[i].SessionId(), UserArr[i].RoomNumber, UserArr[i].ID());
+                var id = _userArr[i].SessionId();
+                (string, int, string) value = (_userArr[i].SessionId(), _userArr[i].RoomNumber, _userArr[i].ID());
 
                 RemoveUser(id);
 
@@ -80,52 +77,52 @@ public class UserManager
     }
 
 
-    public ERROR_CODE AddUser(string userID, string sessionID)
+    public ErrorCode AddUser(string userId, string sessionId)
     {
         if (IsFullUserCount())
         {
-            return ERROR_CODE.LOGIN_FULL_USER_COUNT;
+            return ErrorCode.LoginFullUserCount;
         }
 
-        if (UserMap.ContainsKey(sessionID))
+        if (_userMap.ContainsKey(sessionId))
         {
-            return ERROR_CODE.ADD_USER_DUPLICATION;
+            return ErrorCode.AddUserDuplication;
         }
 
 
         ++UserSequenceNumber;
 
         var user = new User();
-        user.Set(UserSequenceNumber, sessionID, userID, DateTime.Now);
+        user.Set(UserSequenceNumber, sessionId, userId, DateTime.Now);
         
-        UserMap.Add(sessionID, user);
+        _userMap.Add(sessionId, user);
         AddToEmptyArray(user);
 
-        return ERROR_CODE.NONE;
+        return ErrorCode.None;
     }
 
-    public ERROR_CODE RemoveUser(string sessionID)
+    public ErrorCode RemoveUser(string sessionId)
     {
-        UserMap[sessionID].DisconnectUser();
+        _userMap[sessionId].DisconnectUser();
 
-        if (UserMap.Remove(sessionID) == false)
+        if (_userMap.Remove(sessionId) == false)
         {
-            return ERROR_CODE.REMOVE_USER_SEARCH_FAILURE_USER_ID;
+            return ErrorCode.RemoveUserSearchFailureUserId;
         }
 
-        return ERROR_CODE.NONE;
+        return ErrorCode.None;
     }
 
-    public User GetUser(string sessionID)
+    public User GetUser(string sessionId)
     {
         User user = null;
-        UserMap.TryGetValue(sessionID, out user);
+        _userMap.TryGetValue(sessionId, out user);
         return user;
     }
     
     bool IsFullUserCount()
     {
-        return MaxUserCount <= UserMap.Count();
+        return MaxUserCount <= _userMap.Count();
     }
     public int GetMaxUserCount()
     {

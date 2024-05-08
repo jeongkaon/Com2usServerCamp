@@ -45,7 +45,7 @@ public class PacketHandlerRoom : PacketHandler
     }
     (bool, Room, RoomUser) CheckRoomAndRoomUser(string userSessionId)
     {
-        var user = UserMgr.GetUser(userSessionId);
+        var user = _userMgr.GetUser(userSessionId);
         if (user == null)
         {
             return (false, null, null);
@@ -72,12 +72,12 @@ public class PacketHandlerRoom : PacketHandler
 
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_ENTER, RequestRoomEnter);
-        packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_LEAVE, RequestLeave);
-        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOM_LEAVE, NotifyLeaveInternal);
-        packetHandlerMap.Add((int)PACKET_ID.REQ_ROOM_CHAT, RequestChat);
-        packetHandlerMap.Add((int)PACKET_ID.REQ_READY_GAME, RequestGameReadyPacket);
-        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_ROOMCHECK, CheckInRoomState);
+        packetHandlerMap.Add((int)PacketId.ReqRoomEnter, RequestRoomEnter);
+        packetHandlerMap.Add((int)PacketId.ReqRoomLeave, RequestLeave);
+        packetHandlerMap.Add((int)PacketId.NtfIntRoomLeave, NotifyLeaveInternal);
+        packetHandlerMap.Add((int)PacketId.ReqRoomChat, RequestChat);
+        packetHandlerMap.Add((int)PacketId.ReqReadyGame, RequestGameReadyPacket);
+        packetHandlerMap.Add((int)PacketId.NtfInRoomCheck, CheckInRoomState);
 
 
     }
@@ -94,6 +94,8 @@ public class PacketHandlerRoom : PacketHandler
         {
             var room = GetRoom(i);
 
+            //|| room.CheckIsFull() ==false이거 테스트용이라 넣음-> 입장은 했는데 게임시작을 안하는 경우
+            //이거 구현하면 지워야한다.
             if (room.CurrentUserCount() == 0 || room.CheckIsFull() ==false )
             {
                 continue;
@@ -102,7 +104,7 @@ public class PacketHandlerRoom : PacketHandler
             var curTime = DateTime.Now;
 
             //TODO - 
-            //1.게임 시작 안하는 경우 - 입장은 했는데 게임시작을 안하는 경우
+            //1.게임 시작 안하는 경우 -
             //유저의 입장시간과 체크타임 텀이 긴경우체크
 
             room.CheckTimeOutPlayerTurn(curTime, 10000 / 2);
@@ -126,19 +128,19 @@ public class PacketHandlerRoom : PacketHandler
 
         try
         {
-            var user = UserMgr.GetUser(sessionID);
+            var user = _userMgr.GetUser(sessionID);
             
 
 
             if (user == null || user.IsConfirm(sessionID) == false)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_USER, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterInvalidUser, sessionID);
                 return;
             }
 
             if (user.IsStateRoom())
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_STATE, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterInvalidState, sessionID);
                 return;
             }
 
@@ -149,13 +151,13 @@ public class PacketHandlerRoom : PacketHandler
 
             if (room == null)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_ROOM_NUMBER, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterInvalidRoomNumber, sessionID);
                 return;
             }
 
             if(room.CheckIsFull())
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_FAILED_USERFULL, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterFaildUserFull, sessionID);
 
                 Console.WriteLine("방 다참");
                 return;
@@ -163,7 +165,7 @@ public class PacketHandlerRoom : PacketHandler
 
             if (room.AddUser(user.ID(), sessionID) == false)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_FAIL_ADD_USER, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterFailAddUser, sessionID);
                 return;
             }
 
@@ -174,7 +176,7 @@ public class PacketHandlerRoom : PacketHandler
             room.NotifyPacketUserList(sessionID);
             room.NofifyPacketNewUser(sessionID, user.ID());
 
-            ResponseEnterRoomToClient(ERROR_CODE.NONE, sessionID);
+            ResponseEnterRoomToClient(ErrorCode.None, sessionID);
 
             MainServer.MainLogger.Debug("RequestEnterInternal - Success");
         }
@@ -184,7 +186,7 @@ public class PacketHandlerRoom : PacketHandler
         }
     }
 
-    void ResponseEnterRoomToClient(ERROR_CODE errorCode, string sessionID)
+    void ResponseEnterRoomToClient(ErrorCode errorCode, string sessionID)
     {
         var resRoomEnter = new ResRoomEnterPacket()
         {
@@ -192,7 +194,7 @@ public class PacketHandlerRoom : PacketHandler
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(resRoomEnter);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_ROOM_ENTER);
+        PacketHeadInfo.Write(sendPacket, PacketId.ResRoomEnter);
 
         NetworkSendFunc(sessionID, sendPacket);
     }
@@ -204,7 +206,7 @@ public class PacketHandlerRoom : PacketHandler
 
         try
         {
-            var user = UserMgr.GetUser(sessionID);
+            var user = _userMgr.GetUser(sessionID);
             if (user == null)
             {
                 return;
@@ -244,7 +246,7 @@ public class PacketHandlerRoom : PacketHandler
             return false;
         }
 
-        var userID = roomUser.UserID;
+        var userID = roomUser.UserId;
         room.RemoveUser(roomUser);
 
         room.NotifyPacketLeaveUser(userID);
@@ -255,11 +257,11 @@ public class PacketHandlerRoom : PacketHandler
     {
         var resRoomLeave = new ResRoomLeavePacket()
         {
-            Result = (short)ERROR_CODE.NONE
+            Result = (short)ErrorCode.None
         };
 
         var sendPacket = MemoryPackSerializer.Serialize(resRoomLeave);
-        PacketHeadInfo.Write(sendPacket, PACKET_ID.RES_ROOM_LEAVE);
+        PacketHeadInfo.Write(sendPacket, PacketId.ResRoomLeave);
 
         NetworkSendFunc(sessionID, sendPacket);
     }
@@ -270,7 +272,7 @@ public class PacketHandlerRoom : PacketHandler
         MainServer.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.Data);
-        LeaveRoomUser(sessionID, reqData.RoomNumber);
+        LeaveRoomUser(sessionID, reqData._roomNumber);
     }
 
     public void RequestChat(MemoryPackBinaryRequestInfo packetData)
@@ -292,12 +294,12 @@ public class PacketHandlerRoom : PacketHandler
 
             var notifyPacket = new NtfRoomChat()
             {
-                UserID = roomObject.Item3.UserID,
+                UserID = roomObject.Item3.UserId,
                 ChatMessage = reqData.ChatMessage
             };
 
             var sendPacket = MemoryPackSerializer.Serialize(notifyPacket);
-            PacketHeadInfo.Write(sendPacket, PACKET_ID.NTF_ROOM_CHAT);
+            PacketHeadInfo.Write(sendPacket, PacketId.NtfRoomChat);
 
             roomObject.Item2.Broadcast("", sendPacket);
 

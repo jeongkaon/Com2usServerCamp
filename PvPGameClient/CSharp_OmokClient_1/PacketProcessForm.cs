@@ -19,29 +19,29 @@ namespace csharp_test_client
 
         void SetPacketHandler()
         {
-            //PacketFuncDic.Add(PACKET_ID.PACKET_ID_ERROR_NTF, PacketProcess_ErrorNotify);
+            //PacketFuncDic.Add(PacketId.PacketId_ERROR_NTF, PacketProcess_ErrorNotify);
 
             //여기다가 추가하면된다.
-            PacketFuncDic.Add((int)PACKET_ID.RES_LOGIN, PacketProcess_Loginin);
+            PacketFuncDic.Add((int)PacketId.RES_LOGIN, PacketProcess_Loginin);
 
-            PacketFuncDic.Add((int)PACKET_ID.RES_ROOM_ENTER, PacketProcess_RoomEnterResponse);
-            PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_USER_LIST, PacketProcess_RoomUserListNotify);
-            PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_NEW_USER, PacketProcess_RoomNewUserNotify);
-            PacketFuncDic.Add((int)PACKET_ID.RES_ROOM_LEAVE, PacketProcess_RoomLeaveResponse);
-            PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_LEAVE_USER, PacketProcess_RoomLeaveUserNotify);
-            //PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_CHAT, PacketProcess_RoomChatResponse);
-            PacketFuncDic.Add((int)PACKET_ID.NTF_ROOM_CHAT, PacketProcess_RoomChatNotify);
-            PacketFuncDic.Add((int)PACKET_ID.RES_READY_GAME, PacketProcess_ReadyOmokResponse);
-            PacketFuncDic.Add((int)PACKET_ID.NTR_READY_GAME, PacketProcess_ReadyOmokNotify);
-            PacketFuncDic.Add((int)PACKET_ID.NTF_START_GAME, PacketProcess_StartOmokNotify);
-            PacketFuncDic.Add((int)PACKET_ID.RES_PUT_OMOK, PacketProcess_PutMokResponse);
+            PacketFuncDic.Add((int)PacketId.RES_ROOM_ENTER, PacketProcess_RoomEnterResponse);
+            PacketFuncDic.Add((int)PacketId.NTF_ROOM_USER_LIST, PacketProcess_RoomUserListNotify);
+            PacketFuncDic.Add((int)PacketId.NTF_ROOM_NEW_USER, PacketProcess_RoomNewUserNotify);
+            PacketFuncDic.Add((int)PacketId.RES_ROOM_LEAVE, PacketProcess_RoomLeaveResponse);
+            PacketFuncDic.Add((int)PacketId.NTF_ROOM_LEAVE_USER, PacketProcess_RoomLeaveUserNotify);
+            //PacketFuncDic.Add((int)PacketId.NTF_ROOM_CHAT, PacketProcess_RoomChatResponse);
+            PacketFuncDic.Add((int)PacketId.NTF_ROOM_CHAT, PacketProcess_RoomChatNotify);
+            PacketFuncDic.Add((int)PacketId.RES_READY_GAME, PacketProcess_ReadyOmokResponse);
+            PacketFuncDic.Add((int)PacketId.NTR_READY_GAME, PacketProcess_ReadyOmokNotify);
+            PacketFuncDic.Add((int)PacketId.NTF_START_GAME, PacketProcess_StartOmokNotify);
+            PacketFuncDic.Add((int)PacketId.RES_PUT_OMOK, PacketProcess_PutMokResponse);
 
-            PacketFuncDic.Add((int)PACKET_ID.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
+            PacketFuncDic.Add((int)PacketId.NTF_PUT_OMOK, PacketProcess_PutMokNotify);
 
-            PacketFuncDic.Add((int)PACKET_ID.NTF_TIMEOUT_OMOK, PacketProcess_TimeOutNotify);
-            PacketFuncDic.Add((ushort)PACKET_ID.NTR_WINNER_OMOK, PacketProcess_EndOmokNotify);
+            PacketFuncDic.Add((int)PacketId.NTF_TIMEOUT_OMOK, PacketProcess_TimeOutNotify);
+            PacketFuncDic.Add((ushort)PacketId.NTR_WINNER_OMOK, PacketProcess_EndOmokNotify);
 
-            //PacketFuncDic.Add((ushort)PACKET_ID.NTF_END_GAME, PacketProcess_EndOmokNotify);
+            //PacketFuncDic.Add((ushort)PacketId.NTF_END_GAME, PacketProcess_EndOmokNotify);
         }
 
         void PacketProcess(byte[] packet)

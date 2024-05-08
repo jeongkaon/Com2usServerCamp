@@ -23,19 +23,19 @@ public class PacketHandlerCommon : PacketHandler
 
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKET_ID.REQ_LOGIN, ReqLoginPacket);
-        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_CONNECT_CLIENT, NotifyInConnectClient);
-        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_DISCONNECT_CLIENT, NotifyInDisConnectClient);
-        packetHandlerMap.Add((int)PACKET_ID.REQ_HEARTBEAT, ReqHeartBeatPacket);
-        packetHandlerMap.Add((int)PACKET_ID.NTR_IN_USERCHECK, NotifyInUserCheck);
-        packetHandlerMap.Add((int)PACKET_ID.NTF_IN_FORCEDISCONNECT_CLIENT, NotifyInForceDisConnectClient);
+        packetHandlerMap.Add((int)PacketId.ReqLogin, ReqLoginPacket);
+        packetHandlerMap.Add((int)PacketId.NtfInConnectClient, NotifyInConnectClient);
+        packetHandlerMap.Add((int)PacketId.NtfInDisconnectClient, NotifyInDisConnectClient);
+        packetHandlerMap.Add((int)PacketId.ReqHeartBeat, ReqHeartBeatPacket);
+        packetHandlerMap.Add((int)PacketId.NtrInUserCheck, NotifyInUserCheck);
+        packetHandlerMap.Add((int)PacketId.NtfInForceDisconnectClient, NotifyInForceDisConnectClient);
 
     }
     public void NotifyInUserCheck(MemoryPackBinaryRequestInfo requestData)
     {
         int endIdx = UserCheckStartIndex + MaxUserCheckCount;
      
-        var value = UserMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
+        var value = _userMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
 
 
         UserCheckStartIndex += endIdx;
@@ -52,7 +52,7 @@ public class PacketHandlerCommon : PacketHandler
     {
        
         var sessionID = requestData.SessionID;
-        var user = UserMgr.GetUser(sessionID);
+        var user = _userMgr.GetUser(sessionID);
 
         if (user != null)
         {
@@ -64,7 +64,7 @@ public class PacketHandlerCommon : PacketHandler
                 DistributeInnerPacket(internalPacket);
             }
 
-            UserMgr.RemoveUser(sessionID);
+            _userMgr.RemoveUser(sessionID);
         }
 
     }
@@ -80,21 +80,21 @@ public class PacketHandlerCommon : PacketHandler
 
         try
         {
-            if (UserMgr.GetUser(sessionID) != null)
+            if (_userMgr.GetUser(sessionID) != null)
             {
-                SendLoginToClient(ERROR_CODE.LOGIN_ALREADY_WORKING, recvData.SessionID);
+                SendLoginToClient(ErrorCode.LoginAlreadyWorking, recvData.SessionID);
                 return;
             }
 
             var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
-            var errorCode = UserMgr.AddUser(reqData.UserID, sessionID);
-            if (errorCode != ERROR_CODE.NONE)
+            var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);
+            if (errorCode != ErrorCode.None)
             {
                 SendLoginToClient(errorCode, recvData.SessionID);
 
-                if (errorCode == ERROR_CODE.LOGIN_FULL_USER_COUNT)
+                if (errorCode == ErrorCode.LoginFullUserCount)
                 {
-                    NotifyMustCloseToClient(ERROR_CODE.LOGIN_FULL_USER_COUNT, recvData.SessionID);
+                    NotifyMustCloseToClient(ErrorCode.LoginFullUserCount, recvData.SessionID);
                 }
 
                 return;
@@ -115,29 +115,29 @@ public class PacketHandlerCommon : PacketHandler
     {
         var sessionID = recvData.SessionID;
 
-        var user = UserMgr.GetUser(sessionID);
+        var user = _userMgr.GetUser(sessionID);
         if (user != null)
         {
             user.UpdateHeartBeatTime(DateTime.Now);
-            ResHeartBeatPacket(ERROR_CODE.NONE, sessionID);
+            ResHeartBeatPacket(ErrorCode.None, sessionID);
 
         }
 
     }
-    public void ResHeartBeatPacket(ERROR_CODE errorCode, string sessionId)
+    public void ResHeartBeatPacket(ErrorCode errorCode, string sessionId)
     {
         var temp = new ResHeartBeatPacket()
         {
-            Result = (short)ERROR_CODE.NONE
+            Result = (short)ErrorCode.None
 
         };
 
         var sendData = MemoryPackSerializer.Serialize(temp);
-        PacketHeadInfo.Write(sendData, PACKET_ID.RES_HEARTBEAT);
+        PacketHeadInfo.Write(sendData, PacketId.ResHeartBeat);
         NetworkSendFunc(sessionId, sendData);
 
     }
-    public void SendLoginToClient(ERROR_CODE errorCode, string sessionID)
+    public void SendLoginToClient(ErrorCode errorCode, string sessionID)
     {
         var resLogin = new ResLoginPacket()
         {
@@ -145,11 +145,11 @@ public class PacketHandlerCommon : PacketHandler
         };
 
         var sendData = MemoryPackSerializer.Serialize(resLogin);
-        PacketHeadInfo.Write(sendData, PACKET_ID.RES_LOGIN);
+        PacketHeadInfo.Write(sendData, PacketId.ResLogin);
 
         NetworkSendFunc(sessionID, sendData);
     }
-    public void NotifyMustCloseToClient(ERROR_CODE errorCode, string sessionID)
+    public void NotifyMustCloseToClient(ErrorCode errorCode, string sessionID)
     {
         var resLogin = new NtfMustClosePacket()
         {
@@ -157,7 +157,7 @@ public class PacketHandlerCommon : PacketHandler
         };
 
         var sendData = MemoryPackSerializer.Serialize(resLogin);
-        PacketHeadInfo.Write(sendData, PACKET_ID.NTF_MUST_CLOSE);
+        PacketHeadInfo.Write(sendData, PacketId.NtfMustClose);
 
         NetworkSendFunc(sessionID, sendData);
     }

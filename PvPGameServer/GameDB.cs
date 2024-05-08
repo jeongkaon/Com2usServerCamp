@@ -14,7 +14,6 @@ namespace PvPGameServer;
 
 public class GameDB
 {
-
     IDbConnection dbConn;
     MySqlCompiler Compiler;
     QueryFactory QueryFactory;
@@ -29,6 +28,7 @@ public class GameDB
         QueryFactory = new QueryFactory(dbConn, Compiler);
 
     }
+
     void Open()
     {
         dbConn = new MySqlConnection(connectionString);

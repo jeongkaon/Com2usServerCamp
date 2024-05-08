@@ -10,39 +10,39 @@ namespace PvPGameServer;
 
 public class InnerPacketMaker
 {
-    public static MemoryPackBinaryRequestInfo MakeNTFInnerRoomLeavePacket(string sessionID, int roomNumber, string userID)
+    public static MemoryPackBinaryRequestInfo MakeNTFInnerRoomLeavePacket(string sessionId, int roomNumber, string userId)
     {
 
         var packet = new PKTInternalNtfRoomLeave()
         {
-            RoomNumber = roomNumber,
-            UserID = userID,
+            _roomNumber = roomNumber,
+            _userId = userId,
         };
 
         var sendData = MemoryPackSerializer.Serialize(packet);
-        PacketHeadInfo.Write(sendData, PACKET_ID.NTF_IN_ROOM_LEAVE);
+        PacketHeadInfo.Write(sendData, PacketId.NtfIntRoomLeave);
 
         var memoryPakcPacket = new MemoryPackBinaryRequestInfo(null);
         memoryPakcPacket.Data = sendData;
-        memoryPakcPacket.SessionID = sessionID;
+        memoryPakcPacket.SessionID = sessionId;
         return memoryPakcPacket;
     }
 
-    public static MemoryPackBinaryRequestInfo MakeNTFInConnectOrDisConnectClientPacket(bool isConnect, string sessionID)
+    public static MemoryPackBinaryRequestInfo MakeNTFInConnectOrDisConnectClientPacket(bool isConnect, string sessionId)
     {
         var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
         memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
         if (isConnect)
         {
-            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_CONNECT_CLIENT);
+            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInConnectClient);
         }
         else
         {
-            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_DISCONNECT_CLIENT);
+            PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInDisconnectClient);
         }
 
-        memoryPackPacket.SessionID = sessionID;
+        memoryPackPacket.SessionID = sessionId;
         return memoryPackPacket;
     }
 
@@ -52,7 +52,7 @@ public class InnerPacketMaker
         memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
 
-        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTR_IN_USERCHECK);
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtrInUserCheck);
 
         return memoryPackPacket;
 
@@ -64,7 +64,7 @@ public class InnerPacketMaker
         memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
 
-        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_FORCEDISCONNECT_CLIENT);
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInForceDisconnectClient);
         memoryPackPacket.SessionID = SessionId;
 
         return memoryPackPacket;
@@ -77,7 +77,7 @@ public class InnerPacketMaker
         memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
 
-        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PACKET_ID.NTF_IN_ROOMCHECK);
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInRoomCheck);
 
         return memoryPackPacket;
 
@@ -89,6 +89,6 @@ public class InnerPacketMaker
 [MemoryPackable]
 public partial class PKTInternalNtfRoomLeave : PacketHeader
 {
-    public int RoomNumber { get; set; }
-    public string UserID { get; set; }
+    public int _roomNumber { get; set; }
+    public string _userId { get; set; }
 }

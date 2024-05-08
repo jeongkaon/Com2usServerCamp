@@ -1,133 +1,120 @@
 ﻿
 //에러종류, 패킷종류 등 필요한 enum들 여기다가 
 
-public enum STONE_TYPE //: int
+public enum StoneType //: int
 {
-    NONE = 0,
-    BLACK = 1,
-    WHITE = 2
+    None = 0,
+    Black = 1,
+    White = 2
 }
 
 
 
-public enum ERROR_CODE : short
+public enum ErrorCode : short
 {
-    NONE = 0,
+    None = 0,
 
     // 서버 초기화 에러
-    REDIS_INIT_FAIL = 1,    // Redis 초기화 에러
+    RedisInitFail = 1,    // Redis 초기화 에러
 
     // 로그인 
-    LOGIN_INVALID_AUTHTOKEN = 1001, // 로그인 실패: 잘못된 인증 토큰
-    ADD_USER_DUPLICATION = 1002,
-    REMOVE_USER_SEARCH_FAILURE_USER_ID = 1003,
-    USER_AUTH_SEARCH_FAILURE_USER_ID = 1004,
-    USER_AUTH_ALREADY_SET_AUTH = 1005,
-    LOGIN_ALREADY_WORKING = 1006,
-    LOGIN_FULL_USER_COUNT = 1007,
+    LoginInvalidAuthToken = 1001, // 로그인 실패: 잘못된 인증 토큰
+    AddUserDuplication = 1002,
+    RemoveUserSearchFailureUserId = 1003,
+    UserAuthSearchFailureUserId = 1004,
+    UserAuthAlreadySetAuth = 1005,
+    LoginAlreadyWorking = 1006,
+    LoginFullUserCount = 1007,
 
-    DB_LOGIN_INVALID_PASSWORD = 1011,
-    DB_LOGIN_EMPTY_USER = 1012,
-    DB_LOGIN_EXCEPTION = 1013,
+    DBLoginInvalidPassword = 1011,
+    DBLoginEmptyUser = 1012,
+    DBLoginException = 1013,
 
     //방
-    ROOM_ENTER_INVALID_STATE = 1021,
-    ROOM_ENTER_INVALID_USER = 1022,
-    ROOM_ENTER_ERROR_SYSTEM = 1023,
-    ROOM_ENTER_INVALID_ROOM_NUMBER = 1024,
-    ROOM_ENTER_FAIL_ADD_USER = 1025,
+    RoomEnterInvalidState = 1021,
+    RoomEnterInvalidUser = 1022,
+    RoomEnterErrorSystem = 1023,
+    RoomEnterInvalidRoomNumber = 1024,
+    RoomEnterFailAddUser = 1025,
 
-    ROOM_ENTER_FAILED_USERFULL = 1028,
+    RoomEnterFaildUserFull = 1028,
 
     //방조사
-    ROONCHECK_INPUT_ONEPLYAER = 1029,
-    ROONCHECK_ZEROREAYD = 1032,
-    ROOMCHECK_ONEPLYAER_NOTREADY = 1030,
-    ROOMCHECK_TWOPLAYERS_NOTREADY = 1031,
+    RoomCheckInputOnePlayer = 1029,
+    RommCheckZeroReady = 1032,
+    RoomCheckOnePlayerNotReady = 1030,
+    RoomCheckTwoPlayersNotReady = 1031,
 
-    ROOM_NOTALL_READY = 1026,  
-    ROOM_ALL_READY = 1027,     
+    RoomNotAllReady = 1026,
+    RoomAllReady = 1027,
 
 
 
 }
-public enum PACKET_ID : int
+public enum PacketId : int
 {
-    REQ_SC_TEST_ECHO = 101,
+    ReqSCTestEcho = 101,
 
 
     // 클라이언트
-    CS_BEGIN = 1001,
+    CSBegin = 1001,
 
-    REQ_LOGIN = 1002,
-    RES_LOGIN = 1003,
-    NTF_MUST_CLOSE = 1005,
+    ReqLogin = 1002,
+    ResLogin = 1003,
+    NtfMustClose = 1005,
 
-    REQ_ROOM_ENTER = 1015,
-    RES_ROOM_ENTER = 1016,
-    NTF_ROOM_USER_LIST = 1017,
-    NTF_ROOM_NEW_USER = 1018,
+    ReqRoomEnter = 1015,
+    ResRoomEnter = 1016,
+    NftRoomUserList = 1017,
+    NtfRoomNewUser = 1018,
 
-    REQ_ROOM_LEAVE = 1021,
-    RES_ROOM_LEAVE = 1022,
-    NTF_ROOM_LEAVE_USER = 1023,
+    ReqRoomLeave = 1021,
+    ResRoomLeave = 1022,
+    NtfRoomLeaveUser = 1023,
 
-    REQ_ROOM_CHAT = 1026,
-    NTF_ROOM_CHAT = 1027,
+    ReqRoomChat = 1026,
+    NtfRoomChat = 1027,
 
     //게임관련
-    REQ_READY_GAME = 1031,
-    RES_READY_GAME = 1032,
-    NTR_READY_GAME = 1033,
+    ReqReadyGame = 1031,
+    ResReadyGame = 1032,
+    NtfReadGame = 1033,
 
-    NTF_START_GAME = 1034,
+    NtfStartGame = 1034,
 
-    REQ_PUT_OMOK = 1035,
-    RES_PUT_OMOK = 1036,
-    NTF_PUT_OMOK = 1037,
+    ReqPutOmok = 1035,
+    ResPutOmok = 1036,
+    NtfPutOmok = 1037,
 
+    NtrWinnerOmok = 1038,
 
-    NTR_WINNER_OMOK = 1038,
+    NtrTimeOutOmok = 1039,
 
-    NTF_TIMEOUT_OMOK = 1039,
+    ReqRoomDevAllRoomStartGame = 1091,
+    ResRoomDevAllRoomStartGame = 1092,
 
-    REQ_ROOM_DEV_ALL_ROOM_START_GAME = 1091,
-    RES_ROOM_DEV_ALL_ROOM_START_GAME = 1092,
+    ReqRoomDefAllRoomEndGame = 1093,
+    ResRoomDefAllRoomEndGame = 1094,
 
-    REQ_ROOM_DEV_ALL_ROOM_END_GAME = 1093,
-    RES_ROOM_DEV_ALL_ROOM_END_GAME = 1094,
-
-    //하트비트
-    REQ_HEARTBEAT= 1095,
-    RES_HEARTBEAT= 1096,
-
-    
-    
-
-    CS_END = 1100,
-
+    ReqHeartBeat = 1095,
+    ResHeartBeat = 1096,
+    CSEnd = 1100,
 
     // 시스템, 서버 - 서버
     SS_START = 8001,
 
-    NTF_IN_CONNECT_CLIENT = 8011,
-    NTF_IN_DISCONNECT_CLIENT = 8012,
-    NTF_IN_FORCEDISCONNECT_CLIENT = 8013,
+    NtfInConnectClient = 8011,
+    NtfInDisconnectClient = 8012,
+    NtfInForceDisconnectClient = 8013,
 
-    CS_SS_SERVERINFO = 8021,
-    SC_SS_SERVERINFO = 8023,
+    NtfIntRoomLeave = 8036,
 
-    CS_IN_ROOM_ENTER = 8031,
-    SC_IN_ROOM_ENTER = 8032,
-
-    NTF_IN_ROOM_LEAVE = 8036,
-
-    NTR_IN_USERCHECK = 8037,
-    NTF_IN_ROOMCHECK = 8038,
+    NtrInUserCheck = 8037,
+    NtfInRoomCheck = 8038,
 
 
     // DB 8101 ~ 9000
-    REQ_DB_LOGIN = 8101,
-    RES_DB_LOGIN = 8102,
+    ReqDBLogin = 8101,
+    ResDBLogin = 8102,
 }
 
