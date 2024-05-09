@@ -141,7 +141,6 @@ public class GameBoard
         _players.Clear();
         _curType = StoneType.None;
     }
-
     public void NotifyPutOmok(int x, int y)
     {
 
@@ -157,7 +156,6 @@ public class GameBoard
 
         Broadcast("", sendPacket);
     }
-
     public void NotifyWinner(StoneType win)
     {
         var packet = new NtfOmokWinner()
@@ -171,7 +169,6 @@ public class GameBoard
         Broadcast("", sendPacket);
 
     }
-
     public void NotifyTimeOut()
     {
         var packet = new NtfTimeOut()
