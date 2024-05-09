@@ -202,7 +202,7 @@ public class GameBoard
     //오목로직
     public bool CheckBoardEnd(int x, int y)
     {
-        const int TestCount = 2;
+        const int TestCount = 5;
 
         if (CheckCol(x, y) == TestCount)        
         {
