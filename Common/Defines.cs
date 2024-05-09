@@ -57,60 +57,49 @@ public enum PacketId : int
 
 
     // 클라이언트
-    CSBegin = 1001,
+    ReqBegin = 1001,
 
     ReqLogin = 1002,
-    ResLogin = 1003,
-    NtfMustClose = 1005,
+    ReqRoomEnter = 1003,
+    ReqRoomLeave = 1004,
+    ReqRoomChat = 1005,
+    ReqReadyGame = 1006,
+    ReqPutOmok = 1007,
+    ReqRoomDevAllRoomStartGame = 1008,
+    ReqRoomDefAllRoomEndGame = 1009,
+    ReqHeartBeat = 1010,
 
-    ReqRoomEnter = 1015,
-    ResRoomEnter = 1016,
-    NftRoomUserList = 1017,
-    NtfRoomNewUser = 1018,
+    ReqEnd = 1100,
 
-    ReqRoomLeave = 1021,
-    ResRoomLeave = 1022,
-    NtfRoomLeaveUser = 1023,
+    ResLogin = 1101,
+    ResRoomEnter = 1102,
+    ResRoomLeave = 1103,
+    ResReadyGame = 1104,
+    ResPutOmok = 1105,
+    ResRoomDevAllRoomStartGame = 1106,
+    ResRoomDefAllRoomEndGame = 1107,
+    ResHeartBeat = 1108,
 
-    ReqRoomChat = 1026,
-    NtfRoomChat = 1027,
+    NtfMustClose = 1201,
+    NftRoomUserList = 1202,
+    NtfRoomNewUser = 1203,
+    NtfRoomLeaveUser = 1204,
+    NtfRoomChat = 1205,
+    NtfReadGame = 1206,
+    NtfStartGame = 1207,
+    NtfPutOmok = 1208,
+    NtrWinnerOmok = 1209,
+    NtrTimeOutOmok = 1210,
+    NtfInConnectClient = 1211,
+    NtfInDisconnectClient = 1212,
+    NtfInForceDisconnectClient = 1213,
+    NtfIntRoomLeave = 1214,
+    NtrInUserCheck = 1215,
+    NtfInRoomCheck = 1216,
 
-    //게임관련
-    ReqReadyGame = 1031,
-    ResReadyGame = 1032,
-    NtfReadGame = 1033,
-
-    NtfStartGame = 1034,
-
-    ReqPutOmok = 1035,
-    ResPutOmok = 1036,
-    NtfPutOmok = 1037,
-
-    NtrWinnerOmok = 1038,
-
-    NtrTimeOutOmok = 1039,
-
-    ReqRoomDevAllRoomStartGame = 1091,
-    ResRoomDevAllRoomStartGame = 1092,
-
-    ReqRoomDefAllRoomEndGame = 1093,
-    ResRoomDefAllRoomEndGame = 1094,
-
-    ReqHeartBeat = 1095,
-    ResHeartBeat = 1096,
-    CSEnd = 1100,
 
     // 시스템, 서버 - 서버
     SS_START = 8001,
-
-    NtfInConnectClient = 8011,
-    NtfInDisconnectClient = 8012,
-    NtfInForceDisconnectClient = 8013,
-
-    NtfIntRoomLeave = 8036,
-
-    NtrInUserCheck = 8037,
-    NtfInRoomCheck = 8038,
 
 
     // DB 8101 ~ 9000

@@ -24,21 +24,17 @@ namespace csharp_test_client
 
             //여기다가 추가하면된다.
             PacketFuncDic.Add((int)PacketId.ResLogin, PacketProcess_Loginin);
-
             PacketFuncDic.Add((int)PacketId.ResRoomEnter, PacketProcess_RoomEnterResponse);
             PacketFuncDic.Add((int)PacketId.NftRoomUserList, PacketProcess_RoomUserListNotify);
             PacketFuncDic.Add((int)PacketId.NtfRoomNewUser, PacketProcess_RoomNewUserNotify);
             PacketFuncDic.Add((int)PacketId.ResRoomLeave, PacketProcess_RoomLeaveResponse);
             PacketFuncDic.Add((int)PacketId.NtfRoomLeaveUser, PacketProcess_RoomLeaveUserNotify);
-            //PacketFuncDic.Add((int)PacketId.NTF_ROOM_CHAT, PacketProcess_RoomChatResponse);
             PacketFuncDic.Add((int)PacketId.NtfRoomChat, PacketProcess_RoomChatNotify);
             PacketFuncDic.Add((int)PacketId.ResReadyGame, PacketProcess_ReadyOmokResponse);
             PacketFuncDic.Add((int)PacketId.NtfReadGame, PacketProcess_ReadyOmokNotify);
             PacketFuncDic.Add((int)PacketId.NtfStartGame, PacketProcess_StartOmokNotify);
             PacketFuncDic.Add((int)PacketId.ResPutOmok, PacketProcess_PutMokResponse);
-
             PacketFuncDic.Add((int)PacketId.NtfPutOmok, PacketProcess_PutMokNotify);
-
             PacketFuncDic.Add((int)PacketId.NtrTimeOutOmok, PacketProcess_TimeOutNotify);
             PacketFuncDic.Add((ushort)PacketId.NtrWinnerOmok, PacketProcess_EndOmokNotify);
 
@@ -314,12 +310,12 @@ namespace csharp_test_client
             var notifyPkt =  MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
             var cur = notifyPkt.mok;
-            //현재턴_플레이어_정보();
 
             입력된돌그리기(notifyPkt.PosX, notifyPkt.PosY);
 
             ChangeTurn(cur);
 
+            현재턴_플레이어_정보();
 
 
             DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY}");// 알:{notifyPkt.Mok}");

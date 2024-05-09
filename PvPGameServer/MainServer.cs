@@ -182,6 +182,10 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     void OnPacketReceived(ClientSession session, MemoryPackBinaryRequestInfo reqInfo)
     {
         MainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
+        
+        //packeid 그거 확인해야하는디..
+
+        
 
         reqInfo.SessionID = session.SessionID;
         Distribute(reqInfo);
