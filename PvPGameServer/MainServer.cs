@@ -22,7 +22,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     SuperSocket.SocketBase.Config.IServerConfig serverConfig;
 
     PacketProcessor MainPacketProcessor = new PacketProcessor();
-    DBProcessor MainDBProcessor = new DBProcessor();
+    GameDBProcessor MainDBProcessor = new GameDBProcessor();
 
     RoomManager RoomMgr = new RoomManager();
 
@@ -119,7 +119,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainPacketProcessor.ForceSession = ForceDisconnectSession;
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
-        MainDBProcessor = new DBProcessor();
+        MainDBProcessor = new GameDBProcessor();
         MainDBProcessor.CreateAndStart();
 
 

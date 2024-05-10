@@ -103,6 +103,9 @@ public enum PacketId : int
     NtfInUpdateDrawResult = 1303,
 
 
+    //Redis이너패킷
+    NtfIn
+
 
     // 시스템, 서버 - 서버
     SS_START = 8001,

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PvPGameServer;
 
-public class DBHandler
+public class GameDBHandler
 {
     //DB조작만 해야한다.
     //결과값을 누구한테 보내??
@@ -19,11 +19,9 @@ public class DBHandler
         packetHandlerMap.Add((int)PacketId.NtfInUpdateWinnerResult, UpdateWinnerScoreInDB);
         packetHandlerMap.Add((int)PacketId.NtfInUpdateLoserResult, UpdateLoserScoreInDB);
         packetHandlerMap.Add((int)PacketId.NtfInUpdateDrawResult, UpdateDrawScoreInDB);
-
-
     }
 
-    public string GetPlayerId(MemoryPackBinaryRequestInfo packetData)
+    public string GetPlayerIdInPacket(MemoryPackBinaryRequestInfo packetData)
     {
         var headerSize = PacketHeadInfo.HeaderSize;
         var dataLen = packetData.Data.Length;
@@ -33,7 +31,7 @@ public class DBHandler
     }
     public void UpdateWinnerScoreInDB(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
     {
-        var id = GetPlayerId(packetData);
+        var id = GetPlayerIdInPacket(packetData);
 
         var windbInfo =  queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameDBInfo>();
         var winScore = windbInfo.win_score + 1;
@@ -42,7 +40,7 @@ public class DBHandler
     }
     public void UpdateLoserScoreInDB(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
     {
-        var id = GetPlayerId(packetData);
+        var id = GetPlayerIdInPacket(packetData);
 
         var loserDbInfo = queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameDBInfo>();
         var loseScore = loserDbInfo.lose_score + 1;
@@ -52,11 +50,11 @@ public class DBHandler
 
     public void UpdateDrawScoreInDB(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
     {
-        var id = GetPlayerId(packetData);
+        var id = GetPlayerIdInPacket(packetData);
 
-        var windbInfo = queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameDBInfo>();
-        var winScore = windbInfo.draw_score + 1;
-        queryFactory.Query("gamedata").Where("id", id).Update(new { draw_score = winScore });
+        var userdbInfo = queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameDBInfo>();
+        var drawScore = userdbInfo.draw_score + 1;
+        queryFactory.Query("gamedata").Where("id", id).Update(new { draw_score = drawScore });
 
     }
 

@@ -34,7 +34,7 @@ public class GameDB
         return _queryFactory;
     }
 }
-public class DBProcessor
+public class GameDBProcessor
 {
     int ThreadNum = 5;
 
@@ -46,7 +46,7 @@ public class DBProcessor
     Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>> DBHandlerMap = 
         new Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>>();
 
-    DBHandler MyDBHandler = new DBHandler();
+    GameDBHandler MyDBHandler = new GameDBHandler();
 
 
     public void CreateAndStart()
