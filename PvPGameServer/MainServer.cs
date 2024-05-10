@@ -22,6 +22,8 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     SuperSocket.SocketBase.Config.IServerConfig serverConfig;
 
     PacketProcessor MainPacketProcessor = new PacketProcessor();
+    DBProcessor MainDBProcessor = new DBProcessor();
+
     RoomManager RoomMgr = new RoomManager();
 
     Timer RoomCheckTimer = null; 
@@ -105,15 +107,19 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     public ErrorCode CreateComponent()
     {
-        Room.NetworkSendFunc = SendData;
 
         RoomMgr.CreateRooms(serverOption);
 
         MainPacketProcessor = new PacketProcessor();
         MainPacketProcessor.NeworktSendFunc = SendData;
         MainPacketProcessor.ForceSession = ForceDisconnectSession;
-
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
+
+        MainDBProcessor = new DBProcessor();
+        MainDBProcessor.CreateAndStart();
+
+        Room.NetworkSendFunc = SendData;
+        Room.DistributeInnerPacket = DistributeDB;
 
         return ErrorCode.None;
 
@@ -133,6 +139,13 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     void Distribute(MemoryPackBinaryRequestInfo reqPacket)
     {
         MainPacketProcessor.InsertPacket(reqPacket);
+    }
+
+
+    //ㅅㅂ 개같음 구조를 다시생각해보자!!
+    void DistributeDB(MemoryPackBinaryRequestInfo reqPacket)
+    {
+        MainDBProcessor.InsertPacket(reqPacket);
     }
 
     public bool SendData(string sessionId, byte[] data)

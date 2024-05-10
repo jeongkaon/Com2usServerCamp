@@ -212,10 +212,15 @@ public partial class NtfTimeOut : PacketHeader
 [MemoryPackable]
 public partial class NtfOmokWinner : PacketHeader
 {
-   // public string UserId { get; set; }
-   public StoneType WinStone { get; set; } 
+   public StoneType WinStone { get; set; }
 
 }
+
+[MemoryPackable]
+public partial class NtfGameResultToDB : PacketHeader
+{
+}
+
 
 [MemoryPackable]
 public partial class PvPMatchingResult : PacketHeader

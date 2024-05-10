@@ -97,6 +97,10 @@ public enum PacketId : int
     NtrInUserCheck = 1215,
     NtfInRoomCheck = 1216,
 
+    //DB이너패킷
+    NtfInUpdateGameResult = 1301,
+
+
 
     // 시스템, 서버 - 서버
     SS_START = 8001,
@@ -105,5 +109,7 @@ public enum PacketId : int
     // DB 8101 ~ 9000
     ReqDBLogin = 8101,
     ResDBLogin = 8102,
+
+    
 }
 

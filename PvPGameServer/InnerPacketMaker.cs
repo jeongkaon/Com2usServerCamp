@@ -84,6 +84,20 @@ public class InnerPacketMaker
 
     }
 
+    public static MemoryPackBinaryRequestInfo MakeNTFInnerForDBUpdateScorePacket(string playerId1)
+    {
+
+    
+        var id = Encoding.UTF8.GetBytes(playerId1);
+        var memoryPackPacket = new MemoryPackBinaryRequestInfo(id);
+
+
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInUpdateGameResult);
+
+        return memoryPackPacket;
+    }
+
+
 
 }
 [MemoryPackable]

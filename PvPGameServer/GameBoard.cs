@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PvPGameServer;
@@ -23,11 +24,13 @@ public class GameBoard
 
     public int RoomNumber;
     public static Func<string, byte[], bool> NetworkSendFunc;
+    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
-    public GameBoard(int roomNumber, Func<string, byte[], bool> func)
+    public GameBoard(int roomNumber, Func<string, byte[], bool> func, Action<MemoryPackBinaryRequestInfo> distributeInnerPacket)
     {
         RoomNumber = roomNumber;
         NetworkSendFunc = func;
+        DistributeInnerPacket = distributeInnerPacket;
         _players = new List<Player>();
     }
     public StoneType SetPlayer(string sessionId, string userId)
@@ -168,6 +171,16 @@ public class GameBoard
 
         Broadcast("", sendPacket);
 
+        //DB도 해야함
+        //TEST
+        NotifyInnerDB("kaon");
+
+    }
+    public void NotifyInnerDB(string win)
+    {
+
+        MemoryPackBinaryRequestInfo packet = InnerPacketMaker.MakeNTFInnerForDBUpdateScorePacket("kaon");
+        DistributeInnerPacket(packet);
     }
     public void NotifyTimeOut()
     {
@@ -199,7 +212,7 @@ public class GameBoard
     //오목로직
     public bool CheckBoardEnd(int x, int y)
     {
-        const int TestCount = 5;
+        const int TestCount = 2;
 
         if (CheckCol(x, y) == TestCount)        
         {

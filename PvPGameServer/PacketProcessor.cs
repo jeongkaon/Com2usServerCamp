@@ -15,7 +15,7 @@ public class PacketProcessor
     public Func<string, byte[], bool> NeworktSendFunc;
     public Func<string, bool> ForceSession;
 
-    BufferBlock<MemoryPackBinaryRequestInfo> msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
+    BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 
     List<Room> RoomList = new List<Room>();
     UserManager UserMgr = new UserManager();
@@ -50,7 +50,7 @@ public class PacketProcessor
         MainServer.MainLogger.Info("PacketProcessor::Destory - begin");
 
         isThreadRunning = false;
-        msgBuffer.Complete();
+        _msgBuffer.Complete();
         ProcessThread.Join();
 
         MainServer.MainLogger.Info("PacketProcessor::Destory - end");
@@ -59,7 +59,7 @@ public class PacketProcessor
 
     public void InsertPacket(MemoryPackBinaryRequestInfo data)
     {
-        msgBuffer.Post(data);
+        _msgBuffer.Post(data);
     }
 
     void RegistPacketHandlers()
@@ -90,7 +90,7 @@ public class PacketProcessor
         {
             try
             {
-                var packet = msgBuffer.Receive();
+                var packet = _msgBuffer.Receive();
 
                 var header = new PacketHeadInfo();
                 header.Read(packet.Data);
