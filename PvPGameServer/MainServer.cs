@@ -108,6 +108,10 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     public ErrorCode CreateComponent()
     {
 
+        //얘가 순서 내려가면 안됨
+        Room.NetworkSendFunc = SendData;
+        Room.DistributeInnerPacket = DistributeDB;
+
         RoomMgr.CreateRooms(serverOption);
 
         MainPacketProcessor = new PacketProcessor();
@@ -118,8 +122,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainDBProcessor = new DBProcessor();
         MainDBProcessor.CreateAndStart();
 
-        Room.NetworkSendFunc = SendData;
-        Room.DistributeInnerPacket = DistributeDB;
 
         return ErrorCode.None;
 
@@ -173,6 +175,8 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         Stop();
         MainPacketProcessor.Destroy();
+        MainDBProcessor.Destroy();
+           
     }
 
 
@@ -197,9 +201,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
         
         //packeid 그거 확인해야하는디..
-
-        
-
         reqInfo.SessionID = session.SessionID;
         Distribute(reqInfo);
     }

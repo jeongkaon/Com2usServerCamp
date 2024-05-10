@@ -12,6 +12,28 @@ using System.Threading.Tasks.Dataflow;
 
 namespace PvPGameServer;
 
+public class GameDB
+{
+    IDbConnection _dbConn;
+    MySqlCompiler _compiler;
+    QueryFactory _queryFactory;
+
+    const string connectionString =
+        "Server=127.0.0.1;com2us=kaon;Password=0000;Database=game_db;Pooling=true;Min Pool Size=0;Max Pool Size=100;AllowUserVariables=True;";
+
+    public GameDB()
+    {
+        _dbConn = new MySqlConnection(connectionString);
+        _dbConn.Open();
+        _compiler = new MySqlCompiler();
+        _queryFactory = new QueryFactory(_dbConn, _compiler);
+    }
+
+    public QueryFactory GetQueryFactory()
+    {
+        return _queryFactory;
+    }
+}
 public class DBProcessor
 {
     int ThreadNum = 5;
@@ -21,18 +43,15 @@ public class DBProcessor
 
     BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 
-    Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>> PacketHandlerMap = 
+    Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>> DBHandlerMap = 
         new Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>>();
-
-    const string connectionString =
-    "Server=127.0.0.1;user=root;Password=0000;Database=game_db;Pooling=true;Min Pool Size=0;Max Pool Size=100;AllowUserVariables=True;";
 
     DBHandler MyDBHandler = new DBHandler();
 
 
     public void CreateAndStart()
     {
-        MyDBHandler.RegistPacketHandler(PacketHandlerMap);
+        MyDBHandler.RegistPacketHandler(DBHandlerMap);
 
         GameDBThread = new System.Threading.Thread[ThreadNum];
         isThreadRunning = true;
@@ -73,30 +92,20 @@ public class DBProcessor
 
     public void Process()
     {
-        //쓰레드별로 DB 커넥션을 가져야햔다.
-        //GameDB _gameDb = new GameDB();
-        //여기 따로 함수로 빼야한다.
-        IDbConnection _dbConn = new MySqlConnection(connectionString);
-        _dbConn.Open();
-        MySqlCompiler _Compiler = new MySqlCompiler();
-        QueryFactory _QueryFactory = new QueryFactory(_dbConn, _Compiler);
-
+        GameDB gameDb = new GameDB();
 
         while (isThreadRunning)
         {
             try
             {
                 var packet = _msgBuffer.Receive();
-
                 var header = new PacketHeadInfo();
                 header.Read(packet.Data);
 
-                if (PacketHandlerMap.ContainsKey(header.Id))
+                if (DBHandlerMap.ContainsKey(header.Id))
                 {
-                    //쿼리랑 패킷을 인자로 받는 함수를 만들면된다.
-                    PacketHandlerMap[header.Id](_QueryFactory,packet);
+                    DBHandlerMap[header.Id](gameDb.GetQueryFactory(), packet);
                 }
-
             }
             catch (Exception ex)
             {
@@ -105,12 +114,9 @@ public class DBProcessor
                     MainServer.MainLogger.Error(ex.ToString());
                 }
             }
-
         }
-
-
     }
 
-
-
 }
+
+

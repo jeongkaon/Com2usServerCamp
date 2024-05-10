@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Collections.Specialized.BitVector32;
@@ -171,16 +172,48 @@ public class GameBoard
 
         Broadcast("", sendPacket);
 
-        //DB도 해야함
-        //TEST
-        NotifyInnerDB("kaon");
+        NotifyInnerDB(win);
 
     }
-    public void NotifyInnerDB(string win)
+    public void NotifyInnerDB(StoneType win)
     {
+        if (win == StoneType.None)
+        {
+            MemoryPackBinaryRequestInfo player1 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[0]._userId);
+            MemoryPackBinaryRequestInfo player2 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[1]._userId);
+           
+            DistributeInnerPacket(player1);
+            DistributeInnerPacket(player2);
+            
+            return;
+        }
 
-        MemoryPackBinaryRequestInfo packet = InnerPacketMaker.MakeNTFInnerForDBUpdateScorePacket("kaon");
-        DistributeInnerPacket(packet);
+        //winner index
+        int idx = (int)win - 1;
+        if (win == StoneType.Black)     //승자0, 패자1
+        {
+            
+            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx]._userId);
+            DistributeInnerPacket(winner);
+
+            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx + 1]._userId);
+            DistributeInnerPacket(loser);
+
+            return;
+        }
+        
+        if (win == StoneType.White)    //승자1, 패자0
+        {
+
+            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx]._userId);
+            DistributeInnerPacket(winner);
+
+            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx - 1]._userId);
+            DistributeInnerPacket(loser);
+
+            return;
+        }
+
     }
     public void NotifyTimeOut()
     {

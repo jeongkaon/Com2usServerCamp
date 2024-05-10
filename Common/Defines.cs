@@ -98,7 +98,9 @@ public enum PacketId : int
     NtfInRoomCheck = 1216,
 
     //DB이너패킷
-    NtfInUpdateGameResult = 1301,
+    NtfInUpdateWinnerResult = 1301,
+    NtfInUpdateLoserResult = 1302,
+    NtfInUpdateDrawResult = 1303,
 
 
 

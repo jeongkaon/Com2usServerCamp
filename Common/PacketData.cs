@@ -219,6 +219,7 @@ public partial class NtfOmokWinner : PacketHeader
 [MemoryPackable]
 public partial class NtfGameResultToDB : PacketHeader
 {
+    public string id { get; set; }
 }
 
 
