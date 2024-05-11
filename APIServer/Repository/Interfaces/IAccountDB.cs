@@ -5,7 +5,7 @@ namespace APIServer.Repository.Interfaces;
 
 public interface IAccountDB : IDisposable
 {
-    public Task<UserAccountDB> GetUserAccountByEmail(string email);
+    public Task<UserAccountDB> GetUserAccountById(string email);
 
 
 }

@@ -5,7 +5,7 @@ POST {{HiveServer_HostAddress}}/CreateAccount
 Content-Type: application/json
 
 {
-    "Email" : "kaon7723@tukroea.ac.kr",
+    "Id" : "kaon7723@tukroea.ac.kr",
     "Password":"a1234567890"
 }
 
@@ -15,7 +15,7 @@ POST {{HiveServer_HostAddress}}/Login
 Content-Type: application/json
 
 {
-    "Email" : "kaon7723@tukroea.ac.kr",
+    "Id" : "kaon7723@tukroea.ac.kr",
     "Password":"a1234567890"
 }
 ###
@@ -23,7 +23,7 @@ POST {{HiveServer_HostAddress}}/VerifyToken
 Content-Type: application/json
 
 {
-    "Email" : "kaon7723@tukroea.ac.kr",
+    "Id" : "kaon7723@tukroea.ac.kr",
     "Token":"a1234567890"
 }
 ###

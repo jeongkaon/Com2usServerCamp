@@ -37,13 +37,13 @@ public class HiveAccountDB : IHiveAccountDB
 
     }
 
-    public async Task<ErrorCode> CreateAccountAsync(string email, string password)
+    public async Task<ErrorCode> CreateAccountAsync(string id, string password)
     {
         var (salt, hashed) = Security.GenerateHashValue(password);
 
         var count = await _qFactory.Query("account").InsertAsync(new
         {
-            Email = email,
+            id = id,
             SaltValue = salt,
             HashedPassword = hashed
         });
@@ -61,27 +61,27 @@ public class HiveAccountDB : IHiveAccountDB
 
     }
 
-    public async Task<Tuple<ErrorCode, string>> VerifyUserAccount(string email, string password)
+    public async Task<Tuple<ErrorCode, string>> VerifyUserAccount(string id, string password)
     {
         UserInfoAccountDB userInfo = await _qFactory.Query("account")
-            .Where("Email", email).FirstOrDefaultAsync<UserInfoAccountDB>();
+            .Where("id", id).FirstOrDefaultAsync<UserInfoAccountDB>();
 
-        if(userInfo.email== null)
+        if(userInfo.id== null)
         {
             Console.WriteLine("verifyuserAccount fail!!");
-            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNoEmail, email);
+            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNoid, id);
 
         }
 
         if (false == Security.VerifyPassword(password, userInfo.saltvalue, userInfo.hashedpassword))
         {
             Console.WriteLine("verifyuserAccount fail!!");
-            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNotPassword, email);
+            return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNotPassword, id);
 
         }
         Console.WriteLine("verifyuserAccount suc!!");
 
-        return new Tuple<ErrorCode, string>(ErrorCode.None, email);
+        return new Tuple<ErrorCode, string>(ErrorCode.None, id);
 
 
 

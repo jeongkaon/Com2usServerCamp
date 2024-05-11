@@ -2,9 +2,9 @@
 
 public interface IAuthService 
 {
-    public Task<ErrorCode> VerifyTokenToHive(string  email, string token);
+    public Task<ErrorCode> VerifyTokenToHive(string  id, string token);
 
-    public Task<ErrorCode> VerifyExistUser(string email);
+    public Task<ErrorCode> CheckUserInDB(string id);
 
 }
 

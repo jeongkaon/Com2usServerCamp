@@ -8,7 +8,7 @@ namespace HiveServer.Model;
 
 public class LoginHiveRequest
 {
-    public string? Email { get; set; }
+    public string? Id { get; set; }
     public string? Password { get; set; }    
 }
 

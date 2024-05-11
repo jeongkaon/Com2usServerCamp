@@ -32,7 +32,7 @@ public class LoginController : ControllerBase
         LoginHiveResponse response = new();
 
         // 유저정보 있는지 없는지 검사
-        (ErrorCode errorCode, string email) = await _AccountDB.VerifyUserAccount(request.Email, request.Password);
+        (ErrorCode errorCode, string id) = await _AccountDB.VerifyUserAccount(request.Id, request.Password);
         if (errorCode != ErrorCode.None)
         {
             response.Result = errorCode;
@@ -42,7 +42,7 @@ public class LoginController : ControllerBase
 
         //토큰 발행 -> 함수 따로 만들어야함, 유효시간도 정해야한다.
         response.Token = Security.GenerateToken();
-        response.Result = await _HiveRedis.RegistUserAsync(email, response.Token);
+        response.Result = await _HiveRedis.RegistUserAsync(id, response.Token);
 
 
         return response;

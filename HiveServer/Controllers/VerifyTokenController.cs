@@ -24,11 +24,10 @@ public class VerifyTokenController : ControllerBase
     [HttpPost]
     public async Task<VerifyTokenReponse> Create([FromBody] VerifyTokenRequest request)
     {
+        Console.WriteLine("VeriyToeken 요청옴");
         VerifyTokenReponse response = new();
-        response.Result = await _HiveRedis.VerifyUserToken(request.Email, request.Token);
+        response.Result = await _HiveRedis.VerifyUserToken(request.Id, request.Token);
 
         return response;
     }
-
-
 }

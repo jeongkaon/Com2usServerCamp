@@ -30,10 +30,11 @@ public class AccountDB : IAccountDB
 
     }
 
-    public async Task<UserAccountDB> GetUserAccountByEmail(string email)
+    //이름 바꿔야함
+    public async Task<UserAccountDB> GetUserAccountById(string id)
     {
         return await _qFactory.Query("account")
-                        .Where("email", email)
+                        .Where("id", id)
                          .FirstOrDefaultAsync<UserAccountDB>();
 
     }

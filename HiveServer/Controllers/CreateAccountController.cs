@@ -26,7 +26,7 @@ public class CreateAccountController : ControllerBase
     public async Task<CreateHiveAccountResponse> Create([FromBody] CreateHiveAccountRequest request)
     {
         CreateHiveAccountResponse response = new();
-        response.Result = await _HiveDB.CreateAccountAsync(request.Email, request.Password);
+        response.Result = await _HiveDB.CreateAccountAsync(request.Id, request.Password);
 
         return response;
     }

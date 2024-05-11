@@ -5,7 +5,10 @@ namespace APIServer.Repository.Interfaces;
 
 public interface IGameDB : IDisposable
 {
-    public Task<UserGameDataDB> GetUserGameDataByEmail(string email);
+    public Task<UserGameDataDB> GetUserGameDataById(string email);
+
+
+    //이거 빼야할거같은디?
 
     public Task<ErrorCode> CreateUserGameData(string email);
 

@@ -12,7 +12,8 @@ public enum ErrorCode : UInt16
     FailCreateUserGameData=1003,
 
 
+    FailVerifyUserToken = 1004,
 
-    NotExistAccount=2000,
+    NotExistAccount =2000,
     
 }

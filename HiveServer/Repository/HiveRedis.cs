@@ -26,25 +26,27 @@ public class HiveRedis : IHiveRedis
 
     }
 
-    public async Task<ErrorCode> RegistUserAsync(string email, string authToken)
+    public async Task<ErrorCode> RegistUserAsync(string id, string authToken)
     {
         var idDefaultExpiry = TimeSpan.FromDays(1);
-        var redisId = new RedisString<string>(_redisCon, email, idDefaultExpiry);
+        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
         await redisId.SetAsync(authToken);
 
         return ErrorCode.None;
     }
-    public async Task<ErrorCode> VerifyUserToken(string email, string authToken)
+    public async Task<ErrorCode> VerifyUserToken(string id, string authToken)
     {
+
         var idDefaultExpiry = TimeSpan.FromDays(1);
 
-        var redisId = new RedisString<string>(_redisCon, email, idDefaultExpiry);
+        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
         var res =  await redisId.GetAsync();
         if(res.Value != authToken)
         {
             return ErrorCode.FailVerifyUserToken;
         }
 
+        Console.WriteLine("VeriyToeken c처리함!");
         return ErrorCode.None;
     }
 
