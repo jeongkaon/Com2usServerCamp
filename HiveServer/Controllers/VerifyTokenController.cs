@@ -26,6 +26,7 @@ public class VerifyTokenController : ControllerBase
     {
         Console.WriteLine("VeriyToeken 요청옴");
         VerifyTokenReponse response = new();
+
         response.Result = await _HiveRedis.VerifyUserToken(request.Id, request.Token);
 
         return response;
