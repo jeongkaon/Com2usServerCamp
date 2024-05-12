@@ -16,6 +16,9 @@
     - [x] 하이브서버에 맞는 토큰인지 확인받기 
         - [x] 레디스에 저장
         - [x] 처음 API게임서버에 접속한 유저라면 기본게임데이터 생성하기
+
+![로그인다이어그램 drawio (1)](https://github.com/jeongkaon/Com2usServerCamp/assets/90167264/2e5eae26-67b4-4bb9-96f4-8b775a970385)
+
                      
 ## SocketServer
 - [x] 방입장(최대2명까지)
