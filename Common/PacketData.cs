@@ -212,8 +212,7 @@ public partial class NtfTimeOut : PacketHeader
 [MemoryPackable]
 public partial class NtfOmokWinner : PacketHeader
 {
-   // public string UserId { get; set; }
-   public StoneType WinStone { get; set; } 
+   public StoneType WinStone { get; set; }
 
 }
 
@@ -239,4 +238,11 @@ public partial class ResHeartBeatPacket : PacketHeader
 {
     public short Result { get; set; }
 
+}
+
+[MemoryPackable]
+public partial class PKTInternalNtfRoomLeave : PacketHeader
+{
+    public int RoomNumber { get; set; }
+    public string UserId { get; set; }
 }

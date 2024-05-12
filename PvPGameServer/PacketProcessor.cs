@@ -9,36 +9,35 @@ namespace PvPGameServer;
 
 public class PacketProcessor
 {
-    bool isThreadRunning = false;
+    bool _isThreadRunning = false;
     System.Threading.Thread ProcessThread = null;
+
+    BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
+
+    List<Room> _roomList = new List<Room>();
+    UserManager _userMgr = new UserManager();
+
+    Dictionary<int, Action<MemoryPackBinaryRequestInfo>> _packetHandlerMap = new Dictionary<int, Action<MemoryPackBinaryRequestInfo>>();
+
+    PacketHandlerCommon _commonPacketHandler = new PacketHandlerCommon();
+    PacketHandlerRoom _roomPacketHandler = new PacketHandlerRoom();
+    PacketHandlerGame _gamePacketHandler = new PacketHandlerGame();
 
     public Func<string, byte[], bool> NeworktSendFunc;
     public Func<string, bool> ForceSession;
 
-    BufferBlock<MemoryPackBinaryRequestInfo> msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
-
-    List<Room> RoomList = new List<Room>();
-    UserManager UserMgr = new UserManager();
-
-    Dictionary<int, Action<MemoryPackBinaryRequestInfo>> PacketHandlerMap = new Dictionary<int, Action<MemoryPackBinaryRequestInfo>>();
-
-    PacketHandlerCommon CommonPacketHandler = new PacketHandlerCommon();
-    PacketHandlerRoom RoomPacketHandler = new PacketHandlerRoom();
-    PacketHandlerGame GamePacketHandler = new PacketHandlerGame();
-
-
     public void CreateAndStart(List<Room> roomList, PvPServerOption option)
     {
         var MaxUserCount = option.RoomMaxCount * option.RoomMaxUserCount;
-        UserMgr.Init(MaxUserCount);
+        _userMgr.Init(MaxUserCount);
 
-        RoomList = roomList;
-        var MinRoomNum = RoomList[0].Number;
-        var MaxRoomNum = RoomList[0].Number + RoomList.Count() - 1;
+        _roomList = roomList;
+        var MinRoomNum = _roomList[0].Number;
+        var MaxRoomNum = _roomList[0].Number + _roomList.Count() - 1;
 
         RegistPacketHandlers();
 
-        isThreadRunning = true;
+        _isThreadRunning = true;
         ProcessThread = new System.Threading.Thread(Process);
         ProcessThread.Start();
 
@@ -49,8 +48,8 @@ public class PacketProcessor
     {
         MainServer.MainLogger.Info("PacketProcessor::Destory - begin");
 
-        isThreadRunning = false;
-        msgBuffer.Complete();
+        _isThreadRunning = false;
+        _msgBuffer.Complete();
         ProcessThread.Join();
 
         MainServer.MainLogger.Info("PacketProcessor::Destory - end");
@@ -59,7 +58,7 @@ public class PacketProcessor
 
     public void InsertPacket(MemoryPackBinaryRequestInfo data)
     {
-        msgBuffer.Post(data);
+        _msgBuffer.Post(data);
     }
 
     void RegistPacketHandlers()
@@ -67,43 +66,43 @@ public class PacketProcessor
         PacketHandler.NetworkSendFunc = NeworktSendFunc;
         PacketHandler.ForceSession = ForceSession;
         PacketHandler.DistributeInnerPacket = InsertPacket;
-        UserMgr.SetDistributeInnerPacket(InsertPacket);
+        _userMgr.SetDistributeInnerPacket(InsertPacket);
 
-        CommonPacketHandler.Init(UserMgr);
-        CommonPacketHandler.SetCheckCount(UserMgr.GetMaxUserCount() / 4);
-        CommonPacketHandler.RegistPacketHandler(PacketHandlerMap);
+        _commonPacketHandler.Init(_userMgr);
+        _commonPacketHandler.SetCheckCount(_userMgr.GetMaxUserCount() / 4);
+        _commonPacketHandler.RegistPacketHandler(_packetHandlerMap);
 
-        RoomPacketHandler.Init(UserMgr);
-        RoomPacketHandler.SetRoomList(RoomList);
-        RoomPacketHandler.RegistPacketHandler(PacketHandlerMap);
+        _roomPacketHandler.Init(_userMgr);
+        _roomPacketHandler.SetRoomList(_roomList);
+        _roomPacketHandler.RegistPacketHandler(_packetHandlerMap);
 
-        GamePacketHandler.Init(UserMgr);
-        GamePacketHandler.RegistPacketHandler(PacketHandlerMap);
-        GamePacketHandler.SetRoomList(RoomList);
+        _gamePacketHandler.Init(_userMgr);
+        _gamePacketHandler.RegistPacketHandler(_packetHandlerMap);
+        _gamePacketHandler.SetRoomList(_roomList);
 
 
     }
 
     void Process()
     {
-        while (isThreadRunning)
+        while (_isThreadRunning)
         {
             try
             {
-                var packet = msgBuffer.Receive();
+                var packet = _msgBuffer.Receive();
 
                 var header = new PacketHeadInfo();
                 header.Read(packet.Data);
 
-                if (PacketHandlerMap.ContainsKey(header.Id))
+                if (_packetHandlerMap.ContainsKey(header.Id))
                 {
-                    PacketHandlerMap[header.Id](packet);
+                    _packetHandlerMap[header.Id](packet);
                 }
        
             }
             catch (Exception ex)
             {
-                if (isThreadRunning)
+                if (_isThreadRunning)
                 {
                     MainServer.MainLogger.Error(ex.ToString());
                 }

@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PvPGameServer;
@@ -14,7 +16,6 @@ namespace PvPGameServer;
 public class GameBoard
 {
     const int Size = 19;
-
     byte[,] _board = new byte[Size, Size];
     List<Player> _players = null;
 
@@ -23,11 +24,13 @@ public class GameBoard
 
     public int RoomNumber;
     public static Func<string, byte[], bool> NetworkSendFunc;
+    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
-    public GameBoard(int roomNumber, Func<string, byte[], bool> func)
+    public GameBoard(int roomNumber, Func<string, byte[], bool> func, Action<MemoryPackBinaryRequestInfo> distributeInnerPacket)
     {
         RoomNumber = roomNumber;
         NetworkSendFunc = func;
+        DistributeInnerPacket = distributeInnerPacket;
         _players = new List<Player>();
     }
     public StoneType SetPlayer(string sessionId, string userId)
@@ -103,7 +106,7 @@ public class GameBoard
         var player = _players[(int)_curType-1];
         if(player.CheckPassCount() == true)
         {
-            return player._playerType;
+            return player.PlayerType;
         }
         return StoneType.None;
 
@@ -168,6 +171,48 @@ public class GameBoard
 
         Broadcast("", sendPacket);
 
+        NotifyInnerDB(win);
+
+    }
+    public void NotifyInnerDB(StoneType win)
+    {
+        if (win == StoneType.None)
+        {
+            MemoryPackBinaryRequestInfo player1 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[0].UserId);
+            MemoryPackBinaryRequestInfo player2 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[1].UserId);
+           
+            DistributeInnerPacket(player1);
+            DistributeInnerPacket(player2);
+            
+            return;
+        }
+
+        //winner index
+        int idx = (int)win - 1;
+        if (win == StoneType.Black)     //승자0, 패자1
+        {
+            
+            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx].UserId);
+            DistributeInnerPacket(winner);
+
+            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx + 1].UserId);
+            DistributeInnerPacket(loser);
+
+            return;
+        }
+        
+        if (win == StoneType.White)    //승자1, 패자0
+        {
+
+            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx].UserId);
+            DistributeInnerPacket(winner);
+
+            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx - 1].UserId);
+            DistributeInnerPacket(loser);
+
+            return;
+        }
+
     }
     public void NotifyTimeOut()
     {
@@ -186,12 +231,12 @@ public class GameBoard
     {
         foreach (var player in _players)
         {
-            if (player._netSessionId == excludeNetSessionID)
+            if (player.NetSessionId == excludeNetSessionID)
             {
                 continue;
             }
 
-            NetworkSendFunc(player._netSessionId, sendPacket);
+            NetworkSendFunc(player.NetSessionId, sendPacket);
         }
     }
 
@@ -199,7 +244,7 @@ public class GameBoard
     //오목로직
     public bool CheckBoardEnd(int x, int y)
     {
-        const int TestCount = 5;
+        const int TestCount = 2;
 
         if (CheckCol(x, y) == TestCount)        
         {

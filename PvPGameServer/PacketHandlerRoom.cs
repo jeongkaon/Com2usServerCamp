@@ -1,5 +1,7 @@
 ﻿using CommandLine;
 using MemoryPack;
+using SqlKata;
+using SqlKata.Execution;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -74,9 +76,9 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PacketId.ReqRoomChat, RequestChat);
         packetHandlerMap.Add((int)PacketId.ReqReadyGame, RequestGameReadyPacket);
         packetHandlerMap.Add((int)PacketId.NtfInRoomCheck, CheckInRoomState);
-
-
     }
+
+
 
     public void CheckInRoomState(MemoryPackBinaryRequestInfo requestData)
     {
@@ -259,7 +261,7 @@ public class PacketHandlerRoom : PacketHandler
         MainServer.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.Data);
-        LeaveRoomUser(sessionID, reqData._roomNumber);
+        LeaveRoomUser(sessionID, reqData.RoomNumber);
     }
 
     public void RequestChat(MemoryPackBinaryRequestInfo packetData)

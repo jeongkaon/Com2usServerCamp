@@ -10,41 +10,36 @@ namespace PvPGameServer;
 public class PacketHandlerCommon : PacketHandler
 {
 
-    int MaxUserCheckCount;     
-    int UserCheckStartIndex;
-
-
+    int _maxUserCheckCount;     
+    int _userCheckStartIndex;
 
     public void SetCheckCount(int maxUserCheck)
     {
-        UserCheckStartIndex = 0;
-        MaxUserCheckCount = maxUserCheck;
+        _userCheckStartIndex = 0;
+        _maxUserCheckCount = maxUserCheck;
     }
-
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PacketId.ReqLogin, ReqLoginPacket);
+        packetHandlerMap.Add((int)PacketId.NtfInLoginCheck, ReqLoginPacket);
         packetHandlerMap.Add((int)PacketId.NtfInConnectClient, NotifyInConnectClient);
         packetHandlerMap.Add((int)PacketId.NtfInDisconnectClient, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PacketId.ReqHeartBeat, ReqHeartBeatPacket);
         packetHandlerMap.Add((int)PacketId.NtrInUserCheck, NotifyInUserCheck);
         packetHandlerMap.Add((int)PacketId.NtfInForceDisconnectClient, NotifyInForceDisConnectClient);
-
     }
     public void NotifyInUserCheck(MemoryPackBinaryRequestInfo requestData)
     {
-        int endIdx = UserCheckStartIndex + MaxUserCheckCount;
+        int endIdx = _userCheckStartIndex + _maxUserCheckCount;
      
-        var value = _userMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
+        var value = _userMgr.CheckHeartBeat(_userCheckStartIndex, endIdx);
 
 
-        UserCheckStartIndex += endIdx;
-        if(UserCheckStartIndex >= MaxUserCheckCount)
+        _userCheckStartIndex += endIdx;
+        if(_userCheckStartIndex >= _maxUserCheckCount)
         {
-            UserCheckStartIndex = 0;
+            _userCheckStartIndex = 0;
         }
     }
-
     public void NotifyInConnectClient(MemoryPackBinaryRequestInfo requestData)
     {
     }
@@ -73,11 +68,11 @@ public class PacketHandlerCommon : PacketHandler
         var sessionID = requestData.SessionID;
         ForceSession(sessionID);
     }
-
     public void ReqLoginPacket(MemoryPackBinaryRequestInfo recvData)
     {
         var sessionID = recvData.SessionID;
-
+        var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
+        
         try
         {
             if (_userMgr.GetUser(sessionID) != null)
@@ -86,7 +81,6 @@ public class PacketHandlerCommon : PacketHandler
                 return;
             }
 
-            var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
             var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);
             if (errorCode != ErrorCode.None)
             {
@@ -161,8 +155,6 @@ public class PacketHandlerCommon : PacketHandler
 
         NetworkSendFunc(sessionID, sendData);
     }
-
-
 }
 
 

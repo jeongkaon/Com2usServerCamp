@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NLog.Targets;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Logging;
@@ -22,12 +23,13 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     SuperSocket.SocketBase.Config.IServerConfig serverConfig;
 
     PacketProcessor MainPacketProcessor = new PacketProcessor();
+    GameDBProcessor DBProcessor = new GameDBProcessor();
+    AccountDBProcessor AccountProcessor = new AccountDBProcessor();
+
     RoomManager RoomMgr = new RoomManager();
 
     Timer RoomCheckTimer = null; 
     Timer UserCheckTimer = null;
-
-
 
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
@@ -83,7 +85,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             {
                 MainLogger = base.Logger;
                 MainLogger.Info("서버 초기화 성공");
-
             }
 
             CreateComponent();
@@ -94,29 +95,32 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             MainLogger.Debug("서버 생성 성공");
 
             Start();
-
         }
         catch (Exception ex)
         {
             MainLogger.Error($"[ERROR] 서버 생성 실패: {ex.ToString()}");
-
         }
     }
 
     public ErrorCode CreateComponent()
     {
         Room.NetworkSendFunc = SendData;
+        Room.DistributeInnerPacket = DistributeGameDB;
 
         RoomMgr.CreateRooms(serverOption);
 
         MainPacketProcessor = new PacketProcessor();
         MainPacketProcessor.NeworktSendFunc = SendData;
         MainPacketProcessor.ForceSession = ForceDisconnectSession;
-
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
-        return ErrorCode.None;
+        DBProcessor = new GameDBProcessor();
+        DBProcessor.CreateAndStart();
 
+        AccountProcessor = new AccountDBProcessor();
+        AccountProcessor.CreateAndStart();
+
+        return ErrorCode.None;
     }
 
     public bool ForceDisconnectSession(string sessionId)
@@ -134,11 +138,19 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         MainPacketProcessor.InsertPacket(reqPacket);
     }
+    void DistributeGameDB(MemoryPackBinaryRequestInfo reqPacket)
+    {
+        DBProcessor.InsertPacket(reqPacket);
+    }
+
+    void DistributeAccountDB(MemoryPackBinaryRequestInfo reqPacket)
+    {
+        AccountProcessor.InsertPacket(reqPacket);
+    }
 
     public bool SendData(string sessionId, byte[] data)
     {
         var session = GetSessionByID(sessionId);
-
         try
         {
             if (session == null)
@@ -160,13 +172,14 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         Stop();
         MainPacketProcessor.Destroy();
+        DBProcessor.Destroy();
+        AccountProcessor.Destroy();
     }
 
 
     void OnConnected(ClientSession session)
     {
         MainLogger.Info($"세션 번호 {session.SessionID} 접속");
-
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(true, session.SessionID);
         Distribute(packet);
 
@@ -174,7 +187,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     void OnClosed(ClientSession session, CloseReason reason)
     {
         MainLogger.Info($"세션 번호 {session.SessionID} 접속해제: {reason.ToString()}");
-
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(false, session.SessionID);
         Distribute(packet);
 
@@ -182,16 +194,21 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     void OnPacketReceived(ClientSession session, MemoryPackBinaryRequestInfo reqInfo)
     {
         MainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
-        
-        //packeid 그거 확인해야하는디..
-
-        
-
+        var packetId = FastBinaryRead.UInt16(reqInfo.Data, 3);
         reqInfo.SessionID = session.SessionID;
-        Distribute(reqInfo);
-    }
-   
 
+        if (packetId == (UInt16)PacketId.ReqLogin)
+        {
+            DistributeAccountDB(reqInfo);
+            return;
+        }
+
+        if (packetId < (UInt16)PacketId.ReqEnd && packetId > (UInt16)PacketId.ReqBegin)
+        {
+            Distribute(reqInfo);
+            return;
+        }
+    }
 }
 
 
