@@ -19,17 +19,13 @@ IConfiguration configuration = builder.Configuration;
 
 builder.Services.Configure<DbConfig>(configuration.GetSection(nameof(DbConfig)));
 
-//서비스 추가해야한다.
-builder.Services.AddTransient<IAccountDB, AccountDB>();
+builder.Services.AddSingleton<IRedisDB, RedisDB>();
 builder.Services.AddTransient<IGameDB,GameDB>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IGameService, GameService>();
-builder.Services.AddSingleton<IRedisDB, RedisDB>();
 builder.Services.AddControllers();
 
-
 var app = builder.Build();
-
 
 app.MapDefaultControllerRoute();
 
@@ -42,11 +38,8 @@ app.Run(configuration["ServerAddress"]);
 
 
 
-
-//이거 따로뺄까??
 public class DbConfig
 {
-    public string? AccountDB { get; set; }
     public string? GameDB { get; set; }
     public string? Redis { get; set; }
 

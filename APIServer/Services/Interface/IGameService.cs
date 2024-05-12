@@ -2,7 +2,9 @@
 
 public interface IGameService
 {
-    public Task<ErrorCode> CreateNewUserGameData(string email);
+    public Task<ErrorCode> CheckUserGameDataInDB(string id);
+
+    public Task<ErrorCode> CreateNewUserGameData(string id);
 
 }
 

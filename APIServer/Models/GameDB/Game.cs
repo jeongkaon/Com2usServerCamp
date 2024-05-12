@@ -3,7 +3,6 @@
 
 public class UserGameDataDB
 {
-    //id로 바꿔야함
     public string id { get; set; }
     public int epx { get; set; }
     public int win_score { get; set; }

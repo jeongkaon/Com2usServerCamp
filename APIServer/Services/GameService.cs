@@ -15,6 +15,19 @@ public class GameService: IGameService
         _gameDb = gameDb;
     }
 
+    public async Task<ErrorCode> CheckUserGameDataInDB(string id)
+    {
+        //NotExistAccount이거 쓰면될듯
+
+        var res = _gameDb.GetUserGameDataById(id);
+        if (res == null)
+        {
+            return ErrorCode.NotExistAccount;
+        }
+
+        return ErrorCode.None;
+    }
+
     public async Task<ErrorCode> CreateNewUserGameData(string id)
     {
         var error = _gameDb.CreateUserGameData(id);

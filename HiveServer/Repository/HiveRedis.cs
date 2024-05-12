@@ -46,7 +46,6 @@ public class HiveRedis : IHiveRedis
             return ErrorCode.FailVerifyUserToken;
         }
 
-        Console.WriteLine("VeriyToeken c처리함!");
         return ErrorCode.None;
     }
 

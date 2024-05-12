@@ -46,18 +46,17 @@ public class RedisDB : IRedisDB
 
     public async Task<ErrorCode> RegistUserAsync(string id, string authToken)
     {
-        //토큰만료+하이브에서 확인된경우
-        //유저정보등록 id : toekn 저장하기
-
         var idDefaultExpiry = TimeSpan.FromDays(1);
         var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
-        await redisId.SetAsync(authToken);
+        var res= await redisId.SetAsync(authToken);
+
+        if(res == false)
+        {
+            return ErrorCode.FailSetRedisUserToken;
+        }
 
         return ErrorCode.None;
-
     }
-
-
 
     public void Dispose()
     {

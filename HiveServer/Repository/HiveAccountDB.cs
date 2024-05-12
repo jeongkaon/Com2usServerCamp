@@ -68,16 +68,12 @@ public class HiveAccountDB : IHiveAccountDB
 
         if(userInfo.id== null)
         {
-            Console.WriteLine("verifyuserAccount fail!!");
             return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNoid, id);
-
         }
 
         if (false == Security.VerifyPassword(password, userInfo.saltvalue, userInfo.hashedpassword))
         {
-            Console.WriteLine("verifyuserAccount fail!!");
             return new Tuple<ErrorCode, string>(ErrorCode.FailVerifyUserNotPassword, id);
-
         }
         Console.WriteLine("verifyuserAccount suc!!");
 

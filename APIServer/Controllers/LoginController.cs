@@ -19,14 +19,12 @@ namespace APIServer.Controllers;
 public class LoginController : ControllerBase
 {
     readonly IRedisDB _RedisDB;                 
-    readonly IAccountDB _AccountDB;             
     readonly IAuthService _AuthService;
     readonly IGameService _GameService;
 
-    public LoginController(IRedisDB hiveRedis, IAccountDB accountDB, IAuthService authService, IGameService gameService)
+    public LoginController(IRedisDB hiveRedis, IAuthService authService, IGameService gameService)
     {
         _RedisDB = hiveRedis;
-        _AccountDB = accountDB;
         _AuthService = authService;
         _GameService = gameService;
     }
@@ -36,40 +34,49 @@ public class LoginController : ControllerBase
     {
         LoginResponse response = new LoginResponse();
 
-        //TODO 추가해야하는것!
-        //레디스에 있는지 먼저 확인해야하는거아님??
-        //레디스에 없으면 하이브로 가는거임
-        //->redis가 들고있는게 맞는지 아님 auth로 따로빼는게 맞는지 고민..
+        var id = request.Id;
+        var token = request.Token;
 
+        //클라에게 로그인 요청이 들어오면 -> 클라는 id랑 token을 패킷으로 줌
 
-        ErrorCode error = await _AuthService.VerifyTokenToHive(request.Id, request.Token);
+        //0.먼저 레디스에 존재하는지 찾아본다.
+        var error = await _RedisDB.VerifyUserToken(id, token);
+        if (error  == ErrorCode.None)
+        {
+            return response;
+        }
+
+        // 1. 패킷으로 보낸 인증토큰이 유효한지 hive서버에 물어봐야한다.
+        error = await _AuthService.VerifyTokenToHive(id, token);
         if(error != ErrorCode.None)
         {
             response.Result = ErrorCode.FailVerifyToken;
             return response;
         }
 
-        //TODO - 레디스 저장위치가 여기가 맞는가?
-        var result = await _RedisDB.RegistUserAsync(request.Id, request.Token);
-        if(result == ErrorCode.None)
+        //2. 토큰을 레디스에 저장해야한다. id : token으로 저장한다. 하이브와 다른 레디스를 사용한다.
+        error = await _RedisDB.RegistUserAsync(id, token);
+        if(error== ErrorCode.FailSetRedisUserToken)
         {
-            Console.WriteLine("레디스에 잘 저장됨!");
+            //레디스 저장한거 실패! 
+            //TODO - 로그남겨야한다.
         }
 
-        //근데 하이브에 있는데 유효하지 않은 유저일수가 있나?
-        //-> 그게 아니라 처음 회원가입하고 로그인한애면 DB에 USER정보 생성해야한다.
-        // 있는 애라면 걍 들고와야한다.
+        //처음 입장한 애라면 UserGameDataTable 생성해야한다.
+        //게임 데이터 테이블에 id로 확인하자!
+        error = await _GameService.CheckUserGameDataInDB(id);
 
-        //로그인은 한 상황이면 유저정보가 DB에 있는지 확인해야한다.
-        error = await _AuthService.CheckUserInDB(request.Id);
-
-        if(error == ErrorCode.None) 
+        if(error == ErrorCode.NotExistAccount) //유저데이터 없는거임
         {
-           var res = _GameService.CreateNewUserGameData(request.Id);  
+            var res = await _GameService.CreateNewUserGameData(id);
+            if(res != ErrorCode.None)
+            {
+                response.Result = ErrorCode.FailCreateUserGameData;
+                return response;
+            }
         }
-       
-        //TODO-userdata 세팅해야한다.
 
+        
         return response;
     }
 
