@@ -1,4 +1,4 @@
-##SocketServer
+## SocketServer
 - [x] 방입장(최대2명까지)
 - [x] 방 나가기
 - [x] 방 채팅
