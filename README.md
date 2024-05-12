@@ -14,6 +14,7 @@
         - [x] 레디스에 저장
         - [x] 처음 API게임서버에 접속한 유저라면 기본게임데이터 생성하기
 
+![로그인다이어그램-페이지-2 drawio](https://github.com/jeongkaon/Com2usServerCamp/assets/90167264/c521f7a2-9023-4409-87f4-cd7a837f42f2)
 
                      
 ## SocketServer
