@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PvPGameServer;
 
-public class GameDBHandler
+public class GameDBHandler : PacketHandler
 {
     //DB조작만 해야한다.
     //결과값을 누구한테 보내??

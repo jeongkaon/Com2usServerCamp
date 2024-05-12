@@ -95,6 +95,7 @@ public enum PacketId : int
     NtfIntRoomLeave = 1214,
     NtrInUserCheck = 1215,
     NtfInRoomCheck = 1216,
+    NtfInLoginCheck=1217,
 
     //DB이너패킷
     NtfInUpdateWinnerResult = 1301,

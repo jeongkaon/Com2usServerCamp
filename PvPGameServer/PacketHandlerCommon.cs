@@ -23,7 +23,9 @@ public class PacketHandlerCommon : PacketHandler
 
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PacketId.ReqLogin, ReqLoginPacket);
+        //일단 테스트용으로 레디스에 가는지 확인하기위해 login그거를 주석하겠습니다.
+        packetHandlerMap.Add((int)PacketId.NtfInLoginCheck, ReqLoginPacket);
+
         packetHandlerMap.Add((int)PacketId.NtfInConnectClient, NotifyInConnectClient);
         packetHandlerMap.Add((int)PacketId.NtfInDisconnectClient, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PacketId.ReqHeartBeat, ReqHeartBeatPacket);
@@ -77,7 +79,10 @@ public class PacketHandlerCommon : PacketHandler
     public void ReqLoginPacket(MemoryPackBinaryRequestInfo recvData)
     {
         var sessionID = recvData.SessionID;
-
+        
+        //DATE를 뽑아서 타입캐스팅 시키고싶은디..c#은 바이트배열을 클래스로 타입캐스팅하는법없움!
+        var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
+        
         try
         {
             if (_userMgr.GetUser(sessionID) != null)
@@ -85,8 +90,9 @@ public class PacketHandlerCommon : PacketHandler
                 SendLoginToClient(ErrorCode.LoginAlreadyWorking, recvData.SessionID);
                 return;
             }
+            //이미 
+            //var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
 
-            var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
             var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);
             if (errorCode != ErrorCode.None)
             {

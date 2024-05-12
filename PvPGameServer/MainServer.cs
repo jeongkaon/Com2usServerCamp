@@ -189,6 +189,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         Stop();
         MainPacketProcessor.Destroy();
         DBProcessor.Destroy();
+        AccountProcessor.Destroy();
            
     }
 
@@ -212,7 +213,22 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     void OnPacketReceived(ClientSession session, MemoryPackBinaryRequestInfo reqInfo)
     {
         MainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
-        
+
+        //두번째 넣으면 1010이 나오는데? 시발 왜저래 id만 뽑아줘 ㅡㅡ 1010은 하트 비트였음 하트비트..ㅅㅂ 
+        var packetId = FastBinaryRead.UInt16(reqInfo.Data, 3);
+        if(packetId == 1002)
+        {
+            Console.WriteLine("로그인 패킷 레디스로 먼저 보낸다!");
+            reqInfo.SessionID = session.SessionID;
+            DistributeAccountDB(reqInfo);
+            //Distr(reqInfo);
+        }
+
+
+        //클라에서온애를 뽑아야한다 reqInfo에서 typeid를 뽑아야한다. Type인가? Id 인가??
+        //reqInfo에서 id를 뽑아야한다.
+        //FastBinaryRead.UInt16
+
         //packeid 그거 확인해야하는디..
         reqInfo.SessionID = session.SessionID;
         Distribute(reqInfo);

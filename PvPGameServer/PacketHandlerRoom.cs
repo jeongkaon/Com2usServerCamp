@@ -261,7 +261,7 @@ public class PacketHandlerRoom : PacketHandler
         MainServer.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.Data);
-        LeaveRoomUser(sessionID, reqData._roomNumber);
+        LeaveRoomUser(sessionID, reqData.RoomNumber);
     }
 
     public void RequestChat(MemoryPackBinaryRequestInfo packetData)

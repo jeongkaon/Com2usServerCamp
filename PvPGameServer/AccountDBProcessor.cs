@@ -1,4 +1,5 @@
 ﻿using CloudStructures;
+using CloudStructures.Structures;
 using SqlKata.Execution;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using StackExchange.Redis;
 
 namespace PvPGameServer;
 
@@ -26,6 +28,8 @@ public class AccountDB
     {
         return _redisCon;
     }
+
+  
 }
 public class AccountDBProcessor
 {
@@ -39,6 +43,7 @@ public class AccountDBProcessor
     Dictionary<int, Action<RedisConnection, MemoryPackBinaryRequestInfo>> _accountDBHandlerMap =
         new Dictionary<int, Action<RedisConnection, MemoryPackBinaryRequestInfo>>();
 
+
     AccountDBHander _accountDbHandler = new AccountDBHander();
 
 
@@ -46,7 +51,6 @@ public class AccountDBProcessor
     {
         _accountDbHandler.RegistPacketHandler(_accountDBHandlerMap);
         _accountDBThread = new System.Threading.Thread[_threadNum];
-
         _isThreadRunning = true;
 
         for (int i = 0; i < _threadNum; ++i)

@@ -15,8 +15,8 @@ public class InnerPacketMaker
 
         var packet = new PKTInternalNtfRoomLeave()
         {
-            _roomNumber = roomNumber,
-            _userId = userId,
+            RoomNumber = roomNumber,
+            UserId = userId,
         };
 
         var sendData = MemoryPackSerializer.Serialize(packet);
@@ -115,10 +115,11 @@ public class InnerPacketMaker
         PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInUpdateDrawResult);
         return memoryPackPacket;
     }
+
 }
 [MemoryPackable]
 public partial class PKTInternalNtfRoomLeave : PacketHeader
 {
-    public int _roomNumber { get; set; }
-    public string _userId { get; set; }
+    public int RoomNumber { get; set; }
+    public string UserId { get; set; }
 }
