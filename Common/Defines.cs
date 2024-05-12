@@ -36,7 +36,6 @@ public enum ErrorCode : short
     RoomEnterErrorSystem = 1023,
     RoomEnterInvalidRoomNumber = 1024,
     RoomEnterFailAddUser = 1025,
-
     RoomEnterFaildUserFull = 1028,
 
     //방조사
@@ -104,7 +103,7 @@ public enum PacketId : int
 
 
     //Redis이너패킷
-    NtfIn
+   
 
 
     // 시스템, 서버 - 서버

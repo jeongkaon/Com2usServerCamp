@@ -12,9 +12,7 @@ namespace PvPGameServer;
 
 public class AccountDB
 {
-    //레디스con 그거 넣으면됨
     RedisConnection _redisCon;
-
     const string ConnectionString = "127.0.0.1:6379";
 
     public AccountDB()
@@ -47,8 +45,8 @@ public class AccountDBProcessor
     public void CreateAndStart()
     {
         _accountDbHandler.RegistPacketHandler(_accountDBHandlerMap);
-
         _accountDBThread = new System.Threading.Thread[_threadNum];
+
         _isThreadRunning = true;
 
         for (int i = 0; i < _threadNum; ++i)
@@ -58,11 +56,7 @@ public class AccountDBProcessor
                 _accountDBThread[i] = new System.Threading.Thread(Process);
                 _accountDBThread[i].Start();
             }
-
-
         }
-
-
     }
 
     public void Destroy()
@@ -99,7 +93,6 @@ public class AccountDBProcessor
 
                 if (_accountDBHandlerMap.ContainsKey(header.Id))
                 {
-                    //레디스로 바꿔야함ㄴ
                     _accountDBHandlerMap[header.Id](accountDb.GetRedisCon(), packet);
                 }
             }

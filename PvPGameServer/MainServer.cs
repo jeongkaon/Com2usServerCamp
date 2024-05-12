@@ -22,7 +22,10 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     SuperSocket.SocketBase.Config.IServerConfig serverConfig;
 
     PacketProcessor MainPacketProcessor = new PacketProcessor();
-    GameDBProcessor MainDBProcessor = new GameDBProcessor();
+    GameDBProcessor DBProcessor = new GameDBProcessor();
+    AccountDBProcessor AccountProcessor = new AccountDBProcessor();
+
+
 
     RoomManager RoomMgr = new RoomManager();
 
@@ -110,7 +113,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
         //얘가 순서 내려가면 안됨
         Room.NetworkSendFunc = SendData;
-        Room.DistributeInnerPacket = DistributeDB;
+        Room.DistributeInnerPacket = DistributeGameDB;
 
         RoomMgr.CreateRooms(serverOption);
 
@@ -119,8 +122,11 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainPacketProcessor.ForceSession = ForceDisconnectSession;
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
-        MainDBProcessor = new GameDBProcessor();
-        MainDBProcessor.CreateAndStart();
+        DBProcessor = new GameDBProcessor();
+        DBProcessor.CreateAndStart();
+
+        AccountProcessor = new AccountDBProcessor();
+        AccountProcessor.CreateAndStart();
 
 
         return ErrorCode.None;
@@ -144,11 +150,18 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     }
 
 
-    //ㅅㅂ 개같음 구조를 다시생각해보자!!
-    void DistributeDB(MemoryPackBinaryRequestInfo reqPacket)
+    void DistributeGameDB(MemoryPackBinaryRequestInfo reqPacket)
     {
-        MainDBProcessor.InsertPacket(reqPacket);
+        DBProcessor.InsertPacket(reqPacket);
     }
+
+    void DistributeAccountDB(MemoryPackBinaryRequestInfo reqPacket)
+    {
+        //이거 어디서필요..?
+        //위에꺼는 room에서 이너 패킷 보낼일이 있기때문에 쓴거임.
+        AccountProcessor.InsertPacket(reqPacket);
+    }
+
 
     public bool SendData(string sessionId, byte[] data)
     {
@@ -175,7 +188,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         Stop();
         MainPacketProcessor.Destroy();
-        MainDBProcessor.Destroy();
+        DBProcessor.Destroy();
            
     }
 
