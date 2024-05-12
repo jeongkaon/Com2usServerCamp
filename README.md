@@ -1,18 +1,11 @@
-## TODO
-- [ ] 로그정리
-- [ ] try-catch로 예외처리 바꾸기
-- [ ] ASP.NET Core 문서작성
-- [ ] 클라이언트 수정
-    - [ ] 턴순서에 맞춰서 id,돌 출력되는거 -> 돌색은 해결, id는 겹쳐서나오는문제있움..
-    - [ ] 턴 시간표시 추가     
-
-
 ## HiveServer
 - [x] 계정생성
     - [x] DB에 저장     
 - [x] 로그인
     - [x] 로그인 성공인 경우 인증토큰 생성하고 전달
     - [x] 인증 토큰 레디스에 저장
+
+![로그인다이어그램 drawio (1)](https://github.com/jeongkaon/Com2usServerCamp/assets/90167264/2e5eae26-67b4-4bb9-96f4-8b775a970385)
 
 ## APIServer
 - [x] 로그인
@@ -21,7 +14,6 @@
         - [x] 레디스에 저장
         - [x] 처음 API게임서버에 접속한 유저라면 기본게임데이터 생성하기
 
-![로그인다이어그램 drawio (1)](https://github.com/jeongkaon/Com2usServerCamp/assets/90167264/2e5eae26-67b4-4bb9-96f4-8b775a970385)
 
                      
 ## SocketServer
@@ -49,3 +41,11 @@
 - [x] 게임결과 DB 저장
     - [x] 게임 DB에 저장한다. 
 
+## TODO
+- [ ] 로그정리
+- [ ] try-catch로 예외처리 바꾸기
+- [ ] ASP.NET Core 문서작성
+- [ ] 클라이언트 수정
+    - [ ] 턴순서에 맞춰서 id,돌 출력되는거 -> 돌색은 해결, id는 겹쳐서나오는문제있움..
+    - [ ] 턴 시간표시 추가
+    - [ ] 하이브, api서버 주소 넣는 공간 만들어야함
