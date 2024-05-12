@@ -98,6 +98,9 @@ namespace csharp_test_client
         
         private void btnConnect_Click(object sender, EventArgs e)
         {
+            Login test = new Login();
+            test.ShowDialog(); //다이얼로그랑 머가 다룸?
+
             string address = textBoxIP.Text;
 
             if (checkBoxLocalHostIP.Checked)
