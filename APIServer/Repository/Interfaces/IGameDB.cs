@@ -5,7 +5,7 @@ namespace APIServer.Repository.Interfaces;
 
 public interface IGameDB : IDisposable
 {
-    public Task<UserGameDataDB> GetUserGameDataByEmail(string email);
+    public Task<ErrorCode> GetUserGameDataById(string email);
 
     public Task<ErrorCode> CreateUserGameData(string email);
 

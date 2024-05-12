@@ -6,10 +6,10 @@ namespace HiveServer.Model;
 public class CreateHiveAccountRequest
 {
     [Required]
-    [MinLength(1, ErrorMessage = "EMAIL CANNOT BE EMPTY")]      //에러문자열 말고 숫자로 나오게 변경해야한다.
-    [StringLength(50, ErrorMessage = "EMAIL IS TOO LONG")]
+    [MinLength(1, ErrorMessage = "id CANNOT BE EMPTY")]      //에러문자열 말고 숫자로 나오게 변경해야한다.
+    [StringLength(50, ErrorMessage = "id IS TOO LONG")]
     [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "E-mail is not valid")]
-    public string? Email { get; set; }
+    public string? Id { get; set; }
 
     [Required]
     [MinLength(1, ErrorMessage = "PASSWORD CANNOT BE EMPTY")]
@@ -26,7 +26,7 @@ public class CreateHiveAccountResponse
 
 public class UserInfoAccountDB
 {
-    public string email { get; set; }
+    public string id { get; set; }
     public string password { get; set; }
 
 

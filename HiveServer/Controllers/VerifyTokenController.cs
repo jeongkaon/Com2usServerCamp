@@ -15,20 +15,20 @@ namespace HiveServer.Controllers;
 [Route("[controller]")]
 public class VerifyTokenController : ControllerBase
 {
-    readonly IHiveRedis _HiveRedis;
+    readonly IHiveRedis _hiveRedis;
     public VerifyTokenController(IHiveRedis rd)
     {
-        _HiveRedis = rd;
+        _hiveRedis = rd;
     }
 
     [HttpPost]
     public async Task<VerifyTokenReponse> Create([FromBody] VerifyTokenRequest request)
     {
+        Console.WriteLine("VeriyToeken 요청옴");
         VerifyTokenReponse response = new();
-        response.Result = await _HiveRedis.VerifyUserToken(request.Email, request.Token);
+
+        response.Result = await _hiveRedis.VerifyUserToken(request.Id, request.Token);
 
         return response;
     }
-
-
 }

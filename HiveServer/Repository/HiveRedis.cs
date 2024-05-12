@@ -14,7 +14,7 @@ public class HiveRedis : IHiveRedis
 {
     readonly ILogger<HiveRedis> _logger;
     
-    public RedisConnection _redisCon;
+    RedisConnection _redisCon;
 
 
     public HiveRedis(ILogger<HiveRedis> logger, IOptions<DbConfig> dbConfig)
@@ -26,19 +26,20 @@ public class HiveRedis : IHiveRedis
 
     }
 
-    public async Task<ErrorCode> RegistUserAsync(string email, string authToken)
+    public async Task<ErrorCode> RegistUserAsync(string id, string authToken)
     {
         var idDefaultExpiry = TimeSpan.FromDays(1);
-        var redisId = new RedisString<string>(_redisCon, email, idDefaultExpiry);
+        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
         await redisId.SetAsync(authToken);
 
         return ErrorCode.None;
     }
-    public async Task<ErrorCode> VerifyUserToken(string email, string authToken)
+    public async Task<ErrorCode> VerifyUserToken(string id, string authToken)
     {
+
         var idDefaultExpiry = TimeSpan.FromDays(1);
 
-        var redisId = new RedisString<string>(_redisCon, email, idDefaultExpiry);
+        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
         var res =  await redisId.GetAsync();
         if(res.Value != authToken)
         {

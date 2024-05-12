@@ -15,15 +15,24 @@ public class GameService: IGameService
         _gameDb = gameDb;
     }
 
-    public async Task<ErrorCode> CreateNewUserGameData(string email)
+    public async Task<ErrorCode> CheckUserGameDataInDB(string id)
     {
-        //데이터베이스에 새로운 user정보 저장
-        var error = _gameDb.CreateUserGameData(email);
-       if(error != null)
+        var res = _gameDb.GetUserGameDataById(id);
+        if (res.Result == ErrorCode.NotExistAccount)
+        {
+            res = CreateNewUserGameData(id);
+        }
+        return res.Result;
+
+    }
+
+    public async Task<ErrorCode> CreateNewUserGameData(string id)
+    {
+        var error = _gameDb.CreateUserGameData(id);
+        if (error.Result != ErrorCode.None)
         {
             return ErrorCode.FailCreateUserGameData;
         }
-
         return ErrorCode.None;
     }
 

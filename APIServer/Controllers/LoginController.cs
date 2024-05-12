@@ -18,35 +18,53 @@ namespace APIServer.Controllers;
 [Route("[controller]")]
 public class LoginController : ControllerBase
 {
-    readonly IRedisDB _RedisDB;
-    readonly IAccountDB _AccountDB;
+    readonly IRedisDB _RedisDB;                 
     readonly IAuthService _AuthService;
     readonly IGameService _GameService;
+
+    public LoginController(IRedisDB hiveRedis, IAuthService authService, IGameService gameService)
+    {
+        _RedisDB = hiveRedis;
+        _AuthService = authService;
+        _GameService = gameService;
+    }
 
     [HttpPost]
     public async Task<LoginResponse> Create([FromBody] LoginRequest request)
     {
-        LoginResponse response = new();
+        LoginResponse response = new LoginResponse();
+        var id = request.Id;
+        var token = request.Token;
 
-        //하이브서버에 있는지 확인해야한다.
-        ErrorCode error = await _AuthService.VerifyTokenToHive(request.Email, request.Token);
+        var error = await _RedisDB.VerifyUserToken(id, token);
+        if (error == ErrorCode.None)
+        {
+            return response;
+        }
+
+        error = await _AuthService.VerifyTokenToHive(id, token);
         if(error != ErrorCode.None)
         {
             response.Result = ErrorCode.FailVerifyToken;
             return response;
         }
 
-
-        error = await _AuthService.VerifyExistUser(request.Email);
-        if(error != ErrorCode.None) 
+        error = await _RedisDB.RegistUserAsync(id, token);
+        if(error== ErrorCode.FailSetRedisUserToken)
         {
-            //새로운 유저데이터 생성
-           var res = _GameService.CreateNewUserGameData(request.Email);  
+            //레디스 저장한거 실패! 
+            //TODO - 로그남겨야한다.
         }
 
+        error = await _GameService.CheckUserGameDataInDB(id);
+        if(error == ErrorCode.None)
+        {
+            //TODO - 로그 변경
+            Console.WriteLine("데이터테이블에까지 생성완료");
+        }
 
+        response.Result = error;
         return response;
-
     }
 
 

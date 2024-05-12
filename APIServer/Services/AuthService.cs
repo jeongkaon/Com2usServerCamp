@@ -1,6 +1,7 @@
-﻿using APIServer.Models.AccountDB;
+﻿using APIServer.Models;
 using APIServer.Repository.Interfaces;
 using APIServer.Services.Interface;
+using System.Text.Json;
 using static Humanizer.In;
 
 
@@ -10,61 +11,51 @@ public class AuthService : IAuthService
 {
     readonly ILogger<AuthService> _logger;
     readonly IGameDB _gameDB;
-    readonly IAccountDB _accountDB;
     string _hiveServerAPIAddress;
 
 
-    public AuthService(ILogger<AuthService> logger, IConfiguration configuration, IGameDB gameDb, IAccountDB accountDb)
+    public AuthService(ILogger<AuthService> logger, IConfiguration configuration, IGameDB gameDb)
     {
+        //물어볼 hive 서버 주소 
+        //_hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
+    
+        _hiveServerAPIAddress = "http://localhost:11500" + "/VerifyToken";
+
         _gameDB = gameDb;
         _logger = logger;
-        _hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/verifytoken";
-        _accountDB = accountDb;
+        
     }
 
-    public async Task<ErrorCode> VerifyTokenToHive(string email, string token)
+    public async Task<ErrorCode> VerifyTokenToHive(string id, string token)
     {
-        //하이브로 토큰을 보내서 확인을 한다.
         try
         {
             HttpClient client = new();
-            var hiveResponse = await client.PostAsJsonAsync(_hiveServerAPIAddress, new { PlayerId = email, HiveToken = token });
+            var hiveResponse = await client.PostAsJsonAsync(_hiveServerAPIAddress, new {Id = id, Token = token});
 
-            if (hiveResponse == null || !ValidateHiveResponse(hiveResponse))
+            if (hiveResponse == null || false ==ValidateHiveResponse(hiveResponse))
             {
                 return ErrorCode.FailVerifyToken;
             }
 
-            var authResult = await hiveResponse.Content.ReadFromJsonAsync<ErrorCode>();
-            if (!ValidateHiveAuthErrorCode(authResult))
+            var preHiveResResult = await hiveResponse.Content.ReadAsStringAsync();
+            var hiveResResult = JsonSerializer.Deserialize<VerifyTokenReponse>(preHiveResResult);
+
+            if (false==ValidateHiveAuthErrorCode(hiveResResult.Result))
             {
                 return ErrorCode.FailHiveInvalidResponse;
             }
 
             return ErrorCode.None;
         }
-        catch
+        catch (HttpRequestException ex)
         {
-            //오류뜬거 zlog사용해서 해야한다.
+
         }
 
         return ErrorCode.None;
     }
 
-    //유저정보 있는지 확인
-    public async Task<ErrorCode> VerifyExistUser(string email)
-    {
-        var account = _accountDB.GetUserAccountByEmail(email);
-
-        if (account == null)
-        {
-            return ErrorCode.NotExistAccount;
-        }
-
-
-
-        return ErrorCode.None;
-    }
 
     public bool ValidateHiveResponse(HttpResponseMessage? response)
     {
@@ -85,4 +76,6 @@ public class AuthService : IAuthService
 
         return true;
     }
+
+   
 }

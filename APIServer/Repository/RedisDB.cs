@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using ZLogger;
 using APIServer.Repository.Interfaces;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+
+
 namespace APIServer.Repository;
 public class RedisDB : IRedisDB
 {
@@ -20,10 +24,47 @@ public class RedisDB : IRedisDB
         _logger = logger;
         RedisConfig config = new("defult", dbConfig.Value.Redis);
         _redisCon = new RedisConnection(config);
-    }   
+    }
+
+    //유저토큰검증
+    public async Task<ErrorCode> VerifyUserToken(string id, string authToken)
+    {
+        var idDefaultExpiry = TimeSpan.FromDays(1);
+
+        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
+        var res = await redisId.GetAsync();
+        if(res.HasValue == false)
+        {
+            return ErrorCode.NotExistRedis;
+        }
+
+        if (res.Value != authToken)
+        {
+            return ErrorCode.FailVerifyUserToken;
+        }
+
+
+        return ErrorCode.None;
+
+    }
+
+    public async Task<ErrorCode> RegistUserAsync(string id, string authToken)
+    {
+        var idDefaultExpiry = TimeSpan.FromDays(1);
+        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
+        var res= await redisId.SetAsync(authToken);
+
+        if(res == false)
+        {
+            return ErrorCode.FailSetRedisUserToken;
+        }
+
+        return ErrorCode.None;
+    }
 
     public void Dispose()
     {
 
     }
+
 }

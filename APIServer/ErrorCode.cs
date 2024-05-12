@@ -10,9 +10,15 @@ public enum ErrorCode : UInt16
     FailVerifyToken=1001,
     FailHiveInvalidResponse=1002,
     FailCreateUserGameData=1003,
+    FailSetRedisUserToken = 1003,
+    
+    
 
 
+    FailVerifyUserToken = 1004,
 
-    NotExistAccount=2000,
+    NotExistAccount = 2000,
+
+    NotExistRedis = 2001
     
 }
