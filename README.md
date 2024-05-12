@@ -1,3 +1,8 @@
+## TODO
+- [ ] 로그정리
+- [ ] try-catch로 예외처리 바꾸기
+- [ ] ASP.NET Core 문서작성
+
 ## HiveServer
 - [x] 계정생성
     - [x] DB에 저장     
