@@ -12,7 +12,7 @@ public class User
     string _sessionId;
     string _userId;
 
-    public bool _used = false;       
+    public bool Used = false;       
 
     //heartbeat위한 시간
     int _hbTimeSpan;               
@@ -33,7 +33,7 @@ public class User
         _sequenceNumber = sequence;
         _sessionId = sessionID;
         _userId = userID;
-        _used = true;
+        Used = true;
 
         _hbTime= ping;
 
@@ -62,7 +62,7 @@ public class User
 
     public void DisconnectUser()
     {
-        _used = false;
+        Used = false;
     }
 
     public bool IsConfirm(string netSessionID)

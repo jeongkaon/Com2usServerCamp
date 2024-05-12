@@ -12,8 +12,6 @@ namespace PvPGameServer;
 
 public class GameDBHandler : PacketHandler
 {
-    //DB조작만 해야한다.
-    //결과값을 누구한테 보내??
     public void RegistPacketHandler(Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PacketId.NtfInUpdateWinnerResult, UpdateWinnerScoreInDB);
@@ -58,7 +56,7 @@ public class GameDBHandler : PacketHandler
 
     }
 
-    //결과값보내는 함수 하나 만들어서 넣어줘야한다.
+    //TODO- DB처리 결과값해야함
 
 }
 public class GameDBInfo

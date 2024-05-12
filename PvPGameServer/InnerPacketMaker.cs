@@ -12,7 +12,6 @@ public class InnerPacketMaker
 {
     public static MemoryPackBinaryRequestInfo MakeNTFInnerRoomLeavePacket(string sessionId, int roomNumber, string userId)
     {
-
         var packet = new PKTInternalNtfRoomLeave()
         {
             RoomNumber = roomNumber,
@@ -41,7 +40,6 @@ public class InnerPacketMaker
         {
             PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInDisconnectClient);
         }
-
         memoryPackPacket.SessionID = sessionId;
         return memoryPackPacket;
     }
@@ -51,11 +49,9 @@ public class InnerPacketMaker
         var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
         memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
 
-
         PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtrInUserCheck);
 
         return memoryPackPacket;
-
     }
 
     public static MemoryPackBinaryRequestInfo MakeNTFInnerUserForceClosePacket(string SessionId)
@@ -116,10 +112,4 @@ public class InnerPacketMaker
         return memoryPackPacket;
     }
 
-}
-[MemoryPackable]
-public partial class PKTInternalNtfRoomLeave : PacketHeader
-{
-    public int RoomNumber { get; set; }
-    public string UserId { get; set; }
 }

@@ -16,7 +16,6 @@ namespace PvPGameServer;
 public class GameBoard
 {
     const int Size = 19;
-
     byte[,] _board = new byte[Size, Size];
     List<Player> _players = null;
 
@@ -107,7 +106,7 @@ public class GameBoard
         var player = _players[(int)_curType-1];
         if(player.CheckPassCount() == true)
         {
-            return player._playerType;
+            return player.PlayerType;
         }
         return StoneType.None;
 
@@ -179,8 +178,8 @@ public class GameBoard
     {
         if (win == StoneType.None)
         {
-            MemoryPackBinaryRequestInfo player1 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[0]._userId);
-            MemoryPackBinaryRequestInfo player2 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[1]._userId);
+            MemoryPackBinaryRequestInfo player1 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[0].UserId);
+            MemoryPackBinaryRequestInfo player2 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[1].UserId);
            
             DistributeInnerPacket(player1);
             DistributeInnerPacket(player2);
@@ -193,10 +192,10 @@ public class GameBoard
         if (win == StoneType.Black)     //승자0, 패자1
         {
             
-            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx]._userId);
+            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx].UserId);
             DistributeInnerPacket(winner);
 
-            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx + 1]._userId);
+            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx + 1].UserId);
             DistributeInnerPacket(loser);
 
             return;
@@ -205,10 +204,10 @@ public class GameBoard
         if (win == StoneType.White)    //승자1, 패자0
         {
 
-            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx]._userId);
+            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx].UserId);
             DistributeInnerPacket(winner);
 
-            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx - 1]._userId);
+            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx - 1].UserId);
             DistributeInnerPacket(loser);
 
             return;
@@ -232,12 +231,12 @@ public class GameBoard
     {
         foreach (var player in _players)
         {
-            if (player._netSessionId == excludeNetSessionID)
+            if (player.NetSessionId == excludeNetSessionID)
             {
                 continue;
             }
 
-            NetworkSendFunc(player._netSessionId, sendPacket);
+            NetworkSendFunc(player.NetSessionId, sendPacket);
         }
     }
 

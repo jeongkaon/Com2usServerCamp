@@ -10,43 +10,36 @@ namespace PvPGameServer;
 public class PacketHandlerCommon : PacketHandler
 {
 
-    int MaxUserCheckCount;     
-    int UserCheckStartIndex;
-
-
+    int _maxUserCheckCount;     
+    int _userCheckStartIndex;
 
     public void SetCheckCount(int maxUserCheck)
     {
-        UserCheckStartIndex = 0;
-        MaxUserCheckCount = maxUserCheck;
+        _userCheckStartIndex = 0;
+        _maxUserCheckCount = maxUserCheck;
     }
-
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        //일단 테스트용으로 레디스에 가는지 확인하기위해 login그거를 주석하겠습니다.
         packetHandlerMap.Add((int)PacketId.NtfInLoginCheck, ReqLoginPacket);
-
         packetHandlerMap.Add((int)PacketId.NtfInConnectClient, NotifyInConnectClient);
         packetHandlerMap.Add((int)PacketId.NtfInDisconnectClient, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PacketId.ReqHeartBeat, ReqHeartBeatPacket);
         packetHandlerMap.Add((int)PacketId.NtrInUserCheck, NotifyInUserCheck);
         packetHandlerMap.Add((int)PacketId.NtfInForceDisconnectClient, NotifyInForceDisConnectClient);
-
     }
     public void NotifyInUserCheck(MemoryPackBinaryRequestInfo requestData)
     {
-        int endIdx = UserCheckStartIndex + MaxUserCheckCount;
+        int endIdx = _userCheckStartIndex + _maxUserCheckCount;
      
-        var value = _userMgr.CheckHeartBeat(UserCheckStartIndex, endIdx);
+        var value = _userMgr.CheckHeartBeat(_userCheckStartIndex, endIdx);
 
 
-        UserCheckStartIndex += endIdx;
-        if(UserCheckStartIndex >= MaxUserCheckCount)
+        _userCheckStartIndex += endIdx;
+        if(_userCheckStartIndex >= _maxUserCheckCount)
         {
-            UserCheckStartIndex = 0;
+            _userCheckStartIndex = 0;
         }
     }
-
     public void NotifyInConnectClient(MemoryPackBinaryRequestInfo requestData)
     {
     }
@@ -75,12 +68,9 @@ public class PacketHandlerCommon : PacketHandler
         var sessionID = requestData.SessionID;
         ForceSession(sessionID);
     }
-
     public void ReqLoginPacket(MemoryPackBinaryRequestInfo recvData)
     {
         var sessionID = recvData.SessionID;
-        
-        //DATE를 뽑아서 타입캐스팅 시키고싶은디..c#은 바이트배열을 클래스로 타입캐스팅하는법없움!
         var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
         
         try
@@ -90,8 +80,6 @@ public class PacketHandlerCommon : PacketHandler
                 SendLoginToClient(ErrorCode.LoginAlreadyWorking, recvData.SessionID);
                 return;
             }
-            //이미 
-            //var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(recvData.Data);
 
             var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);
             if (errorCode != ErrorCode.None)
@@ -167,8 +155,6 @@ public class PacketHandlerCommon : PacketHandler
 
         NetworkSendFunc(sessionID, sendData);
     }
-
-
 }
 
 

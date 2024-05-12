@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NLog.Targets;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Logging;
@@ -25,14 +26,10 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     GameDBProcessor DBProcessor = new GameDBProcessor();
     AccountDBProcessor AccountProcessor = new AccountDBProcessor();
 
-
-
     RoomManager RoomMgr = new RoomManager();
 
     Timer RoomCheckTimer = null; 
     Timer UserCheckTimer = null;
-
-
 
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
@@ -88,7 +85,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             {
                 MainLogger = base.Logger;
                 MainLogger.Info("서버 초기화 성공");
-
             }
 
             CreateComponent();
@@ -99,19 +95,15 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             MainLogger.Debug("서버 생성 성공");
 
             Start();
-
         }
         catch (Exception ex)
         {
             MainLogger.Error($"[ERROR] 서버 생성 실패: {ex.ToString()}");
-
         }
     }
 
     public ErrorCode CreateComponent()
     {
-
-        //얘가 순서 내려가면 안됨
         Room.NetworkSendFunc = SendData;
         Room.DistributeInnerPacket = DistributeGameDB;
 
@@ -128,9 +120,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         AccountProcessor = new AccountDBProcessor();
         AccountProcessor.CreateAndStart();
 
-
         return ErrorCode.None;
-
     }
 
     public bool ForceDisconnectSession(string sessionId)
@@ -148,8 +138,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         MainPacketProcessor.InsertPacket(reqPacket);
     }
-
-
     void DistributeGameDB(MemoryPackBinaryRequestInfo reqPacket)
     {
         DBProcessor.InsertPacket(reqPacket);
@@ -157,16 +145,12 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     void DistributeAccountDB(MemoryPackBinaryRequestInfo reqPacket)
     {
-        //이거 어디서필요..?
-        //위에꺼는 room에서 이너 패킷 보낼일이 있기때문에 쓴거임.
         AccountProcessor.InsertPacket(reqPacket);
     }
-
 
     public bool SendData(string sessionId, byte[] data)
     {
         var session = GetSessionByID(sessionId);
-
         try
         {
             if (session == null)
@@ -190,14 +174,12 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainPacketProcessor.Destroy();
         DBProcessor.Destroy();
         AccountProcessor.Destroy();
-           
     }
 
 
     void OnConnected(ClientSession session)
     {
         MainLogger.Info($"세션 번호 {session.SessionID} 접속");
-
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(true, session.SessionID);
         Distribute(packet);
 
@@ -205,7 +187,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     void OnClosed(ClientSession session, CloseReason reason)
     {
         MainLogger.Info($"세션 번호 {session.SessionID} 접속해제: {reason.ToString()}");
-
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(false, session.SessionID);
         Distribute(packet);
 
@@ -213,28 +194,21 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     void OnPacketReceived(ClientSession session, MemoryPackBinaryRequestInfo reqInfo)
     {
         MainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
-
-        //두번째 넣으면 1010이 나오는데? 시발 왜저래 id만 뽑아줘 ㅡㅡ 1010은 하트 비트였음 하트비트..ㅅㅂ 
         var packetId = FastBinaryRead.UInt16(reqInfo.Data, 3);
-        if(packetId == 1002)
+        reqInfo.SessionID = session.SessionID;
+
+        if (packetId == (UInt16)PacketId.ReqLogin)
         {
-            Console.WriteLine("로그인 패킷 레디스로 먼저 보낸다!");
-            reqInfo.SessionID = session.SessionID;
             DistributeAccountDB(reqInfo);
-            //Distr(reqInfo);
+            return;
         }
 
-
-        //클라에서온애를 뽑아야한다 reqInfo에서 typeid를 뽑아야한다. Type인가? Id 인가??
-        //reqInfo에서 id를 뽑아야한다.
-        //FastBinaryRead.UInt16
-
-        //packeid 그거 확인해야하는디..
-        reqInfo.SessionID = session.SessionID;
-        Distribute(reqInfo);
+        if (packetId < (UInt16)PacketId.ReqEnd && packetId > (UInt16)PacketId.ReqBegin)
+        {
+            Distribute(reqInfo);
+            return;
+        }
     }
-   
-
 }
 
 

@@ -239,3 +239,10 @@ public partial class ResHeartBeatPacket : PacketHeader
     public short Result { get; set; }
 
 }
+
+[MemoryPackable]
+public partial class PKTInternalNtfRoomLeave : PacketHeader
+{
+    public int RoomNumber { get; set; }
+    public string UserId { get; set; }
+}

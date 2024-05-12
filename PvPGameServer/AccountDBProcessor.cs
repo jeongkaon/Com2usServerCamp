@@ -16,25 +16,19 @@ public class AccountDB
 {
     RedisConnection _redisCon;
     const string ConnectionString = "127.0.0.1:6379";
-
     public AccountDB()
     {
         RedisConfig config = new("default", ConnectionString);
         _redisCon = new RedisConnection(config);
-
     }
-
     public RedisConnection GetRedisCon()
     {
         return _redisCon;
     }
-
-  
 }
 public class AccountDBProcessor
 {
     int _threadNum = 2;
-
     bool _isThreadRunning = false;
     System.Threading.Thread[] _accountDBThread = null;
 
@@ -43,10 +37,7 @@ public class AccountDBProcessor
     Dictionary<int, Action<RedisConnection, MemoryPackBinaryRequestInfo>> _accountDBHandlerMap =
         new Dictionary<int, Action<RedisConnection, MemoryPackBinaryRequestInfo>>();
 
-
     AccountDBHander _accountDbHandler = new AccountDBHander();
-
-
     public void CreateAndStart()
     {
         _accountDbHandler.RegistPacketHandler(_accountDBHandlerMap);
@@ -62,10 +53,9 @@ public class AccountDBProcessor
             }
         }
     }
-
     public void Destroy()
     {
-        MainServer.MainLogger.Info("DBProcessor::Destory - begin");
+        MainServer.MainLogger.Info("RedisProcessor::Destory - begin");
 
         _isThreadRunning = false;
         _msgBuffer.Complete();
@@ -75,14 +65,12 @@ public class AccountDBProcessor
             th.Join();
         }
 
-        MainServer.MainLogger.Info("DBProcessor::Destory - end");
+        MainServer.MainLogger.Info("RedisProcessor::Destory - end");
     }
-
     public void InsertPacket(MemoryPackBinaryRequestInfo data)
     {
         _msgBuffer.Post(data);
     }
-
     public void Process()
     {
         AccountDB accountDb = new AccountDB();

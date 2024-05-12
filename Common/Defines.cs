@@ -103,7 +103,6 @@ public enum PacketId : int
     NtfInUpdateDrawResult = 1303,
 
 
-    //Redis이너패킷
    
 
 

@@ -9,37 +9,31 @@ namespace PvPGameServer;
 
 public class Player
 {
-    public string _userId { get; private set; }
-    public string _netSessionId { get; private set; }
+    public string UserId { get; private set; }
+    public string NetSessionId { get; private set; }
     
-    public StoneType _playerType { get; private set; }
-
-
-
-   int PassCount { get; set; } = 0;      //넘어간거
-
+    public StoneType PlayerType { get; private set; }
+    int _passCount { get; set; } = 0;      //넘어간거
 
     public Player(string netSessionID,string userId,StoneType type)
     {
-        _userId = userId;
-        _netSessionId = netSessionID;
-        _playerType = type;
-        
-
-        PassCount = 0;
+        UserId = userId;
+        NetSessionId = netSessionID;
+        PlayerType = type;
+        _passCount = 0;
     }
 
     public void AddPassCount()
     {
-        ++PassCount;
+        ++_passCount;
     }
 
     public bool CheckPassCount()
     {
         //TODO - 고쳐야한다
-        const int testcount = 6;
+        const int test = 6;
 
-        if (PassCount == testcount) 
+        if (_passCount == test) 
         {
             return true;
         }

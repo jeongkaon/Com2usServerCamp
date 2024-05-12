@@ -20,7 +20,6 @@ public class GameDB
 
     const string connectionString =
         "Server=127.0.0.1;user=root;Password=0000;Database=game_db;Pooling=true;Min Pool Size=0;Max Pool Size=100;AllowUserVariables=True;";
-
     public GameDB()
     {
         _dbConn = new MySqlConnection(connectionString);
@@ -63,11 +62,7 @@ public class GameDBProcessor
                 GameDBThread[i] = new System.Threading.Thread(Process);
                 GameDBThread[i].Start();
             }
-
-
         }
-
-        
     }
     
     public void Destroy()
