@@ -15,18 +15,18 @@ namespace HiveServer.Controllers;
 [Route("[controller]")]
 public class CreateAccountController : ControllerBase
 {
-    readonly IHiveAccountDB _HiveDB;
+    readonly IHiveAccountDB _hiveDB;
 
     public CreateAccountController(IHiveAccountDB db)
     {
-        _HiveDB = db;
+        _hiveDB = db;
     }
 
     [HttpPost]
     public async Task<CreateHiveAccountResponse> Create([FromBody] CreateHiveAccountRequest request)
     {
         CreateHiveAccountResponse response = new();
-        response.Result = await _HiveDB.CreateAccountAsync(request.Id, request.Password);
+        response.Result = await _hiveDB.CreateAccountAsync(request.Id, request.Password);
 
         return response;
     }

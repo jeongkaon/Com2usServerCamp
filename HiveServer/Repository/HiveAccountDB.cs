@@ -83,20 +83,11 @@ public class HiveAccountDB : IHiveAccountDB
 
         return new Tuple<ErrorCode, string>(ErrorCode.None, id);
 
-
-
     }
-
-
-
-
     public void Dispose()
     {
         Close();
     }
-
-
-
     void Open()
     {
         _dbCon = new MySqlConnection(_dbConfig.Value.HiveDB); 

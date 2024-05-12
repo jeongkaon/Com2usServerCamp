@@ -14,7 +14,7 @@ public class HiveRedis : IHiveRedis
 {
     readonly ILogger<HiveRedis> _logger;
     
-    public RedisConnection _redisCon;
+    RedisConnection _redisCon;
 
 
     public HiveRedis(ILogger<HiveRedis> logger, IOptions<DbConfig> dbConfig)

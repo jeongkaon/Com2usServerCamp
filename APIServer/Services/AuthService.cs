@@ -80,6 +80,7 @@ public class AuthService : IAuthService
         return ErrorCode.None;
     }
 
+
     public bool ValidateHiveResponse(HttpResponseMessage? response)
     {
         if (response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -99,4 +100,6 @@ public class AuthService : IAuthService
 
         return true;
     }
+
+   
 }

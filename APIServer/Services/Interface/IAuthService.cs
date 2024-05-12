@@ -6,5 +6,7 @@ public interface IAuthService
 
     public Task<ErrorCode> CheckUserInDB(string id);
 
+
+
 }
 
