@@ -37,19 +37,27 @@ public class GameDB : IGameDB
 
     }
 
-    public async Task<UserGameDataDB> GetUserGameDataById(string id)
+    public async Task<ErrorCode> GetUserGameDataById(string id)
     {
-        return await _qFactory.Query("usergamedata")
+        var res =  await _qFactory.Query("gamedata")
                         .Where("id", id)
                          .FirstOrDefaultAsync<UserGameDataDB>();
+
+       
+        if(res == null)
+        {
+            return ErrorCode.NotExistAccount;
+        }
+
+        return ErrorCode.None;
     }
 
 
-    public async Task<ErrorCode> CreateUserGameData(string email)
+    public async Task<ErrorCode> CreateUserGameData(string id)
     {
         var count = await _qFactory.Query("gamedata").InsertAsync(new
         {
-            id = email,
+            id = id,
             exp = 0,
             win_score =0,
             lose_score=0,

@@ -20,18 +20,28 @@ public class GameService: IGameService
         //NotExistAccount이거 쓰면될듯
 
         var res = _gameDb.GetUserGameDataById(id);
-        if (res == null)
+        if (res.Result == ErrorCode.NotExistAccount)
         {
-            return ErrorCode.NotExistAccount;
+            //여기서 걍 생성해버리자.
+
+            res = CreateNewUserGameData(id);
+
+            if (res.Result != ErrorCode.None)
+            {
+                return ErrorCode.FailCreateUserGameData;
+            }
+
         }
 
         return ErrorCode.None;
+
+
     }
 
     public async Task<ErrorCode> CreateNewUserGameData(string id)
     {
         var error = _gameDb.CreateUserGameData(id);
-       if(error != null)
+       if(error.Result != ErrorCode.None)
         {
             return ErrorCode.FailCreateUserGameData;
         }

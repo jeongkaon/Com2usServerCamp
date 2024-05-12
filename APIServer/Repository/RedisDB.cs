@@ -34,6 +34,11 @@ public class RedisDB : IRedisDB
 
         var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
         var res = await redisId.GetAsync();
+        if(res.HasValue == false)
+        {
+            return ErrorCode.NotExistRedis;
+        }
+
         if (res.Value != authToken)
         {
             return ErrorCode.FailVerifyUserToken;

@@ -1,6 +1,5 @@
 ﻿namespace APIServer.Models;
 
-
 public class VerifyTokenRequest
 {
     public string Id { get; set; }

@@ -41,7 +41,7 @@ public class LoginController : ControllerBase
 
         //0.먼저 레디스에 존재하는지 찾아본다.
         var error = await _RedisDB.VerifyUserToken(id, token);
-        if (error  == ErrorCode.None)
+        if (error == ErrorCode.None)
         {
             return response;
         }
@@ -64,18 +64,12 @@ public class LoginController : ControllerBase
 
         //처음 입장한 애라면 UserGameDataTable 생성해야한다.
         //게임 데이터 테이블에 id로 확인하자!
-        error = await _GameService.CheckUserGameDataInDB(id);
-
-        if(error == ErrorCode.NotExistAccount) //유저데이터 없는거임
+        var res = await _GameService.CheckUserGameDataInDB(id);
+        if(res == ErrorCode.None)
         {
-            var res = await _GameService.CreateNewUserGameData(id);
-            if(res != ErrorCode.None)
-            {
-                response.Result = ErrorCode.FailCreateUserGameData;
-                return response;
-            }
-        }
 
+        }
+     
         
         return response;
     }
