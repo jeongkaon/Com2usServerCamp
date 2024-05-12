@@ -33,20 +33,15 @@ public class LoginController : ControllerBase
     public async Task<LoginResponse> Create([FromBody] LoginRequest request)
     {
         LoginResponse response = new LoginResponse();
-
         var id = request.Id;
         var token = request.Token;
 
-        //클라에게 로그인 요청이 들어오면 -> 클라는 id랑 token을 패킷으로 줌
-
-        //0.먼저 레디스에 존재하는지 찾아본다.
         var error = await _RedisDB.VerifyUserToken(id, token);
         if (error == ErrorCode.None)
         {
             return response;
         }
 
-        // 1. 패킷으로 보낸 인증토큰이 유효한지 hive서버에 물어봐야한다.
         error = await _AuthService.VerifyTokenToHive(id, token);
         if(error != ErrorCode.None)
         {
@@ -54,7 +49,6 @@ public class LoginController : ControllerBase
             return response;
         }
 
-        //2. 토큰을 레디스에 저장해야한다. id : token으로 저장한다. 하이브와 다른 레디스를 사용한다.
         error = await _RedisDB.RegistUserAsync(id, token);
         if(error== ErrorCode.FailSetRedisUserToken)
         {
@@ -62,15 +56,14 @@ public class LoginController : ControllerBase
             //TODO - 로그남겨야한다.
         }
 
-        //처음 입장한 애라면 UserGameDataTable 생성해야한다.
-        //게임 데이터 테이블에 id로 확인하자!
-        var res = await _GameService.CheckUserGameDataInDB(id);
-        if(res == ErrorCode.None)
+        error = await _GameService.CheckUserGameDataInDB(id);
+        if(error == ErrorCode.None)
         {
-
+            //TODO - 로그 변경
+            Console.WriteLine("데이터테이블에까지 생성완료");
         }
-     
-        
+
+        response.Result = error;
         return response;
     }
 

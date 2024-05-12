@@ -29,7 +29,6 @@ public class RedisDB : IRedisDB
     //유저토큰검증
     public async Task<ErrorCode> VerifyUserToken(string id, string authToken)
     {
-        //레디스에 유저랑 토큰이 저장되어있는지 확인
         var idDefaultExpiry = TimeSpan.FromDays(1);
 
         var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);

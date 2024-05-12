@@ -37,7 +37,6 @@ app.UseEndpoints(endpoints => { _ = endpoints.MapControllers(); });
 app.Run(configuration["ServerAddress"]);
 
 
-
 public class DbConfig
 {
     public string? GameDB { get; set; }
