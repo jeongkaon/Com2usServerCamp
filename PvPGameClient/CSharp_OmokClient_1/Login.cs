@@ -4,9 +4,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Windows.Media.Protection.PlayReady;
 
 namespace OmokClient
 {
@@ -26,7 +30,14 @@ namespace OmokClient
             var pw = 하이브계정생성PW창.Text;
 
             하이브ID입력창.Text = id;
-            API로긴ID입력창.Text = id;   
+            API로긴ID입력창.Text = id;
+            HttpClient httpClient = new();
+            var res = httpClient.PostAsJsonAsync(ip, new { Id = id, Password = pw });
+
+            if(res == null)
+            {
+                
+            }
 
             MessageBox.Show(ip + " "+id);
         }
@@ -39,8 +50,15 @@ namespace OmokClient
 
         private void 하이브계정생성ID입력창(object sender, EventArgs e)
         {
+            //하이브회원가입 EMALI입력창
+            하이브ID입력_TextChanged(sender, e);
         }
-    
+        private void 하이브계정생성PW_TextChanged(object sender, EventArgs e)
+        {
+            //하이브회원가입 비번입력창
+            
+
+        }
         private void 하이브로그인버튼_Click(object sender, EventArgs e)
         {
             //하이브로그인버튼
@@ -52,7 +70,18 @@ namespace OmokClient
             //ok뜨면 token창에 넣어주기!
 
         }
-         
+        private void 하이브ID입력_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void 하이브PW입력_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+      
         private void API로그인버튼_Click(object sender, EventArgs e)
         {
             //API로그인버튼
@@ -63,7 +92,19 @@ namespace OmokClient
             //버튼누르면 api서버로 보내야한다.
 
         }
- 
+        private void APIIP주소입력_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void API토큰입력_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void API로긴ID입력_TextChanged(object sender, EventArgs e)
+        {
+
+        }
 
         private void groupBox1_Enter(object sender, EventArgs e)
         {

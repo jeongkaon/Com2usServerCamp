@@ -28,6 +28,8 @@ public class CreateAccountController : ControllerBase
         CreateHiveAccountResponse response = new();
         response.Result = await _hiveDB.CreateAccountAsync(request.Id, request.Password);
 
+        Console.WriteLine("Account Create Response");
+
         return response;
     }
 
