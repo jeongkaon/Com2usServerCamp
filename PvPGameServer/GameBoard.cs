@@ -26,11 +26,10 @@ public class GameBoard
     public static Func<string, byte[], bool> NetworkSendFunc;
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
-    public GameBoard(int roomNumber, Func<string, byte[], bool> func, Action<MemoryPackBinaryRequestInfo> distributeInnerPacket)
+    public GameBoard(int roomNumber, Func<string, byte[], bool> func)
     {
         RoomNumber = roomNumber;
         NetworkSendFunc = func;
-        DistributeInnerPacket = distributeInnerPacket;
         _players = new List<Player>();
     }
     public StoneType SetPlayer(string sessionId, string userId)
@@ -171,19 +170,23 @@ public class GameBoard
 
         Broadcast("", sendPacket);
 
-        NotifyInnerDB(win);
+        //이거도 이름 바꿔야함
+        NotifyGameResult(win);  //이너패킷으로 보내버려서 거기서 점수올릴까
+                                ///게임 보드에서 이너패킷보내서
+                                  /// gmaehaendlr로 보내서 거기서 getuser해서 점수올리면될ㄷ스?
 
     }
-    public void NotifyInnerDB(StoneType win)
+    public void NotifyGameResult(StoneType win)
     {
-        if (win == StoneType.None)
+        if (win == StoneType.None)      //비긴거
         {
-            MemoryPackBinaryRequestInfo player1 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[0].UserId);
-            MemoryPackBinaryRequestInfo player2 = InnerPacketMaker.MakeNTFInnerForDBUpdateDrawPacket(_players[1].UserId);
-           
-            DistributeInnerPacket(player1);
-            DistributeInnerPacket(player2);
-            
+            //game거기에 패킷보내
+            var packet = InnerPacketMaker.MakeNTFInnerGetUserDataInDB("kain");
+
+
+            DistributeInnerPacket(packet);
+
+            //그럼 내부에서 
             return;
         }
 
@@ -192,11 +195,6 @@ public class GameBoard
         if (win == StoneType.Black)     //승자0, 패자1
         {
             
-            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx].UserId);
-            DistributeInnerPacket(winner);
-
-            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx + 1].UserId);
-            DistributeInnerPacket(loser);
 
             return;
         }
@@ -204,11 +202,6 @@ public class GameBoard
         if (win == StoneType.White)    //승자1, 패자0
         {
 
-            MemoryPackBinaryRequestInfo winner = InnerPacketMaker.MakeNTFInnerForDBUpdateWinPacket(_players[idx].UserId);
-            DistributeInnerPacket(winner);
-
-            MemoryPackBinaryRequestInfo loser = InnerPacketMaker.MakeNTFInnerForDBUpdateLosePacket(_players[idx - 1].UserId);
-            DistributeInnerPacket(loser);
 
             return;
         }

@@ -98,9 +98,8 @@ public enum PacketId : int
     NtfInLoginCheck=1217,
 
     //DB이너패킷
-    NtfInUpdateWinnerResult = 1301,
-    NtfInUpdateLoserResult = 1302,
-    NtfInUpdateDrawResult = 1303,
+    NtfInGetUserData = 1301,
+    NtfInUpdateUserData = 1302,
 
 
    

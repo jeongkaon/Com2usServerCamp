@@ -105,20 +105,24 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     public ErrorCode CreateComponent()
     {
         Room.NetworkSendFunc = SendData;
-        Room.DistributeInnerPacket = DistributeGameDB;
+        //Room.SetGameData= MainPacketProcessor._아니 연결해야한다구요
+
 
         RoomMgr.CreateRooms(serverOption);
 
         MainPacketProcessor = new PacketProcessor();
         MainPacketProcessor.NeworktSendFunc = SendData;
         MainPacketProcessor.ForceSession = ForceDisconnectSession;
+        MainPacketProcessor.DistributeInnerPacketDB = DistributeGameDB;
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
 
+        
         DBProcessor = new GameDBProcessor();
         DBProcessor.CreateAndStart();
 
         AccountProcessor = new AccountDBProcessor();
         AccountProcessor.CreateAndStart();
+
 
         return ErrorCode.None;
     }

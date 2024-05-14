@@ -25,6 +25,14 @@ public class PacketProcessor
 
     public Func<string, byte[], bool> NeworktSendFunc;
     public Func<string, bool> ForceSession;
+    public Action<MemoryPackBinaryRequestInfo> DistributeInnerPacketDB;
+
+    public void  RetUserSetGameDataFunc(Func<string, GameUserData,bool> func)
+    {
+       func = _userMgr.SetUserGameData;
+    }
+
+
 
     public void CreateAndStart(List<Room> roomList, PvPServerOption option)
     {
@@ -70,6 +78,7 @@ public class PacketProcessor
 
         _commonPacketHandler.Init(_userMgr);
         _commonPacketHandler.SetCheckCount(_userMgr.GetMaxUserCount() / 4);
+        _commonPacketHandler.GetDistributeGameDB(DistributeInnerPacketDB);
         _commonPacketHandler.RegistPacketHandler(_packetHandlerMap);
 
         _roomPacketHandler.Init(_userMgr);

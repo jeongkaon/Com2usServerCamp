@@ -12,11 +12,16 @@ public class PacketHandlerCommon : PacketHandler
 
     int _maxUserCheckCount;     
     int _userCheckStartIndex;
+    Action<MemoryPackBinaryRequestInfo> _distributeInnerPacketDB;
 
     public void SetCheckCount(int maxUserCheck)
     {
         _userCheckStartIndex = 0;
         _maxUserCheckCount = maxUserCheck;
+    }
+    public void GetDistributeGameDB(Action<MemoryPackBinaryRequestInfo> distribute)
+    {
+        _distributeInnerPacketDB = distribute;
     }
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
@@ -96,6 +101,11 @@ public class PacketHandlerCommon : PacketHandler
 
             SendLoginToClient(errorCode, recvData.SessionID);
 
+            //게임 데이터도 들고와야한다. -> 데베이너패킷으로 넘겨야한다
+            var innerPacket = InnerPacketMaker.MakeNTFInnerGetUserDataInDB(sessionID);
+            _distributeInnerPacketDB(innerPacket);
+
+
             MainServer.MainLogger.Debug($"로그인 결과. UserID:{reqData.UserID}, {errorCode}");
 
         }
@@ -155,7 +165,9 @@ public class PacketHandlerCommon : PacketHandler
 
         NetworkSendFunc(sessionID, sendData);
     }
+
 }
+
 
 
 

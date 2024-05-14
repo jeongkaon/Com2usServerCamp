@@ -14,52 +14,39 @@ public class GameDBHandler : PacketHandler
 {
     public void RegistPacketHandler(Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PacketId.NtfInUpdateWinnerResult, UpdateWinnerScoreInDB);
-        packetHandlerMap.Add((int)PacketId.NtfInUpdateLoserResult, UpdateLoserScoreInDB);
-        packetHandlerMap.Add((int)PacketId.NtfInUpdateDrawResult, UpdateDrawScoreInDB);
+        packetHandlerMap.Add((int)PacketId.NtfInGetUserData, GetUserGameData);
+        packetHandlerMap.Add((int)PacketId.NtfInUpdateUserData, UpdateUserGameData);
     }
 
-    public string GetPlayerIdInPacket(MemoryPackBinaryRequestInfo packetData)
+
+    public void GetUserGameData(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
     {
-        var headerSize = PacketHeadInfo.HeaderSize;
-        var dataLen = packetData.Data.Length;
+        var user = _userMgr.GetUser(packetData.SessionID);
+        var id = user.ID;
 
-        return FastBinaryRead.String(packetData.Data, headerSize, dataLen - headerSize);
+        var gamedata =  queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameUserData>();
+        user.SetGameData(gamedata);
 
     }
-    public void UpdateWinnerScoreInDB(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
+
+
+    public void UpdateUserGameData(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
     {
-        var id = GetPlayerIdInPacket(packetData);
+        var user = _userMgr.GetUser(packetData.SessionID);
+        var id = user.ID;
 
-        var windbInfo =  queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameDBInfo>();
-        var winScore = windbInfo.win_score + 1;
-        queryFactory.Query("gamedata").Where("id", id).Update(new { win_score = winScore });
-
-    }
-    public void UpdateLoserScoreInDB(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
-    {
-        var id = GetPlayerIdInPacket(packetData);
-
-        var loserDbInfo = queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameDBInfo>();
-        var loseScore = loserDbInfo.lose_score + 1;
-        queryFactory.Query("gamedata").Where("id", id).Update(new { lose_score = loseScore });
+        var loserDbInfo = queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameUserData>();
+        
+        //  여기서 업데이트 해줘야한다.
+        //queryFactory.Query("gamedata").Where("id", id).Update(new { lose_score = loseScore });
 
     }
 
-    public void UpdateDrawScoreInDB(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
-    {
-        var id = GetPlayerIdInPacket(packetData);
-
-        var userdbInfo = queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameDBInfo>();
-        var drawScore = userdbInfo.draw_score + 1;
-        queryFactory.Query("gamedata").Where("id", id).Update(new { draw_score = drawScore });
-
-    }
-
+  
     //TODO- DB처리 결과값해야함
 
 }
-public class GameDBInfo
+public class GameUserData
 {
     public string id { get; set; }
     public int exp { get; set; }

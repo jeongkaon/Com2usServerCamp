@@ -17,7 +17,7 @@ public class UserManager
 
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
-
+    
     void InnerUserCheckTimer(object? state)
     {
         MemoryPackBinaryRequestInfo packet = InnerPacketMaker.MakeNTFInnerRoomCheckPacket();
@@ -133,6 +133,14 @@ public class UserManager
     public int GetMaxUserCount()
     {
         return _maxUserCount;
+    }
+
+    public bool SetUserGameData(string sessinId, GameUserData gameData)
+    {
+        var user = GetUser(sessinId);
+        user.SetGameData(gameData);
+
+        return true;
     }
 
 }

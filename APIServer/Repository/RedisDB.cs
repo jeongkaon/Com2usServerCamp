@@ -43,16 +43,14 @@ public class RedisDB : IRedisDB
             return ErrorCode.FailVerifyUserToken;
         }
 
-
         return ErrorCode.None;
-
     }
 
     public async Task<ErrorCode> RegistUserAsync(string id, string authToken)
     {
         var idDefaultExpiry = TimeSpan.FromDays(1);
         var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
-        var res= await redisId.SetAsync(authToken);
+        var res = await redisId.SetAsync(authToken);
 
         if(res == false)
         {

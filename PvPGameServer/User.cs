@@ -12,7 +12,11 @@ public class User
     string _sessionId;
     string _userId;
 
+    GameUserData _gameData;
+
+
     public bool Used = false;       
+   
 
     //heartbeat위한 시간
     int _hbTimeSpan;               
@@ -27,7 +31,10 @@ public class User
         _hbTimeSpan = timespan;    
         
     }
-
+    public void SetGameData(GameUserData gameData)
+    {
+        _gameData = gameData;
+    }
     public void Set(UInt64 sequence, string sessionID, string userID, DateTime ping)
     {
         _sequenceNumber = sequence;
