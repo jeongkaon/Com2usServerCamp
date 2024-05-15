@@ -28,7 +28,7 @@ public class GameBoard
     public static Func<string, byte[], bool> NetworkSendFunc;
 
     public static Action<string, GameResult> UpdateUserGameDataFunc;
-    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerDB;      //필요한가?
+    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerDB;      
 
     public GameBoard(int roomNumber)
     {
