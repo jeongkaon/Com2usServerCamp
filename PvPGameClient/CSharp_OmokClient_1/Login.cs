@@ -6,10 +6,11 @@ using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Windows.Forms;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Windows.Media.Protection.PlayReady;
 
 namespace OmokClient
@@ -31,15 +32,22 @@ namespace OmokClient
 
             하이브ID입력창.Text = id;
             API로긴ID입력창.Text = id;
+
             HttpClient httpClient = new();
-            var res = httpClient.PostAsJsonAsync(ip, new { Id = id, Password = pw });
+            var task = httpClient.PostAsJsonAsync(ip, new { Id = id, Password = pw });
 
-            if(res == null)
+            if (task.Result == null)
             {
-                
+                //곤란하지~
             }
+            var res = task.Result;
+            var preResult = res.Content.ReadAsStringAsync().Result;
+            var Result = JsonSerializer.Deserialize<VerifyTokenReponse>(preResult);
 
-            MessageBox.Show(ip + " "+id);
+            //예외처리 더 해줘야함
+            
+
+            MessageBox.Show(ip + " " + id);
         }
 
         private void 하이브IP입력창_TextChanged(object sender, EventArgs e)
@@ -68,7 +76,31 @@ namespace OmokClient
             var pw = 하이브PW입력창.Text;
 
             //ok뜨면 token창에 넣어주기!
+            //패킷 그거 해줘야할듯?
 
+            HttpClient httpClient = new();
+            var task = httpClient.PostAsJsonAsync(ip, new { Id = id, Password = pw });
+
+            if (task.Result == null)
+            {
+                //곤란하지~
+            }
+            var res = task.Result;
+            //var preResult = res.Content.ReadAsStringAsync().Result;
+            var preResult = res.Content.ReadAsStringAsync().Result;
+            var jsonDocument = JsonDocument.Parse(preResult);
+
+            int result;
+            string token = null;
+
+            if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement) &&
+                jsonDocument.RootElement.TryGetProperty("token", out var tokenElement))
+            {
+                result = resultElement.GetInt16();
+                token = tokenElement.GetString();
+            }
+            API로긴ID입력창.Text = id;
+            API토큰입력창.Text = token;
         }
         private void 하이브ID입력_TextChanged(object sender, EventArgs e)
         {
@@ -91,6 +123,8 @@ namespace OmokClient
 
             //버튼누르면 api서버로 보내야한다.
 
+
+
         }
         private void APIIP주소입력_TextChanged(object sender, EventArgs e)
         {
@@ -111,5 +145,17 @@ namespace OmokClient
 
         }
 
+
+        public class VerifyTokenReponse
+        {
+            public ErrorCode Result { get; set; } = ErrorCode.None;
+
+        }
+        public class LoginHiveResponse
+        {
+            public UInt16 Result { get; set; } = 0;
+
+            public string? Token { get; set; }
+        }
     }
 }

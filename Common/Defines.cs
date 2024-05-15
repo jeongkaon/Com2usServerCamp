@@ -9,7 +9,6 @@ public enum StoneType //: int
 }
 
 
-
 public enum ErrorCode : short
 {
     None = 0,
