@@ -6,6 +6,8 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Collections.Specialized.BitVector32;
@@ -24,12 +26,13 @@ public class GameBoard
 
     public int RoomNumber;
     public static Func<string, byte[], bool> NetworkSendFunc;
-    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerPacket;
 
-    public GameBoard(int roomNumber, Func<string, byte[], bool> func)
+    public static Action<string, GameResult> UpdateUserGameDataFunc;
+    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerDB;      //필요한가?
+
+    public GameBoard(int roomNumber)
     {
         RoomNumber = roomNumber;
-        NetworkSendFunc = func;
         _players = new List<Player>();
     }
     public StoneType SetPlayer(string sessionId, string userId)
@@ -54,7 +57,9 @@ public class GameBoard
     }
     public void EndGame(StoneType win)
     {
+        SavePlayerGameData(win);
         NotifyWinner(win);
+        UpdateGameDataInDB();
         ClearBoard();
     }
 
@@ -170,40 +175,53 @@ public class GameBoard
 
         Broadcast("", sendPacket);
 
-        //이거도 이름 바꿔야함
-        NotifyGameResult(win);  //이너패킷으로 보내버려서 거기서 점수올릴까
-                                ///게임 보드에서 이너패킷보내서
-                                  /// gmaehaendlr로 보내서 거기서 getuser해서 점수올리면될ㄷ스?
 
     }
-    public void NotifyGameResult(StoneType win)
+
+    public void UpdateGameDataInDB()
+    {
+        var packet = InnerPacketMaker.MakeNTFInnerUpdateDB(_players[0].UserId);
+        packet.SessionID = _players[0].NetSessionId;
+        DistributeInnerDB(packet);
+
+        packet = InnerPacketMaker.MakeNTFInnerUpdateDB(_players[1].UserId);
+        packet.SessionID = _players[1].NetSessionId;
+        DistributeInnerDB(packet);
+
+
+    }
+    public void SavePlayerGameData(StoneType win)
     {
         if (win == StoneType.None)      //비긴거
         {
-            //game거기에 패킷보내
-            var packet = InnerPacketMaker.MakeNTFInnerGetUserDataInDB("kain");
+            var id1 = _players[0].NetSessionId;
+            UpdateUserGameDataFunc(id1, GameResult.Draw);
 
+            var id2 = _players[1].NetSessionId;
+            UpdateUserGameDataFunc(id2, GameResult.Draw);
 
-            DistributeInnerPacket(packet);
-
-            //그럼 내부에서 
-            return;
         }
-
-        //winner index
-        int idx = (int)win - 1;
-        if (win == StoneType.Black)     //승자0, 패자1
+        else
         {
-            
+            int idx = (int)win - 1;
 
-            return;
-        }
-        
-        if (win == StoneType.White)    //승자1, 패자0
-        {
+            string winner = _players[idx].NetSessionId;
+            UpdateUserGameDataFunc(winner, GameResult.Win);
+
+            string loser = null;
+            if (win == StoneType.Black)     //승자0, 패자1
+            {
+                idx += 1;
+            }
+            else if (win == StoneType.White)  //승자1, 패자0
+            {
+                idx -= 1;
+            }
+
+            loser = _players[idx].NetSessionId;
+            UpdateUserGameDataFunc(loser, GameResult.Lose);
 
 
-            return;
         }
 
     }
@@ -309,7 +327,6 @@ public class GameBoard
 
         return SameCount;
     }
-
     int CheckDiagonal(int x, int y)      // / 확인
     {
         int SameCount = 1;

@@ -15,6 +15,7 @@ public class Player
     public StoneType PlayerType { get; private set; }
     int _passCount { get; set; } = 0;      //넘어간거
 
+
     public Player(string netSessionID,string userId,StoneType type)
     {
         UserId = userId;

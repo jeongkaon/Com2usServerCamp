@@ -8,6 +8,13 @@ public enum StoneType //: int
     White = 2
 }
 
+public enum GameResult
+{
+    Win=0,
+    Lose=1,
+    Draw=2
+}
+
 
 
 public enum ErrorCode : short
@@ -101,8 +108,10 @@ public enum PacketId : int
     NtfInGetUserData = 1301,
     NtfInUpdateUserData = 1302,
 
+    //
+    NtfInUpdateScore=1303,
+    NtfInUpdateDrawScore=1304,
 
-   
 
 
     // 시스템, 서버 - 서버

@@ -27,13 +27,7 @@ public class PacketProcessor
     public Func<string, bool> ForceSession;
     public Action<MemoryPackBinaryRequestInfo> DistributeInnerPacketDB;
 
-    public void  RetUserSetGameDataFunc(Func<string, GameUserData,bool> func)
-    {
-       func = _userMgr.SetUserGameData;
-    }
-
-
-
+ 
     public void CreateAndStart(List<Room> roomList, PvPServerOption option)
     {
         var MaxUserCount = option.RoomMaxCount * option.RoomMaxUserCount;
@@ -91,7 +85,11 @@ public class PacketProcessor
 
 
     }
-
+    public string GetUserId(string sessionId)
+    {
+        var user = _userMgr.GetUser(sessionId);
+        return user.ID();
+    }
     void Process()
     {
         while (_isThreadRunning)

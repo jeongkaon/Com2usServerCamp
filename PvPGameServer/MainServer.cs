@@ -31,6 +31,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     Timer RoomCheckTimer = null; 
     Timer UserCheckTimer = null;
 
+
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
     {
@@ -105,8 +106,8 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     public ErrorCode CreateComponent()
     {
         Room.NetworkSendFunc = SendData;
-        //Room.SetGameData= MainPacketProcessor._아니 연결해야한다구요
-
+        GameBoard.NetworkSendFunc = SendData;
+        GameBoard.DistributeInnerDB = DistributeGameDB;
 
         RoomMgr.CreateRooms(serverOption);
 
@@ -190,9 +191,13 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     }
     void OnClosed(ClientSession session, CloseReason reason)
     {
+        
         MainLogger.Info($"세션 번호 {session.SessionID} 접속해제: {reason.ToString()}");
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(false, session.SessionID);
+        
+
         Distribute(packet);
+        
 
     }
     void OnPacketReceived(ClientSession session, MemoryPackBinaryRequestInfo reqInfo)
@@ -214,8 +219,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         }
     }
 }
-
-
 
 public class ClientSession : AppSession<ClientSession, MemoryPackBinaryRequestInfo>
 {

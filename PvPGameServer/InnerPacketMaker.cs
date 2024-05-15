@@ -3,6 +3,7 @@ using PvPGameServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -80,12 +81,24 @@ public class InnerPacketMaker
 
     }
 
-    public static MemoryPackBinaryRequestInfo MakeNTFInnerGetUserDataInDB(string winnerId)
+    public static MemoryPackBinaryRequestInfo MakeNTFInnerGetUserDataInDB(string id)
     {
         var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
-        memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize];
+
+        memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize + id.Length];
+        FastBinaryWrite.String(memoryPackPacket.Data, PacketHeadInfo.HeaderSize, id);
 
         PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInGetUserData);
+        return memoryPackPacket;
+    }
+
+    public static MemoryPackBinaryRequestInfo MakeNTFInnerUpdateDB(string id)
+    {
+        var memoryPackPacket = new MemoryPackBinaryRequestInfo(null);
+        memoryPackPacket.Data = new byte[PacketHeadInfo.HeaderSize + id.Length];
+        FastBinaryWrite.String(memoryPackPacket.Data, PacketHeadInfo.HeaderSize, id);
+        PacketHeadInfo.WritePacketId(memoryPackPacket.Data, (UInt16)PacketId.NtfInUpdateUserData);
+
         return memoryPackPacket;
     }
 

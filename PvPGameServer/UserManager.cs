@@ -27,10 +27,28 @@ public class UserManager
     {
         _maxUserCount = maxUserCount;
         _userArr = new User[_maxUserCount];
+
+        GameBoard.UpdateUserGameDataFunc = UpdateGameData;
+        GameDBHandler.SetUserGameDataFunc = SetUsertGameData;
+        GameDBHandler.GetUserGameDataFunc = GetUserGameData;
     }
     public void SetDistributeInnerPacket(Action<MemoryPackBinaryRequestInfo> action)
     {
         DistributeInnerPacket = action;
+
+    }
+
+    public void SetUsertGameData(string sessionId, GameUserData gameData)
+    {
+        _userMap[sessionId].SetGameData(gameData);
+    }
+    public void UpdateGameData(string sessionId, GameResult res)
+    {
+        _userMap[sessionId].UpdateGameData(res);
+    }
+    public GameUserData GetUserGameData(string sessionId)
+    {
+        return _userMap[sessionId].GetGameData();
 
     }
     public void AddToEmptyArray(User newUser)
@@ -135,12 +153,6 @@ public class UserManager
         return _maxUserCount;
     }
 
-    public bool SetUserGameData(string sessinId, GameUserData gameData)
-    {
-        var user = GetUser(sessinId);
-        user.SetGameData(gameData);
 
-        return true;
-    }
 
 }

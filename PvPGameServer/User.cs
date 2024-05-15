@@ -31,9 +31,30 @@ public class User
         _hbTimeSpan = timespan;    
         
     }
-    public void SetGameData(GameUserData gameData)
+    public void SetGameData(GameUserData data)
     {
-        _gameData = gameData;
+        _gameData = data;
+    }
+
+    public GameUserData GetGameData()
+    {
+        return _gameData;
+    }
+    public void UpdateGameData(GameResult res)
+    {
+        if(res == GameResult.Draw)
+        {
+            _gameData.draw_score += 1;
+        }
+        else if(res == GameResult.Lose)
+        {
+            _gameData.lose_score += 1;
+        }
+        else
+        {
+            _gameData.win_score += 1;
+
+        }
     }
     public void Set(UInt64 sequence, string sessionID, string userID, DateTime ping)
     {
@@ -46,8 +67,6 @@ public class User
 
         //테스트로 일단 20초로세팅
         InitTimeSpan(20000);   
-
-
     }
 
     public void UpdateHeartBeatTime(DateTime curTime)
@@ -99,6 +118,7 @@ public class User
     {
         return RoomNumber;
     }
+
 
     public bool IsStateLogin() { return _sequenceNumber != 0; }
 

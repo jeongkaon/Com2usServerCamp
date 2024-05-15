@@ -102,8 +102,11 @@ public class PacketHandlerCommon : PacketHandler
             SendLoginToClient(errorCode, recvData.SessionID);
 
             //게임 데이터도 들고와야한다. -> 데베이너패킷으로 넘겨야한다
-            var innerPacket = InnerPacketMaker.MakeNTFInnerGetUserDataInDB(sessionID);
+            var innerPacket = InnerPacketMaker.MakeNTFInnerGetUserDataInDB(reqData.UserID);
+            innerPacket.SessionID = sessionID;
             _distributeInnerPacketDB(innerPacket);
+
+            //user에 넣어야하는디..
 
 
             MainServer.MainLogger.Debug($"로그인 결과. UserID:{reqData.UserID}, {errorCode}");

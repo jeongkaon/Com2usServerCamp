@@ -12,38 +12,45 @@ namespace PvPGameServer;
 
 public class GameDBHandler : PacketHandler
 {
+    public static Action<string, GameUserData> SetUserGameDataFunc;
+    public static Func<string,GameUserData> GetUserGameDataFunc;
+
+
     public void RegistPacketHandler(Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
+        
+
         packetHandlerMap.Add((int)PacketId.NtfInGetUserData, GetUserGameData);
         packetHandlerMap.Add((int)PacketId.NtfInUpdateUserData, UpdateUserGameData);
     }
 
 
+    public string GetPlayerIdInPacket(MemoryPackBinaryRequestInfo packetData)
+    {
+        var headerSize = PacketHeadInfo.HeaderSize;
+        var dataLen = packetData.Data.Length;
+
+        return FastBinaryRead.String(packetData.Data, headerSize, dataLen - headerSize);
+
+    }
     public void GetUserGameData(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
     {
-        var user = _userMgr.GetUser(packetData.SessionID);
-        var id = user.ID;
-
+        var id = GetPlayerIdInPacket(packetData);
         var gamedata =  queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameUserData>();
-        user.SetGameData(gamedata);
 
+        SetUserGameDataFunc(packetData.SessionID, gamedata);
     }
 
 
     public void UpdateUserGameData(QueryFactory queryFactory, MemoryPackBinaryRequestInfo packetData)
     {
-        var user = _userMgr.GetUser(packetData.SessionID);
-        var id = user.ID;
+        var id = GetPlayerIdInPacket(packetData);
+        var gamedata = GetUserGameDataFunc(packetData.SessionID);
 
-        var loserDbInfo = queryFactory.Query("gamedata").Where("id", id).FirstOrDefault<GameUserData>();
-        
-        //  여기서 업데이트 해줘야한다.
-        //queryFactory.Query("gamedata").Where("id", id).Update(new { lose_score = loseScore });
+        var count = queryFactory.Query("gamedata").Where("id", id).Update(gamedata);
 
     }
 
-  
-    //TODO- DB처리 결과값해야함
 
 }
 public class GameUserData

@@ -19,6 +19,13 @@ public class PacketHandlerGame : PacketHandler
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PacketId.ReqPutOmok, ReqOmokPut);
+        packetHandlerMap.Add((int)PacketId.NtfInUpdateScore, ReqOmokPut);
+    }
+    public string GetPlayerIdInPacket(MemoryPackBinaryRequestInfo packetData)
+    {
+        var headerSize = PacketHeadInfo.HeaderSize;
+        var dataLen = packetData.Data.Length;
+        return FastBinaryRead.String(packetData.Data, headerSize, dataLen - headerSize);
 
     }
     public void ReqOmokPut(MemoryPackBinaryRequestInfo packetData)
@@ -30,4 +37,5 @@ public class PacketHandlerGame : PacketHandler
         board.CheckBaord(reqData.mok, reqData.PosX, reqData.PosY);
     }
 
+ 
 }

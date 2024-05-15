@@ -23,7 +23,6 @@ public class Room
     DateTime _gameStartTime;   
     
     public static Func<string, byte[], bool> NetworkSendFunc;
-    public static Func<string, GameUserData, bool> SetGameData;
 
     public void Init(int index, int number, int maxUserCount)
     {
@@ -31,7 +30,7 @@ public class Room
         Number = number;
         _maxUserCount = maxUserCount;
 
-        _board = new GameBoard(Number, NetworkSendFunc);
+        _board = new GameBoard(Number);
     }
 
 
