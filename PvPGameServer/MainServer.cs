@@ -31,7 +31,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     Timer RoomCheckTimer = null; 
     Timer UserCheckTimer = null;
 
-
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
     {
@@ -204,6 +203,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     {
         MainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
         var packetId = FastBinaryRead.UInt16(reqInfo.Data, 3);
+       
         reqInfo.SessionID = session.SessionID;
 
         if (packetId == (UInt16)PacketId.ReqLogin)
