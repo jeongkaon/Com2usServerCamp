@@ -39,25 +39,41 @@ public class HiveAccountDB : IHiveAccountDB
 
     public async Task<ErrorCode> CreateAccountAsync(string id, string password)
     {
-        var (salt, hashed) = Security.GenerateHashValue(password);
 
-        var count = await _qFactory.Query("account").InsertAsync(new
+        try
         {
-            id = id,
-            SaltValue = salt,
-            HashedPassword = hashed
-        });
+            var (salt, hashed) = Security.GenerateHashValue(password);
 
-        if(count== 1)
-        {
-            Console.WriteLine("Insert Data in DataBase SucceSSS11");
+            var count = await _qFactory.Query("account").InsertAsync(new
+            {
+                id = id,
+                SaltValue = salt,
+                HashedPassword = hashed
+            });
+
+            if (1 != count)
+            {
+                _logger.ZLogDebug(
+                    $"[CreateAccount] email: {id} Failid");
+                return ErrorCode.FailCreateAccount;
+
+            }
+
+            _logger.ZLogDebug(
+                $"[CreateAccount] email: {id}, salt_value : {salt}, hashed_pw:{hashed}");
+
+
+            return ErrorCode.None;
+
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine("Insert Data in DataBase FAILE!!!!!!");
-        }
+            _logger.ZLogError(
+                $"[CreateAccount] ErrorCode: {ErrorCode.FailCreateAccount}");
 
-        return ErrorCode.None;
+            return ErrorCode.FailCreateAccount;
+
+        }
 
     }
 

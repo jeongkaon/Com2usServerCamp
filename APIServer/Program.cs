@@ -27,6 +27,9 @@ builder.Services.AddTransient<IMatchingService, MatchingService>();
 
 builder.Services.AddControllers();
 
+SettingLogger();
+
+
 var app = builder.Build();
 
 app.MapDefaultControllerRoute();
@@ -38,6 +41,36 @@ app.UseEndpoints(endpoints => { _ = endpoints.MapControllers(); });
 
 app.Run(configuration["ServerAddress"]);
 
+void SettingLogger()
+{
+    ILoggingBuilder logging = builder.Logging;
+    logging.ClearProviders();
+
+    var fileDir = configuration["logdir"];
+
+    var exists = Directory.Exists(fileDir);
+
+    if (!exists)
+    {
+        Directory.CreateDirectory(fileDir);
+    }
+
+    logging.AddZLoggerRollingFile(
+        options =>
+        {
+            options.UseJsonFormatter();
+            options.FilePathSelector = (timestamp, sequenceNumber) => $"{fileDir}{timestamp.ToLocalTime():yyyy-MM-dd}_{sequenceNumber:000}.log";
+            options.RollingInterval = ZLogger.Providers.RollingInterval.Day;
+            options.RollingSizeKB = 1024;
+        });
+
+    _ = logging.AddZLoggerConsole(options =>
+    {
+        options.UseJsonFormatter();
+    });
+
+
+}
 
 public class DbConfig
 {
@@ -45,3 +78,5 @@ public class DbConfig
     public string? Redis { get; set; }
 
 }
+
+

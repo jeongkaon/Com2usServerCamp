@@ -15,11 +15,13 @@ namespace HiveServer.Controllers;
 [Route("[controller]")]
 public class CreateAccountController : ControllerBase
 {
+    readonly ILogger<CreateAccountController> _logger;
     readonly IHiveAccountDB _hiveDB;
 
-    public CreateAccountController(IHiveAccountDB db)
+    public CreateAccountController(ILogger<CreateAccountController> logger,IHiveAccountDB db)
     {
         _hiveDB = db;
+        _logger = logger;   
     }
 
     [HttpPost]
@@ -28,7 +30,15 @@ public class CreateAccountController : ControllerBase
         CreateHiveAccountResponse response = new();
         response.Result = await _hiveDB.CreateAccountAsync(request.Id, request.Password);
 
-        Console.WriteLine("Account Create Response");
+        if (response.Result != ErrorCode.None)
+        {
+            _logger.ZLogDebug(
+                $"[CreateAccountController] Account Create Fiail ErrorCode: {ErrorCode.FailVerifyUserToken}");
+            response.Result = ErrorCode.FailVerifyUserToken;
+        }
+
+        _logger.ZLogDebug(
+                $"[CreateAccountController] Account Create Susccess");
 
         return response;
     }

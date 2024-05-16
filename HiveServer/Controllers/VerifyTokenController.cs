@@ -16,19 +16,34 @@ namespace HiveServer.Controllers;
 public class VerifyTokenController : ControllerBase
 {
     readonly IHiveRedis _hiveRedis;
-    public VerifyTokenController(IHiveRedis rd)
+    readonly ILogger<VerifyTokenController> _logger;
+    public VerifyTokenController(IHiveRedis rd, ILogger<VerifyTokenController> logger)
     {
         _hiveRedis = rd;
+        _logger = logger;
     }
 
     [HttpPost]
     public async Task<VerifyTokenReponse> Create([FromBody] VerifyTokenRequest request)
     {
-        Console.WriteLine("VeriyToeken 요청옴");
-        VerifyTokenReponse response = new();
+        _logger.ZLogDebug(
+            $"[VerifyTokenController]  Verify요청 옴");
 
-        response.Result = await _hiveRedis.VerifyUserToken(request.Id, request.Token);
+        VerifyTokenReponse response = new()
+        {
+            Result = ErrorCode.None
+        };
 
+        var res = await _hiveRedis.VerifyUserToken(request.Id, request.Token);
+        if (res != ErrorCode.None)
+        {
+            _logger.ZLogDebug(
+                $"[VerifyTokenController] ErrorCode: {ErrorCode.FailVerifyUserToken}");
+            response.Result = ErrorCode.FailVerifyUserToken;
+        }
+
+        _logger.ZLogDebug(
+              $"[VerifyTokenController] Verify요청 성공!");
         return response;
     }
 }
