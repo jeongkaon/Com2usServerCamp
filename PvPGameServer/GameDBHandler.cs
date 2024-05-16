@@ -18,8 +18,6 @@ public class GameDBHandler : PacketHandler
 
     public void RegistPacketHandler(Dictionary<int, Action<QueryFactory, MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
-        
-
         packetHandlerMap.Add((int)PacketId.NtfInGetUserData, GetUserGameData);
         packetHandlerMap.Add((int)PacketId.NtfInUpdateUserData, UpdateUserGameData);
     }
@@ -48,9 +46,7 @@ public class GameDBHandler : PacketHandler
         var gamedata = GetUserGameDataFunc(packetData.SessionID);
 
         var count = queryFactory.Query("gamedata").Where("id", id).Update(gamedata);
-
     }
-
 
 }
 public class GameUserData
