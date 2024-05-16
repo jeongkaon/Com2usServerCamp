@@ -12,13 +12,16 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.Protection.PlayReady;
+using csharp_test_client;
 
 namespace OmokClient
 {
     public partial class Login : Form
     {
+        public static Action<string, string> SettingIdAndPwFunc;
         public Login()
         {
+
             InitializeComponent();
         }
         private void 회원가입버튼_Click(object sender, EventArgs e)
@@ -114,7 +117,7 @@ namespace OmokClient
 
 
       
-        private void API로그인버튼_Click(object sender, EventArgs e)
+        private async void API로그인버튼_Click(object sender, EventArgs e)
         {
             //API로그인버튼
             var ip = APIIP주소입력창.Text + "/Login";
@@ -124,8 +127,35 @@ namespace OmokClient
             //버튼누르면 api서버로 보내야한다.
 
 
+            HttpClient httpClient = new();
+            var task = httpClient.PostAsJsonAsync(ip, new { Id = id, Token = token });
 
+            if (task.Result == null)
+            {
+                //곤란하지~
+            }
+            var res = task.Result;
+            //var preResult = res.Content.ReadAsStringAsync().Result;
+            var preResult = res.Content.ReadAsStringAsync().Result;
+            var jsonDocument = JsonDocument.Parse(preResult);
+
+            int result;
+         
+
+            if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement))
+            {
+                result = resultElement.GetInt16();
+            }
+
+            //리졸트 체크하고 넘어와야함
+            SettingIdAndPwFunc(id, token);
+
+            //여기다가 조건 넣어줘야한다.->그래도 문제가 있는디???
+             Hide();
+            //창 닫아버리자. -> 아니 자꾸 늦게 닫히는디?
         }
+
+
         private void APIIP주소입력_TextChanged(object sender, EventArgs e)
         {
 
@@ -144,8 +174,7 @@ namespace OmokClient
         {
 
         }
-
-
+    
         public class VerifyTokenReponse
         {
             public ErrorCode Result { get; set; } = ErrorCode.None;

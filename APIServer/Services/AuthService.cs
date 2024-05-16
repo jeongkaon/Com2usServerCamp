@@ -17,9 +17,10 @@ public class AuthService : IAuthService
     public AuthService(ILogger<AuthService> logger, IConfiguration configuration, IGameDB gameDb)
     {
         //물어볼 hive 서버 주소 
+        //원래는 configuration에서 서버주소 뜯어옴
         //_hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
     
-        _hiveServerAPIAddress = "http://localhost:11500" + "/VerifyToken";
+        _hiveServerAPIAddress = "http://localhost:11500" + "/RequestMatching";
 
         _gameDB = gameDb;
         _logger = logger;

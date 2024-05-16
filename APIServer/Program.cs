@@ -23,6 +23,8 @@ builder.Services.AddSingleton<IRedisDB, RedisDB>();
 builder.Services.AddTransient<IGameDB,GameDB>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IGameService, GameService>();
+builder.Services.AddTransient<IMatchingService, MatchingService>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
