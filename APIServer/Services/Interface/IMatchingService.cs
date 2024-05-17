@@ -1,10 +1,12 @@
-﻿namespace APIServer.Services.Interface;
+﻿using APIServer.Models;
+
+namespace APIServer.Services.Interface;
 
 public interface IMatchingService
 {
     public Task<ErrorCode> UserIdToMatchServer(string id);
 
-    public Task<ErrorCode> CheckToMatchServer(string id);
+    public Task<CheckMatchingResponse> CheckToMatchServer(string id);
 
 
 

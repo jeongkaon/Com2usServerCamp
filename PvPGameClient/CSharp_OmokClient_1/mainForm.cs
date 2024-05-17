@@ -362,22 +362,6 @@ namespace csharp_test_client
         private void 로그인창_클릭(object sender, EventArgs e)
         {
      
-
-
-            //테스트 해야하니까 일단 위에 주석 밑에 주석풀음
-            //다시 할때는 밑에 주석달고 위에 주석풀어야한다.
-
-
-            //결과가 들어올때까지 대기해야함
-
-
-
-
-
-
-
-
-
             var loginReq = new ReqLoginPacket();
             loginReq.UserID = 아이디입력칸.Text;
             loginReq.AuthToken = 비밀번호입력칸.Text;

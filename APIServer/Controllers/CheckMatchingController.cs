@@ -16,18 +16,22 @@ public class CheckMatchingController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<CheckMatchingRes> Create([FromBody] CheckMatchingReq request)
+    public async Task<CheckMatchingResponse> Create([FromBody] CheckMatchingRequest request)
     {
-        CheckMatchingRes test = new CheckMatchingRes();
+        Console.WriteLine("매칭서버 체크하는데에 들오음...!");
+        //CheckMatchingResponse test = new CheckMatchingResponse();
 
-        var res = _matchingService.CheckToMatchServer(request.UserID);
-
-        test.Result = ErrorCode.FailVerifyToken;
+        var res = await _matchingService.CheckToMatchServer(request.UserID);
+        if(res == null)
+        {
+            Console.WriteLine("매칭서버 체크 아직안됨");
+            return null;
+        }
         
-
+        //여기부터 널로 들어가는디?
 
         Console.WriteLine("매칭서버에서 답이왔다..ㄴ");
-        return test;
+        return res;
 
     }
 }

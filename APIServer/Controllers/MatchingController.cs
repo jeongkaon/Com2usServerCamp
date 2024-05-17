@@ -20,21 +20,19 @@ public class MatchingController : ControllerBase
     [HttpPost]
     public async Task<MatchingResponse> Create([FromBody] MatchingRequst request)
     {
-        //매칭 요청 받으면 매칭 서버에 넘겨줘야한다.
-        MatchingResponse test = new MatchingResponse();
+        //매칭 요청 받으면 매칭서버에 넘겨줘야한다.
+        MatchingResponse response = new MatchingResponse();
 
         //여기다가 넘겨주면된다.
         var res = _matchingService.UserIdToMatchServer(request.UserID);
 
-
-
-
-        test.Result = ErrorCode.FailVerifyToken;
-
-
+        if(res == null)
+        {
+            response.Result = ErrorCode.FailUserIdToMatchServer;
+        }
 
         Console.WriteLine("매칭서버에 들어엄");
-        return test;
+        return response;
     }
 
         

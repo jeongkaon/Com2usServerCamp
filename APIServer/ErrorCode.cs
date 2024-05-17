@@ -11,8 +11,10 @@ public enum ErrorCode : UInt16
     FailHiveInvalidResponse=1002,
     FailCreateUserGameData=1003,
     FailSetRedisUserToken = 1003,
-    
-    
+
+    FailUserIdToMatchServer = 1004,
+
+
 
 
     FailVerifyUserToken = 1004,

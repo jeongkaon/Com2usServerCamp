@@ -50,6 +50,7 @@ public class LoginController : ControllerBase
         }
 
         error = await _RedisDB.RegistUserAsync(id, token);
+
         if(error== ErrorCode.FailSetRedisUserToken)
         {
             //레디스 저장한거 실패! 
