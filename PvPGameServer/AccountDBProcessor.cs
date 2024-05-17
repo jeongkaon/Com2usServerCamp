@@ -12,20 +12,8 @@ using StackExchange.Redis;
 namespace PvPGameServer;
 
 
-public class AccountDB
-{
-    RedisConnection _redisCon;
-    const string ConnectionString = "127.0.0.1:6379";
-    public AccountDB()
-    {
-        RedisConfig config = new("default", ConnectionString);
-        _redisCon = new RedisConnection(config);
-    }
-    public RedisConnection GetRedisCon()
-    {
-        return _redisCon;
-    }
-}
+
+
 public class AccountDBProcessor
 {
     int _threadNum = 2;
@@ -73,7 +61,7 @@ public class AccountDBProcessor
     }
     public void Process()
     {
-        AccountDB accountDb = new AccountDB();
+        RedisDB accountDb = new RedisDB();
 
         while (_isThreadRunning)
         {

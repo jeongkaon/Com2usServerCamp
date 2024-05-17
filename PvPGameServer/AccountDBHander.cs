@@ -25,7 +25,14 @@ public class AccountDBHander : PacketHandler
 
         var value = GeValue(redisConnection, id);
 
-        if(reqData.AuthToken == value)
+
+        ///.value써주면될듯? 위에랑 밑에랑 머 할지 고민해봐야함...
+        var idDefaultExpiry = TimeSpan.FromDays(1);
+        var redisId = new RedisString<string>(redisConnection, id, idDefaultExpiry);
+        var temp = redisId.SetAsync(id).Result;
+        //
+
+        if (reqData.AuthToken == value)
         {
             Console.WriteLine("인증토근 완료!!!");
             PacketHeadInfo.WritePacketId(packetData.Data, (UInt16)PacketId.NtfInLoginCheck);

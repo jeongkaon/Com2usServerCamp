@@ -28,7 +28,10 @@ public class GameBoard
     public static Func<string, byte[], bool> NetworkSendFunc;
 
     public static Action<string, GameResult> UpdateUserGameDataFunc;
-    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerDB;      
+    public static Action<MemoryPackBinaryRequestInfo> DistributeInnerDB;  
+    public static Action<int> RemoveEmptyRoomListAction;
+    public static Action<int> AddEmptyRoomListAction;
+
 
     public GameBoard(int roomNumber)
     {
@@ -51,12 +54,18 @@ public class GameBoard
     }
     public void GameStart()
     {
+        //이거 필요없을듯? 왜냐면 
+        //방번호 제공할때 그때 빼면됨.섭?할때 빼면된다.
+        RemoveEmptyRoomListAction(RoomNumber);
+
         _curType = StoneType.Black;
         SetTimeoutCheckTime(DateTime.Now);
 
     }
     public void EndGame(StoneType win)
     {
+        //빈방 리스트에 넣어줘야한다.
+
         SavePlayerGameData(win);
         NotifyWinner(win);
         UpdateGameDataInDB();
@@ -147,6 +156,8 @@ public class GameBoard
         Array.Clear(_board, 0, _board.Length);
         _players.Clear();
         _curType = StoneType.None;
+
+        AddEmptyRoomListAction(RoomNumber);
     }
     public void NotifyPutOmok(int x, int y)
     {

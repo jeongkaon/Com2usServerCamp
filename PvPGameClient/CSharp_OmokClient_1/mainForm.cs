@@ -358,28 +358,32 @@ namespace csharp_test_client
         }
 
 
-        // 로그인 요청
+        // 로그인 요청 -> 일단 여기서 매칭요청하는거로 함수정해야함
         private void 로그인창_클릭(object sender, EventArgs e)
         {
             //여기서 방 매치를 해보자!!
             //api 서버로 매칭 요청을 보내보자
-            var ip = "http://localhost:11501" + "/Matching";
+            //var ip = "http://localhost:11501" + "/Matching";
 
 
-            HttpClient httpClient = new();
-            var task = httpClient.PostAsJsonAsync(ip, new { UserID="kaon" });
+            //HttpClient httpClient = new();
+            ////id
+            //var task = httpClient.PostAsJsonAsync(ip, new { UserID="kaon" });
 
-            if (task.Result == null)
-            {
-                //곤란하지~
-            }
-            var res = task.Result;
-            var preResult = res.Content.ReadAsStringAsync().Result;
-            var jsonDocument = JsonDocument.Parse(preResult);
-            
-            
+            //if (task.Result == null)
+            //{
+            //    //곤란하지~
+            //}
+            //var res = task.Result;
+            //var preResult = res.Content.ReadAsStringAsync().Result;
+            //var jsonDocument = JsonDocument.Parse(preResult);
+
+
+            //테스트 해야하니까 일단 위에 주석 밑에 주석풀음
+            //다시 할때는 밑에 주석달고 위에 주석풀어야한다.
+
+
             //결과가 들어올때까지 대기해야함
-     
 
 
 
@@ -388,15 +392,16 @@ namespace csharp_test_client
 
 
 
-            //var loginReq = new ReqLoginPacket();
-            //loginReq.UserID = 아이디입력칸.Text;
-            //loginReq.AuthToken = 비밀번호입력칸.Text;
-            //var packet = MemoryPackSerializer.Serialize(loginReq);
 
-            //MyPlayer.Id = loginReq.UserID;
-                        
-            //PostSendPacket(PacketId.ReqLogin, packet);     
-            //DevLog.Write($"로그인 요청:  {아이디입력칸.Text}, {비밀번호입력칸.Text}");
+            var loginReq = new ReqLoginPacket();
+            loginReq.UserID = 아이디입력칸.Text;
+            loginReq.AuthToken = 비밀번호입력칸.Text;
+            var packet = MemoryPackSerializer.Serialize(loginReq);
+
+            MyPlayer.Id = loginReq.UserID;
+
+            PostSendPacket(PacketId.ReqLogin, packet);
+            DevLog.Write($"로그인 요청:  {아이디입력칸.Text}, {비밀번호입력칸.Text}");
 
         }
 

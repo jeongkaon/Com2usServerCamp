@@ -24,6 +24,10 @@ WebApplication app = builder.Build();
 
 app.MapDefaultControllerRoute();
 
+app.UseRouting();
+#pragma warning disable ASP0014
+app.UseEndpoints(endpoints => { _ = endpoints.MapControllers(); });
+#pragma warning restore ASP0014
 
 app.Run(configuration["ServerAddress"]);
 
