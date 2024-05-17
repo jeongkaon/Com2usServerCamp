@@ -21,7 +21,7 @@ public class CreateAccountController : ControllerBase
     public CreateAccountController(ILogger<CreateAccountController> logger,IHiveAccountDB db)
     {
         _hiveDB = db;
-        _logger = logger;   
+        _logger = logger;
     }
 
     [HttpPost]
@@ -32,7 +32,8 @@ public class CreateAccountController : ControllerBase
 
         if (response.Result != ErrorCode.None)
         {
-            _logger.ZLogDebug(
+            //_logger.ZLogDebug(
+            _logger.ZLogInformation(
                 $"[CreateAccountController] Account Create Fiail ErrorCode: {ErrorCode.FailVerifyUserToken}");
             response.Result = ErrorCode.FailVerifyUserToken;
         }

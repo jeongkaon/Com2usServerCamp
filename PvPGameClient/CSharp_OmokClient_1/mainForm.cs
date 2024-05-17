@@ -84,6 +84,12 @@ namespace csharp_test_client
 
             SetPacketHandler();
 
+            //시작하자마자 뜨게헤볼게
+            Login loginForm = new Login();
+            loginForm.ShowDialog();
+
+           
+
 
             Omok_Init();
             DevLog.Write("프로그램 시작 !!!", LOG_LEVEL.INFO);
@@ -108,10 +114,6 @@ namespace csharp_test_client
         
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            //접속 버튼 누르면 로긴창 뜸
-            Login test = new Login();
-            test.ShowDialog(); 
-
             string address = 서버주소입력창.Text;
 
             

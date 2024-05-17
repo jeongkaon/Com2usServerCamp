@@ -21,8 +21,13 @@ builder.Services.AddSingleton<IHiveRedis, HiveRedis>();
 builder.Services.AddControllers();
 
 SettingLogger();
+// 다양한 로그 수준의 메시지 기록
+
 
 var app = builder.Build();
+
+
+
 
 app.MapDefaultControllerRoute();
 app.UseRouting();
@@ -60,6 +65,9 @@ void SettingLogger()
     {
         options.UseJsonFormatter();
     });
+
+    //debug도 일단 콘솔창에 찍기위해 추가->그래도 안찍힘.. infromation으로 하자..
+    logging.SetMinimumLevel(LogLevel.Debug);
 
 
 }

@@ -1,12 +1,12 @@
 ﻿using System;
 
-public enum ErrorCode : UInt16
+public enum ErrorCode 
 {
     None = 0,
     FailCreateAccount=1,
 
-    FailVerifyUserNoid=1000,
-    FailVerifyUserNotPassword = 1001,
-    FailVerifyUserToken = 1002
+    FailVerifyUserNoid=2000,
+    FailVerifyUserNotPassword = 2001,
+    FailVerifyUserToken = 2002
 
 }

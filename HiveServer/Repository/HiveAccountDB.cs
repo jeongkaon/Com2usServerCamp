@@ -66,7 +66,7 @@ public class HiveAccountDB : IHiveAccountDB
             return ErrorCode.None;
 
         }
-        catch (Exception ex)
+        catch 
         {
             _logger.ZLogError(
                 $"[CreateAccount] ErrorCode: {ErrorCode.FailCreateAccount}");

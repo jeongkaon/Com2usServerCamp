@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.Protection.PlayReady;
 using csharp_test_client;
+using System.ComponentModel.DataAnnotations;
 
 namespace OmokClient
 {
@@ -41,16 +42,34 @@ namespace OmokClient
 
             if (task.Result == null)
             {
-                //곤란하지~
+                //곤란해~
             }
+           
             var res = task.Result;
             var preResult = res.Content.ReadAsStringAsync().Result;
-            var Result = JsonSerializer.Deserialize<VerifyTokenReponse>(preResult);
+            var jsonDocument = JsonDocument.Parse(preResult);
+
+            int result;
+
+            if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement) )
+            {
+                result = resultElement.GetInt16();
+                if (result == (short)ErrorCode.None)
+                {
+                    MessageBox.Show("회원가입이 완료되었습니다");
+
+                }
+                else 
+                {
+                    MessageBox.Show("회원가입에 실패하였습니다.");
+
+                }
+
+            }
 
             //예외처리 더 해줘야함
-            
 
-            MessageBox.Show(ip + " " + id);
+
         }
 
         private void 하이브IP입력창_TextChanged(object sender, EventArgs e)
@@ -186,5 +205,12 @@ namespace OmokClient
 
             public string? Token { get; set; }
         }
+
+        public class CreateHiveAccountResponse
+        {
+            [Required]
+            public ErrorCode Result { get; set; } = ErrorCode.None;
+        }
+
     }
 }
