@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,12 +13,11 @@ public class RoomManager
 
     //빈방 관리하고 있어야한다.
     //순서를 보장하지 않고 중복을 허용하지 않는다.
-    HashSet<int> _emptyRoom = new HashSet<int>();
+    Queue<int> _emptyRoom = new Queue<int>();
 
     public void CreateRooms(PvPServerOption option)
     {
-        GameBoard.RemoveEmptyRoomListAction = RemoveEmptyRoomList;
-        GameBoard.AddEmptyRoomListAction = AddEmptyRoomList;
+        GameBoard.AddEmptyRoomListAction = EnqueueEmptyRoomList;
 
         var maxRoomCount = option.RoomMaxCount;
         var startNumber = option.RoomStartNumber;
@@ -30,22 +30,20 @@ public class RoomManager
             room.Init(i, roomNumber, maxUserCount);
 
             _roomList.Add(room);
-            //방생성할때 같이 만들어주자
-            //경기끝나면 없애주기.
-            _emptyRoom.Add(roomNumber);
+
+            _emptyRoom.Enqueue(roomNumber);
         }
 
     }
 
-    public void RemoveEmptyRoomList(int roomNumber)
+  
+    public void EnqueueEmptyRoomList(int roomNumber)
     {
-        //룸넘버를 뱉어야할거같은디..?
-        _emptyRoom.Remove(roomNumber);
-
+        _emptyRoom.Enqueue(roomNumber);
     }
-    public void AddEmptyRoomList(int roomNumber)
+    public int DequeEmptyRoomList()
     {
-        _emptyRoom.Add(roomNumber);
+        return _emptyRoom.Dequeue();
     }
     
     public bool IsEmptyRoomList()   //비었으면 true

@@ -158,19 +158,49 @@ namespace OmokClient
             var preResult = res.Content.ReadAsStringAsync().Result;
             var jsonDocument = JsonDocument.Parse(preResult);
 
-            int result;
-         
-
             if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement))
             {
-                result = resultElement.GetInt16();
+                var result = resultElement.GetInt16();
+                
+                //매칭요청을 보낸다.
+                if(result == (short)ErrorCode.None)
+                {
+                    ip = APIIP주소입력창.Text + "/Matching";
+
+                   
+                    task = httpClient.PostAsJsonAsync(ip, new { UserID = id });
+
+                    if (task.Result == null)
+                    {
+                        //곤란하지~
+                    }
+                    res = task.Result;
+                    preResult = res.Content.ReadAsStringAsync().Result;
+                    jsonDocument = JsonDocument.Parse(preResult);
+                    var code = jsonDocument.ToInt16();
+
+                    if (code == (short)ErrorCode.None)
+                    {
+                        //문제가 없다고하면 요청타이머를 보낸다.
+                        MessageBox.Show("매칭요청까지완료");
+                    }
+
+
+
+                }
             }
 
+        
+
+
+
+
+
             //리졸트 체크하고 넘어와야함
-            SettingIdAndPwFunc(id, token);
+            //SettingIdAndPwFunc(id, token);
 
             //여기다가 조건 넣어줘야한다.->그래도 문제가 있는디???
-             Hide();
+            //Hide();
             //창 닫아버리자. -> 아니 자꾸 늦게 닫히는디?
         }
 

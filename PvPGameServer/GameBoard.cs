@@ -29,7 +29,6 @@ public class GameBoard
 
     public static Action<string, GameResult> UpdateUserGameDataFunc;
     public static Action<MemoryPackBinaryRequestInfo> DistributeInnerDB;  
-    public static Action<int> RemoveEmptyRoomListAction;
     public static Action<int> AddEmptyRoomListAction;
 
 
@@ -56,7 +55,6 @@ public class GameBoard
     {
         //이거 필요없을듯? 왜냐면 
         //방번호 제공할때 그때 빼면됨.섭?할때 빼면된다.
-        RemoveEmptyRoomListAction(RoomNumber);
 
         _curType = StoneType.Black;
         SetTimeoutCheckTime(DateTime.Now);
@@ -157,6 +155,7 @@ public class GameBoard
         _players.Clear();
         _curType = StoneType.None;
 
+        //다쓴 방번호 다시 큐에 넣어줘야한다.
         AddEmptyRoomListAction(RoomNumber);
     }
     public void NotifyPutOmok(int x, int y)

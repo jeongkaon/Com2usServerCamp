@@ -25,6 +25,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     PacketProcessor MainPacketProcessor = new PacketProcessor();
     GameDBProcessor DBProcessor = new GameDBProcessor();
     AccountDBProcessor AccountProcessor = new AccountDBProcessor();
+    MatchingProcessor MatchProcessor = new MatchingProcessor();
 
     RoomManager RoomMgr = new RoomManager();
 
@@ -123,6 +124,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         AccountProcessor = new AccountDBProcessor();
         AccountProcessor.CreateAndStart();
 
+        MatchProcessor.CreateAndStart(RoomMgr, serverOption);
 
         return ErrorCode.None;
     }
@@ -178,6 +180,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         MainPacketProcessor.Destroy();
         DBProcessor.Destroy();
         AccountProcessor.Destroy();
+        MatchProcessor.Destory();
     }
 
 

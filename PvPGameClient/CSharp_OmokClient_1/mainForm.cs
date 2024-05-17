@@ -361,22 +361,7 @@ namespace csharp_test_client
         // 로그인 요청 -> 일단 여기서 매칭요청하는거로 함수정해야함
         private void 로그인창_클릭(object sender, EventArgs e)
         {
-            //여기서 방 매치를 해보자!!
-            //api 서버로 매칭 요청을 보내보자
-            //var ip = "http://localhost:11501" + "/Matching";
-
-
-            //HttpClient httpClient = new();
-            ////id
-            //var task = httpClient.PostAsJsonAsync(ip, new { UserID="kaon" });
-
-            //if (task.Result == null)
-            //{
-            //    //곤란하지~
-            //}
-            //var res = task.Result;
-            //var preResult = res.Content.ReadAsStringAsync().Result;
-            //var jsonDocument = JsonDocument.Parse(preResult);
+     
 
 
             //테스트 해야하니까 일단 위에 주석 밑에 주석풀음
@@ -468,9 +453,25 @@ namespace csharp_test_client
         private void btnMatching_Click(object sender, EventArgs e)
         {
             DevLog.Write($"매칭 요청");
+           // 여기서 방 매치를 해보자!!
+           // api 서버로 매칭 요청을 보내보자
+            var ip = "http://localhost:11501" + "/Matching";
+
+
+            HttpClient httpClient = new();
+            var id = 아이디입력칸.Text;
+            var task = httpClient.PostAsJsonAsync(ip, new { UserID = id });
+
+            if (task.Result == null)
+            {
+                //곤란하지~
+            }
+            var res = task.Result;
+            var preResult = res.Content.ReadAsStringAsync().Result;
+            var jsonDocument = JsonDocument.Parse(preResult);
         }
 
-        
+
         private void listBoxRoomChatMsg_SelectedIndexChanged(object sender, EventArgs e)
         {
 
