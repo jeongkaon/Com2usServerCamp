@@ -11,6 +11,9 @@ using System.Windows.Forms;
 using System.Threading;
 using Windows.Media.Core;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 #pragma warning disable CA1416
 
 
@@ -46,6 +49,8 @@ namespace csharp_test_client
         {
             InitializeComponent();
 
+            Login.SettingIdAndPwFunc = SettingIdAndPw;
+
             hbTimer = new System.Windows.Forms.Timer();
             hbTimer.Interval = 1000;
             hbTimer.Tick += HeartBeatTimer;
@@ -79,6 +84,12 @@ namespace csharp_test_client
 
             SetPacketHandler();
 
+            //시작하자마자 뜨게헤볼게
+            Login loginForm = new Login();
+            loginForm.ShowDialog();
+
+           
+
 
             Omok_Init();
             DevLog.Write("프로그램 시작 !!!", LOG_LEVEL.INFO);
@@ -94,18 +105,25 @@ namespace csharp_test_client
             Network.Close();
         }
 
-
+        //id, authToken 셋팅창
+        public void SettingIdAndPw(string id, string token)
+        {
+            아이디입력칸.Text = id;
+            비밀번호입력칸.Text = token;
+        }
         
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            string address = textBoxIP.Text;
+            string address = 서버주소입력창.Text;
+
+            
 
             if (checkBoxLocalHostIP.Checked)
             {
                 address = "127.0.0.1";
             }
 
-            int port = Convert.ToInt32(textBoxPort.Text);
+            int port = Convert.ToInt32(포트입력칸.Text);
 
             if (Network.Connect(address, port))
             {
@@ -341,17 +359,44 @@ namespace csharp_test_client
 
 
         // 로그인 요청
-        private void button2_Click(object sender, EventArgs e)
+        private void 로그인창_클릭(object sender, EventArgs e)
         {
-            var loginReq = new ReqLoginPacket();
-            loginReq.UserID = textBoxUserID.Text;
-            loginReq.AuthToken = textBoxUserPW.Text;
-            var packet = MemoryPackSerializer.Serialize(loginReq);
+            //여기서 방 매치를 해보자!!
+            //api 서버로 매칭 요청을 보내보자
+            var ip = "http://localhost:11501" + "/Matching";
 
-            MyPlayer.Id = loginReq.UserID;
+
+            HttpClient httpClient = new();
+            var task = httpClient.PostAsJsonAsync(ip, new { UserID="kaon" });
+
+            if (task.Result == null)
+            {
+                //곤란하지~
+            }
+            var res = task.Result;
+            var preResult = res.Content.ReadAsStringAsync().Result;
+            var jsonDocument = JsonDocument.Parse(preResult);
+            
+            
+            //결과가 들어올때까지 대기해야함
+     
+
+
+
+
+
+
+
+
+            //var loginReq = new ReqLoginPacket();
+            //loginReq.UserID = 아이디입력칸.Text;
+            //loginReq.AuthToken = 비밀번호입력칸.Text;
+            //var packet = MemoryPackSerializer.Serialize(loginReq);
+
+            //MyPlayer.Id = loginReq.UserID;
                         
-            PostSendPacket(PacketId.ReqLogin, packet);     
-            DevLog.Write($"로그인 요청:  {textBoxUserID.Text}, {textBoxUserPW.Text}");
+            //PostSendPacket(PacketId.ReqLogin, packet);     
+            //DevLog.Write($"로그인 요청:  {아이디입력칸.Text}, {비밀번호입력칸.Text}");
 
         }
 
@@ -375,9 +420,9 @@ namespace csharp_test_client
         private void btn_RoomLeave_Click(object sender, EventArgs e)
         {
             PostSendPacket(PacketId.ReqRoomLeave, new byte[PacketHeadInfo.HeaderSize]);
-            RemoveRoomUserList(textBoxUserID.Text);
+            RemoveRoomUserList(아이디입력칸.Text);
 
-            DevLog.Write($"방 퇴장 요청:  {textBoxUserID.Text} 번");
+            DevLog.Write($"방 퇴장 요청:  {아이디입력칸.Text} 번");
         }
 
         private void btnRoomChat_Click(object sender, EventArgs e)

@@ -33,16 +33,16 @@
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnConnect = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.textBoxPort = new System.Windows.Forms.TextBox();
+            this.포트입력칸 = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.checkBoxLocalHostIP = new System.Windows.Forms.CheckBox();
-            this.textBoxIP = new System.Windows.Forms.TextBox();
+            this.서버주소입력창 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.labelStatus = new System.Windows.Forms.Label();
             this.listBoxLog = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBoxUserID = new System.Windows.Forms.TextBox();
-            this.textBoxUserPW = new System.Windows.Forms.TextBox();
+            this.아이디입력칸 = new System.Windows.Forms.TextBox();
+            this.비밀번호입력칸 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.Room = new System.Windows.Forms.GroupBox();
@@ -87,10 +87,10 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.textBoxPort);
+            this.groupBox5.Controls.Add(this.포트입력칸);
             this.groupBox5.Controls.Add(this.label10);
             this.groupBox5.Controls.Add(this.checkBoxLocalHostIP);
-            this.groupBox5.Controls.Add(this.textBoxIP);
+            this.groupBox5.Controls.Add(this.서버주소입력창);
             this.groupBox5.Controls.Add(this.label9);
             this.groupBox5.Location = new System.Drawing.Point(12, 12);
             this.groupBox5.Name = "groupBox5";
@@ -101,13 +101,13 @@
             // 
             // textBoxPort
             // 
-            this.textBoxPort.Location = new System.Drawing.Point(225, 20);
-            this.textBoxPort.MaxLength = 6;
-            this.textBoxPort.Name = "textBoxPort";
-            this.textBoxPort.Size = new System.Drawing.Size(51, 21);
-            this.textBoxPort.TabIndex = 18;
-            this.textBoxPort.Text = "32452";
-            this.textBoxPort.WordWrap = false;
+            this.포트입력칸.Location = new System.Drawing.Point(225, 20);
+            this.포트입력칸.MaxLength = 6;
+            this.포트입력칸.Name = "textBoxPort";
+            this.포트입력칸.Size = new System.Drawing.Size(51, 21);
+            this.포트입력칸.TabIndex = 18;
+            this.포트입력칸.Text = "32452";
+            this.포트입력칸.WordWrap = false;
             // 
             // label10
             // 
@@ -131,17 +131,17 @@
             this.checkBoxLocalHostIP.UseVisualStyleBackColor = true;
             // 
             // textBoxIP
-            // 
-            this.textBoxIP.Location = new System.Drawing.Point(68, 18);
-            this.textBoxIP.MaxLength = 30;
-            this.textBoxIP.Name = "textBoxIP";
-            this.textBoxIP.Size = new System.Drawing.Size(87, 21);
-            this.textBoxIP.TabIndex = 11;
-            this.textBoxIP.Text = "34.64.232.76";
-            this.textBoxIP.WordWrap = false;
+            // --서버주소 넣는곳
+            this.서버주소입력창.Location = new System.Drawing.Point(68, 18);
+            this.서버주소입력창.MaxLength = 30;
+            this.서버주소입력창.Name = "textBoxIP";
+            this.서버주소입력창.Size = new System.Drawing.Size(87, 21);
+            this.서버주소입력창.TabIndex = 11;
+            this.서버주소입력창.Text = "34.64.232.76";
+            this.서버주소입력창.WordWrap = false;
             // 
             // label9
-            // 
+            // 아이디 넣는곳
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(6, 23);
             this.label9.Name = "label9";
@@ -179,23 +179,23 @@
             // 
             // textBoxUserID
             // 
-            this.textBoxUserID.Location = new System.Drawing.Point(62, 67);
-            this.textBoxUserID.MaxLength = 6;
-            this.textBoxUserID.Name = "textBoxUserID";
-            this.textBoxUserID.Size = new System.Drawing.Size(87, 21);
-            this.textBoxUserID.TabIndex = 43;
-            this.textBoxUserID.Text = "test1";
-            this.textBoxUserID.WordWrap = false;
+            this.아이디입력칸.Location = new System.Drawing.Point(62, 67);
+            this.아이디입력칸.MaxLength = 6;
+            this.아이디입력칸.Name = "textBoxUserID";
+            this.아이디입력칸.Size = new System.Drawing.Size(87, 21);
+            this.아이디입력칸.TabIndex = 43;
+            this.아이디입력칸.Text = "test1";
+            this.아이디입력칸.WordWrap = false;
             // 
             // textBoxUserPW
             // 
-            this.textBoxUserPW.Location = new System.Drawing.Point(220, 68);
-            this.textBoxUserPW.MaxLength = 6;
-            this.textBoxUserPW.Name = "textBoxUserPW";
-            this.textBoxUserPW.Size = new System.Drawing.Size(87, 21);
-            this.textBoxUserPW.TabIndex = 45;
-            this.textBoxUserPW.Text = "123qwe";
-            this.textBoxUserPW.WordWrap = false;
+            this.비밀번호입력칸.Location = new System.Drawing.Point(220, 68);
+            this.비밀번호입력칸.MaxLength = 6;
+            this.비밀번호입력칸.Name = "textBoxUserPW";
+            this.비밀번호입력칸.Size = new System.Drawing.Size(87, 21);
+            this.비밀번호입력칸.TabIndex = 45;
+            this.비밀번호입력칸.Text = "123qwe";
+            this.비밀번호입력칸.WordWrap = false;
             // 
             // label2
             // 
@@ -215,7 +215,7 @@
             this.button2.TabIndex = 46;
             this.button2.Text = "Login";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.로그인창_클릭);
             // 
             // Room
             // 
@@ -386,9 +386,9 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.Room);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.textBoxUserPW);
+            this.Controls.Add(this.비밀번호입력칸);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBoxUserID);
+            this.Controls.Add(this.아이디입력칸);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.listBoxLog);
@@ -414,16 +414,16 @@
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.TextBox textBoxPort;
+        private System.Windows.Forms.TextBox 포트입력칸;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.CheckBox checkBoxLocalHostIP;
-        private System.Windows.Forms.TextBox textBoxIP;
+        private System.Windows.Forms.TextBox 서버주소입력창;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.ListBox listBoxLog;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBoxUserID;
-        private System.Windows.Forms.TextBox textBoxUserPW;
+        private System.Windows.Forms.TextBox 아이디입력칸;
+        private System.Windows.Forms.TextBox 비밀번호입력칸;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.GroupBox Room;

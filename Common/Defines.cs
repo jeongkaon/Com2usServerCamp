@@ -16,7 +16,6 @@ public enum GameResult
 }
 
 
-
 public enum ErrorCode : short
 {
     None = 0,
@@ -53,6 +52,14 @@ public enum ErrorCode : short
 
     RoomNotAllReady = 1026,
     RoomAllReady = 1027,
+
+    //
+    FailCreateAccount = 1,
+
+    FailVerifyUserNoid = 2000,
+    FailVerifyUserNotPassword = 2001,
+    FailVerifyUserToken = 2002
+
 
 
 
