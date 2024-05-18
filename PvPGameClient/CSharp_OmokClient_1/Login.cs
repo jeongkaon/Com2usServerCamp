@@ -55,7 +55,13 @@ namespace OmokClient
             else
             {
                 var preHiveResResult = res.Content.ReadAsStringAsync().Result;
+                if (preHiveResResult == null)
+                {
+                    return;
+                }
+                //여기서 잘 파싱해서 하는거로 해야할듯~
                 var deserializedData = JsonSerializer.Deserialize<CheckMatchingResponse>(preHiveResResult);
+
 
                 //var preResult = res.Content.ReadAsStringAsync().Result;
                 //var jsonDocument = JsonDocument.Parse(preResult);
@@ -74,7 +80,8 @@ namespace OmokClient
 
                 //if (jsonDocument.RootElement.TryGetProperty("Result", out var resultElement) &&
                 //    jsonDocument.RootElement.TryGetProperty("ServerAddress", out var tokenElement) &&
-                //    jsonDocument.RootElement.TryGetProperty("Port", out var portElement) &&
+                //    jsonDocument.RootElement.TryGetProperty("Port", out
+                //    var portElement) &&
                 //    jsonDocument.RootElement.TryGetProperty("RoomNumber", out var roomElement))
                 //{
                 //    result = resultElement.GetInt16();

@@ -22,6 +22,8 @@ public class MatchingProcessor
 
     string _matchReqRedisName = "match_request";
     string _matchResRedisName = "match_response";
+
+    //이 ip주소 mainserver에서 관리할까??
     string _ip = null;      
     string _port = null;
 

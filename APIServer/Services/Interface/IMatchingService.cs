@@ -6,7 +6,7 @@ public interface IMatchingService
 {
     public Task<ErrorCode> UserIdToMatchServer(string id);
 
-    public Task<CheckMatchingResponse> CheckToMatchServer(string id);
+    public Task<string> CheckToMatchServer(string id);
 
 
 

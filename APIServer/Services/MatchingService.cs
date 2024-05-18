@@ -39,24 +39,30 @@ public class MatchingService : IMatchingService
     }
 
     //매칭서버에 결과 확인하는거 해야함
-    public async Task<CheckMatchingResponse> CheckToMatchServer(string id)
+    public async Task<string> CheckToMatchServer(string id)
     {
         var checkMatchRes = await client.PostAsJsonAsync(_checkServerAddress, new { UserID = id });
         //변수이름 바꿔야함
 
-        var preHiveResResult = await checkMatchRes.Content.ReadAsStringAsync();
-        var hiveResResult = JsonSerializer.Deserialize<CheckMatchingResponse>(preHiveResResult);
+        //여기도 값 잘들어옴.
+        var json = await checkMatchRes.Content.ReadAsStringAsync();
+        //
+        //역직렬화 없이 그냥 보내보자 일단 hive위에는 값 잘들어오는거 확인함
+        //var hiveResResult = JsonSerializer.Deserialize<CheckMatchingResponse>(preHiveResResult);
 
-        if(hiveResResult == null ||hiveResResult.Result != ErrorCode.None)
+        //여기가 안됨 -> 이방법말고 다른방법으로 값 가져와야할듯?
+        //근데 null이아니면 걍 역직렬화안시키고 보내도 되는거아님??
+        if(json == null)
         {
-            Console.WriteLine("매칭서버에서 아직 매칭안됨!");
-
             return null;
         }
         //결과, 서버주소, 포트번호, 방번호 받아야한다.
-        Console.WriteLine("매칭서버 완료!!!!");
-
-        return hiveResResult;
+        //Console.WriteLine("매칭서버 완료!!!!");
+        Console.WriteLine($"[매칭서비스] 매칭서버 -> API로 받은 JSON: {json}");
+        
+        // 클라가 받는다... 받는쪽 수정해야함
+        //받는쪽에서 역직렬화 하면 되는거아님?
+        return json;
 
     }
 
