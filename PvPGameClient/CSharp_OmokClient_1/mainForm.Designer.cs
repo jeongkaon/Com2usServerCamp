@@ -55,7 +55,7 @@
             this.listBoxRoomUserList = new System.Windows.Forms.ListBox();
             this.btn_RoomLeave = new System.Windows.Forms.Button();
             this.btn_RoomEnter = new System.Windows.Forms.Button();
-            this.textBoxRoomNumber = new System.Windows.Forms.TextBox();
+            this.방번호입력칸 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
@@ -229,7 +229,7 @@
             this.Room.Controls.Add(this.listBoxRoomUserList);
             this.Room.Controls.Add(this.btn_RoomLeave);
             this.Room.Controls.Add(this.btn_RoomEnter);
-            this.Room.Controls.Add(this.textBoxRoomNumber);
+            this.Room.Controls.Add(this.방번호입력칸);
             this.Room.Controls.Add(this.label3);
             this.Room.Location = new System.Drawing.Point(14, 119);
             this.Room.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -339,13 +339,13 @@
             // 
             // textBoxRoomNumber
             // 
-            this.textBoxRoomNumber.Location = new System.Drawing.Point(98, 20);
-            this.textBoxRoomNumber.MaxLength = 6;
-            this.textBoxRoomNumber.Name = "textBoxRoomNumber";
-            this.textBoxRoomNumber.Size = new System.Drawing.Size(38, 21);
-            this.textBoxRoomNumber.TabIndex = 44;
-            this.textBoxRoomNumber.Text = "0";
-            this.textBoxRoomNumber.WordWrap = false;
+            this.방번호입력칸.Location = new System.Drawing.Point(98, 20);
+            this.방번호입력칸.MaxLength = 6;
+            this.방번호입력칸.Name = "textBoxRoomNumber";
+            this.방번호입력칸.Size = new System.Drawing.Size(38, 21);
+            this.방번호입력칸.TabIndex = 44;
+            this.방번호입력칸.Text = "0";
+            this.방번호입력칸.WordWrap = false;
             // 
             // label3
             // 
@@ -429,7 +429,7 @@
         private System.Windows.Forms.GroupBox Room;
         private System.Windows.Forms.Button btn_RoomLeave;
         private System.Windows.Forms.Button btn_RoomEnter;
-        private System.Windows.Forms.TextBox textBoxRoomNumber;
+        private System.Windows.Forms.TextBox 방번호입력칸;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnRoomChat;
         private System.Windows.Forms.TextBox textBoxRoomSendMsg;

@@ -50,6 +50,7 @@ namespace csharp_test_client
             InitializeComponent();
 
             Login.SettingIdAndPwFunc = SettingIdAndPw;
+            Login.SettingLoginInfoFunc = SettingLoginInfo;
 
             hbTimer = new System.Windows.Forms.Timer();
             hbTimer.Interval = 1000;
@@ -111,7 +112,15 @@ namespace csharp_test_client
             아이디입력칸.Text = id;
             비밀번호입력칸.Text = token;
         }
-        
+        public void SettingLoginInfo(LoginInformation res)
+        {
+            아이디입력칸.Text = res.UserId;
+            비밀번호입력칸.Text = res.AuthToken;
+            서버주소입력창.Text = res.ServerAddress;
+            포트입력칸.Text = res.Port;
+            방번호입력칸.Text = res.RoomNumber.ToString();
+        }
+
         private void btnConnect_Click(object sender, EventArgs e)
         {
             string address = 서버주소입력창.Text;
@@ -378,7 +387,7 @@ namespace csharp_test_client
         {
 
             int result;
-            int.TryParse(textBoxRoomNumber.Text, out result);
+            int.TryParse(방번호입력칸.Text, out result);
             MyPlayer.PlayRoom = result;
 
             var temp = new ReqRoomEnterPacket()
@@ -388,7 +397,7 @@ namespace csharp_test_client
             var packet = MemoryPackSerializer.Serialize(temp);
 
             PostSendPacket(PacketId.ReqRoomEnter, packet);
-            DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번");
+            DevLog.Write($"방 입장 요청:  {방번호입력칸.Text} 번");
         }
 
         private void btn_RoomLeave_Click(object sender, EventArgs e)
@@ -422,7 +431,7 @@ namespace csharp_test_client
 
             //예외처리할거있음 -> 방 입장 안했는데 눌리면 곤란 처리해야함
             int result;
-            int.TryParse(textBoxRoomNumber.Text, out result);
+            int.TryParse(방번호입력칸.Text, out result);
 
             var temp = new ReqGameReadyPacket()
             {

@@ -19,7 +19,6 @@ public class CheckMatchingController: ControllerBase
     public async Task<string> Create([FromBody] CheckMatchingRequest request)
     {
         Console.WriteLine("매칭서버 체크하는데에 들오음...!");
-        //CheckMatchingResponse test = new CheckMatchingResponse();
 
         //매칭서버에 물어본다. 매칭서버에서 결과 받아온다.
         //res에 결과가 들어가있는거임
