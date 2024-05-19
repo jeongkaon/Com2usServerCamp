@@ -40,7 +40,7 @@ public class MatchingProcessor
 
             // 외부 IP 주소 가져오기
             string externalIp = client.GetStringAsync(metadataUrl).Result;
-
+            _ip = externalIp;
             _logger.Info($"외부 IP 주소: {externalIp}");
         }
         catch (HttpRequestException e)
