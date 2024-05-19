@@ -24,6 +24,10 @@ public class CheckMatchingController: ControllerBase
     public async Task<string> Create([FromBody] CheckMatchingRequest request)
     {
         var res = await _matchingService.CheckToMatchServer(request.UserID);
+        if(res == ""|| res == null)
+        {
+            return "";
+        }
         return res;
     }
 }

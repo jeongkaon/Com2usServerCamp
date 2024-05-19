@@ -71,7 +71,6 @@ public class MatchingProcessor
     }
     public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
     {
-        SetIpAddress();
 
         _roomMgr = roomMgr;
         _port = serverOption.Port.ToString();
@@ -81,6 +80,7 @@ public class MatchingProcessor
         _matchingThread.Start();
 
     }
+    
     public void Destory()
     {
         _matchingThread.Join();

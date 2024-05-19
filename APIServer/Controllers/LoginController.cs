@@ -26,6 +26,7 @@ public class LoginController : ControllerBase
 
     public LoginController(ILogger<LoginController> logger,IRedisDB hiveRedis, IAuthService authService, IGameService gameService)
     {
+        _logger = logger;
         _redisDB = hiveRedis;
         _authService = authService;
         _gameService = gameService;

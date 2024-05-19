@@ -60,15 +60,15 @@ public class MatchingService : IMatchingService
   
             if (json == null)
             {
-                return null;
+                return "";
             }
-            _logger.ZLogInformation($"[MatchingService] success matching : {json}");
+            _logger.ZLogInformation($"[MatchingService] success matching");
             return json;
         }
         catch
         {
             _logger.ZLogError($"[MatchingService] faile Check To Match Server ");
-            return null;
+            return "";
         }
 
     }

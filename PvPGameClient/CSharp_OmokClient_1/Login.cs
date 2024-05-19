@@ -59,10 +59,10 @@ namespace OmokClient
                 var jsonDocument = JsonDocument.Parse(preHiveResResult);
                 if (jsonDocument == null) return;
 
-                if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement) &&
-                    jsonDocument.RootElement.TryGetProperty("serverAddress", out var serverAddrElement) &&
-                    jsonDocument.RootElement.TryGetProperty("port", out var portElement) &&
-                    jsonDocument.RootElement.TryGetProperty("roomNumber", out var roomElement))
+                if (jsonDocument.RootElement.TryGetProperty("Result", out var resultElement) &&
+                    jsonDocument.RootElement.TryGetProperty("ServerAddress", out var serverAddrElement) &&
+                    jsonDocument.RootElement.TryGetProperty("Port", out var portElement) &&
+                    jsonDocument.RootElement.TryGetProperty("RoomNumber", out var roomElement))
                 {
                     //여기서 받은 값 기반으로 타이머 멈추고 hide하고 값 메인창에 넘겨줘야한다.
                     var result = resultElement.GetInt16();
@@ -96,8 +96,9 @@ namespace OmokClient
             }
             catch
             {
-                matchingTimer.Stop();
-                MessageBox.Show("매칭에 실패하였습니다.");
+                return;
+                //matchingTimer.Stop();
+               // MessageBox.Show("매칭에 실패하였습니다.");
 
             }
         }
