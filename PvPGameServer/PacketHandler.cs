@@ -15,6 +15,7 @@ public class PacketHandler
 
     protected UserManager _userMgr = null;
 
+    public static SuperSocket.SocketBase.Logging.ILog _logger;
 
     public void Init(UserManager userMgr)
     {

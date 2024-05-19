@@ -91,6 +91,8 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             _userCheckTimer = new Timer(InnerUserCheckTimer, null, 0, _serverOption.RoomCheckTime);
 
             _mainLogger.Debug("서버 생성 성공");
+            SetLog();
+            _mainLogger.Debug("로그 세팅 성공");
 
             Start();
         }
@@ -100,6 +102,13 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         }
     }
 
+    public void SetLog()
+    {
+        PacketProcessor._logger = base.Logger;
+        PacketHandler._logger = base.Logger;
+        Room._logger = base.Logger;
+
+    }
     public ErrorCode CreateComponent()
     {
         Room.NetworkSendFunc = SendData;
@@ -113,7 +122,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         _mainPacketProcessor.ForceSession = ForceDisconnectSession;
         _mainPacketProcessor.DistributeInnerPacketDB = DistributeGameDB;
         _mainPacketProcessor.CreateAndStart(_roomMgr.GetRooms(), _serverOption);
-        //_mainPacketProcessor.SetLogger(_mainLogger);
 
         _dBProcessor = new GameDBProcessor();
         _dBProcessor.CreateAndStart();

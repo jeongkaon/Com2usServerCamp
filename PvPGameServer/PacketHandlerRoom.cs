@@ -20,13 +20,8 @@ public class PacketHandlerRoom : PacketHandler
     int _startCheckRoomNumber = 0;
     int _checkRoomNumberCount;
     int _maxRoomCheckCount;
-    //static SuperSocket.SocketBase.Logging.ILog _logger;
 
-    //public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
-    //{
-    //    _logger = logger;
-    //    Room.SetLogger(_logger);
-    //}
+
 
     public void SetRoomList(List<Room> roomList)
     {
