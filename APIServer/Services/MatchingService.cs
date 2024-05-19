@@ -58,11 +58,11 @@ public class MatchingService : IMatchingService
             var checkMatchRes = await client.PostAsJsonAsync(_checkServerAddress, new { UserID = id });
             var json = await checkMatchRes.Content.ReadAsStringAsync();
   
-            if (json == null)
+            if (json == null || json =="")
             {
-                return null;
+                return "";
             }
-            _logger.ZLogInformation($"[MatchingService] success matching : {json}");
+            _logger.ZLogInformation($"[MatchingService] success matching : ");
             return json;
         }
         catch

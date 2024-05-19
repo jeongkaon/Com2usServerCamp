@@ -22,10 +22,10 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     SuperSocket.SocketBase.Logging.ILog _mainLogger;
     SuperSocket.SocketBase.Config.IServerConfig _serverConfig;
 
-    PacketProcessor     _mainPacketProcessor= new PacketProcessor();
-    GameDBProcessor     _dBProcessor        = new GameDBProcessor();
-    AccountDBProcessor  _accountProcessor   = new AccountDBProcessor();
-    MatchingProcessor   _matchProcessor     = new MatchingProcessor();
+    PacketProcessor     _mainPacketProcessor= null;
+    GameDBProcessor     _dBProcessor        = null;
+    AccountDBProcessor  _accountProcessor   = null;
+    MatchingProcessor _matchProcessor       = null;
 
     RoomManager         _roomMgr            = new RoomManager();
 
@@ -123,8 +123,10 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         _accountProcessor.CreateAndStart();
         _accountProcessor.SetLogger(_mainLogger);
 
+        _matchProcessor = new MatchingProcessor();
         _matchProcessor.CreateAndStart(_roomMgr, _serverOption);
         _matchProcessor.SetLogger(_mainLogger);
+        _matchProcessor.SetIpAddress();
 
         return ErrorCode.None;
     }

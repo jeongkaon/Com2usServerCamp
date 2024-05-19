@@ -20,8 +20,8 @@ public class AuthService : IAuthService
        _hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
        // _hiveServerAPIAddress = "http://localhost:11500" + "/VerifyToken";
 
-        _gameDB = gameDb;
         _logger = logger;
+        _gameDB = gameDb;
         
     }
 
@@ -50,7 +50,7 @@ public class AuthService : IAuthService
         }
         catch (HttpRequestException ex)
         {
-            _logger.ZLogError($"[AuthService] {ex}, fail VerifyTokenToHive");
+            _logger.ZLogError($"[AuthService] {ex.Message}, fail VerifyTokenToHive");
             return ErrorCode.FailHiveInvalidResponse;
 
         }

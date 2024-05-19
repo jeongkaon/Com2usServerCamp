@@ -29,6 +29,7 @@ public class LoginController : ControllerBase
         _redisDB = hiveRedis;
         _authService = authService;
         _gameService = gameService;
+        _logger = logger;
     }
 
     [HttpPost]

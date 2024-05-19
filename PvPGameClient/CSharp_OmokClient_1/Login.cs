@@ -44,63 +44,59 @@ namespace OmokClient
         }
         void MatchingCheckTimer(object sender, EventArgs e)
         {
-            try
+            var ip = APIIP주소입력창.Text + "/CheckMatching";
+            var id = API로긴ID입력창.Text;
+
+            //1초에 한번씩 매칭요청되었는지 보내보자.
+            var task = httpClient.PostAsJsonAsync(ip, new { UserID = id });
+            if (task.Result == null) return;
+
+            var preHiveResResult = task.Result.Content.ReadAsStringAsync().Result;
+            if (preHiveResResult == null || preHiveResResult == "") return;   //null이 아니라 ""도 해줘야에러가 안남
+            if (string.IsNullOrEmpty(preHiveResResult))
             {
-                var ip = APIIP주소입력창.Text + "/CheckMatching";
-                var id = API로긴ID입력창.Text;
+                return;
+            }
+            var jsonDocument = JsonDocument.Parse(preHiveResResult);
+            if (jsonDocument == null) return;
 
-                //1초에 한번씩 매칭요청되었는지 보내보자.
-                var task = httpClient.PostAsJsonAsync(ip, new { UserID = id });
-                if (task.Result == null) return;
-
-                var preHiveResResult = task.Result.Content.ReadAsStringAsync().Result;
-                if (preHiveResResult == null || preHiveResResult=="") return;   //null이 아니라 ""도 해줘야에러가 안남
-
-                var jsonDocument = JsonDocument.Parse(preHiveResResult);
-                if (jsonDocument == null) return;
-
-                if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement) &&
-                    jsonDocument.RootElement.TryGetProperty("serverAddress", out var serverAddrElement) &&
-                    jsonDocument.RootElement.TryGetProperty("port", out var portElement) &&
-                    jsonDocument.RootElement.TryGetProperty("roomNumber", out var roomElement))
+            if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement) &&
+                jsonDocument.RootElement.TryGetProperty("serverAddress", out var serverAddrElement) &&
+                jsonDocument.RootElement.TryGetProperty("port", out var portElement) &&
+                jsonDocument.RootElement.TryGetProperty("roomNumber", out var roomElement))
+            {
+                //여기서 받은 값 기반으로 타이머 멈추고 hide하고 값 메인창에 넘겨줘야한다.
+                var result = resultElement.GetInt32();
+                if (result == (short)ErrorCode.None)
                 {
-                    //여기서 받은 값 기반으로 타이머 멈추고 hide하고 값 메인창에 넘겨줘야한다.
-                    var result = resultElement.GetInt16();
-                    if (result == (short)ErrorCode.None)
+                    LoginInformation temp = new LoginInformation
                     {
-                        LoginInformation temp = new LoginInformation
-                        {
-                            ServerAddress = serverAddrElement.GetString(),  //tostring이아니라 getstrign을 써야한다.
-                            Port = portElement.GetString(),
-                            RoomNumber = roomElement.GetInt32(),
-                            UserId = API로긴ID입력창.Text,
-                            AuthToken = API토큰입력창.Text
-                        };
+                        ServerAddress = serverAddrElement.GetString(),  //tostring이아니라 getstrign을 써야한다.
+                        Port = portElement.GetString(),
+                        RoomNumber = roomElement.GetInt32(),
+                        UserId = API로긴ID입력창.Text,
+                        AuthToken = API토큰입력창.Text
+                    };
 
-                        SettingLoginInfoFunc(temp);
-                        matchingTimer.Stop();
+                    SettingLoginInfoFunc(temp);
+                    matchingTimer.Stop();
 
-                        MessageBox.Show("매칭완료!");
+                    MessageBox.Show("매칭완료!");
 
-                        Hide();
+                    Hide();
 
-                    }
-                    else
-                    {
-                        MessageBox.Show("매칭에 실패하였습니다.");
-
-                    }
+                }
+                else
+                {
+                    MessageBox.Show("매칭에 실패하였습니다.");
 
                 }
 
             }
-            catch
-            {
-                matchingTimer.Stop();
-                MessageBox.Show("매칭에 실패하였습니다.");
 
-            }
         }
+           
+        
         private void 회원가입버튼_Click(object sender, EventArgs e)
         {
             //회원가입버튼만들거임
@@ -237,6 +233,7 @@ namespace OmokClient
                 MessageBox.Show("로그인버튼눌렀을때 돌아온json이 아무것도 없음");
             }
             var jsonDocument = JsonDocument.Parse(preResult);
+            if (jsonDocument == null) return;
 
             if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement))
             {
@@ -277,7 +274,7 @@ namespace OmokClient
                         matchingTimer.Start();
 
                     }
-
+                 
 
 
                 }
