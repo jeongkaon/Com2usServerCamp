@@ -28,6 +28,25 @@ public class MatchingProcessor
 
     public void SetIpAddress()
     {
+        HttpClient client = new HttpClient();
+        try{
+            string metadataUrl = "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip";
+
+            // 요청 헤더 추가
+            client.DefaultRequestHeaders.Add("Metadata-Flavor", "Google");
+
+            // 외부 IP 주소 가져오기
+            string externalIp = client.GetStringAsync(metadataUrl).Result;
+
+            Console.WriteLine($"외부 IP 주소: {externalIp}");
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"요청 오류: {e.Message}");
+        }
+    }
+    public void SetIpAddress1()
+    {
         string hostName = Dns.GetHostName();
         IPAddress[] addresses = Dns.GetHostAddresses(hostName);
 
@@ -43,7 +62,7 @@ public class MatchingProcessor
 
     }
 
-
+    
 public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
     {
         SetIpAddress();
