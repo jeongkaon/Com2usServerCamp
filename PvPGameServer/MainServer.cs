@@ -84,6 +84,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
                 _mainLogger = base.Logger;
                 _mainLogger.Info("서버 초기화 성공");
             }
+            MatchingProcessor._logger = base.Logger;
 
             CreateComponent();
 
@@ -105,7 +106,6 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     public void SetLog()
     {
         PacketProcessor._logger = base.Logger;
-        MatchingProcessor._logger = base.Logger;
         AccountDBProcessor._logger = base.Logger;
         GameDBProcessor._logger = base.Logger;
         PacketHandler._logger = base.Logger;
