@@ -331,7 +331,6 @@ namespace csharp_test_client
 
             현재턴_플레이어_정보();
 
-
             DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY}");// 알:{notifyPkt.Mok}");
         }
         

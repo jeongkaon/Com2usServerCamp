@@ -145,7 +145,7 @@ namespace csharp_test_client
                 {
                     현재돌표시();
                 }
-
+                돌주인_정보_표시();
                 현재턴_플레이어_정보();
             }
             else
@@ -236,7 +236,7 @@ namespace csharp_test_client
                 g.FillEllipse(검은색, 시작위치 + 100, 599, 돌크기, 돌크기);
                 g.DrawString(str, 글꼴, 검은색, 시작위치, 600);
 
-                g.DrawString($"PlayerName: {흑돌플레이어Name }", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 600);
+               // g.DrawString($"PlayerName: {흑돌플레이어Name }", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 600);
             }
 
             if (curPlayer == StoneType.White)
@@ -245,8 +245,26 @@ namespace csharp_test_client
                 g.FillEllipse(흰색, 시작위치 + 100, 599, 돌크기, 돌크기);
                 g.DrawString(str, 글꼴, 검은색, 시작위치, 600);
 
-                g.DrawString($"PlayerName: {백돌플레이어Name }", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 600);
+               // g.DrawString($"PlayerName: {백돌플레이어Name }", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 600);
             }            
+        }
+        void 돌주인_정보_표시()
+        {
+            Graphics g = panel1.CreateGraphics();
+            string str;
+            Font 글꼴 = new Font("HY견고딕", 15);
+            if(MyPlayer.PlayerType == StoneType.White)
+            {
+                g.DrawString($"흰돌플레이어(나): {백돌플레이어Name}", 글꼴, 흰색, (시작위치 + 120 + 돌크기), 700);
+                g.DrawString($"검정플레이어    : {흑돌플레이어Name}", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 730);
+
+            }
+            else
+            {
+                g.DrawString($"검정플레이어(나): {흑돌플레이어Name}", 글꼴, 검은색, (시작위치 + 120 + 돌크기), 700);
+                g.DrawString($"흰돌플레이어    : {백돌플레이어Name}", 글꼴, 흰색, (시작위치 + 120 + 돌크기), 730);
+
+            }
         }
 
 
