@@ -20,7 +20,7 @@ public class GameDB
 
 
     const string connectionString =
-        "Server=127.0.0.1;user=root;Password=0000;Database=game_db;Pooling=true;Min Pool Size=0;Max Pool Size=100;AllowUserVariables=True;";
+        "Server=127.0.0.1;user=kaon;Password=0000;Database=game_db;Pooling=true;Min Pool Size=0;Max Pool Size=100;AllowUserVariables=True;";
     public GameDB()
     {
         _dbConn = new MySqlConnection(connectionString);
@@ -41,7 +41,7 @@ public class GameDBProcessor
     bool _isThreadRunning = false;
     System.Threading.Thread[] _gameDBThread = null;
 
-    SuperSocket.SocketBase.Logging.ILog _logger;
+    public static SuperSocket.SocketBase.Logging.ILog _logger;
 
     BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 
@@ -66,10 +66,6 @@ public class GameDBProcessor
                 _gameDBThread[i].Start();
             }
         }
-    }
-    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
-    {
-        _logger = logger;
     }
 
     public void Destroy()

@@ -32,6 +32,10 @@ namespace csharp_test_client
         /// </summary>
         private void InitializeComponent()
         {
+            //타이머관련 추가해보쟈
+
+
+
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnConnect = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();

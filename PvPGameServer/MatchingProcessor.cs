@@ -18,7 +18,7 @@ public class MatchingProcessor
     System.Threading.Thread _matchingThread = null;
     RedisDB _matchRedis = new RedisDB(0);
 
-    SuperSocket.SocketBase.Logging.ILog _logger;
+    static public SuperSocket.SocketBase.Logging.ILog _logger;
   
 
     RoomManager _roomMgr = null;
@@ -29,7 +29,7 @@ public class MatchingProcessor
     string _ip = null;      
     string _port = null;
 
-    public void SetIpAddress1()
+    public void ExternalSetIpAddress()
     {
         HttpClient client = new HttpClient();
         try{
@@ -48,7 +48,7 @@ public class MatchingProcessor
             _logger.Info($"요청 오류: {e.Message}");
         }
     }
-    public void SetIpAddress()
+    public void InternalSetIpAddress()
     {
         string hostName = Dns.GetHostName();
         IPAddress[] addresses = Dns.GetHostAddresses(hostName);
@@ -65,10 +65,6 @@ public class MatchingProcessor
 
     }
 
-    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
-    {
-        _logger = logger;
-    }
     public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
     {
 

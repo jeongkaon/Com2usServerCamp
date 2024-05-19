@@ -17,7 +17,7 @@ public class AccountDBProcessor
     bool _isThreadRunning = false;
     System.Threading.Thread[] _accountDBThread = null;
 
-    static SuperSocket.SocketBase.Logging.ILog _logger;
+    public static SuperSocket.SocketBase.Logging.ILog _logger;
 
     BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 
@@ -40,10 +40,7 @@ public class AccountDBProcessor
             }
         }
     }
-    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
-    {
-        _logger = logger;
-    }
+ 
 
     public void Destroy()
     {

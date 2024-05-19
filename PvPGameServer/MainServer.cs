@@ -105,9 +105,12 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     public void SetLog()
     {
         PacketProcessor._logger = base.Logger;
+        MatchingProcessor._logger = base.Logger;
+        AccountDBProcessor._logger = base.Logger;
+        GameDBProcessor._logger = base.Logger;
         PacketHandler._logger = base.Logger;
         Room._logger = base.Logger;
-
+        
     }
     public ErrorCode CreateComponent()
     {
@@ -125,16 +128,13 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
         _dBProcessor = new GameDBProcessor();
         _dBProcessor.CreateAndStart();
-        _dBProcessor.SetLogger(_mainLogger);
 
         _accountProcessor = new AccountDBProcessor();
         _accountProcessor.CreateAndStart();
-        _accountProcessor.SetLogger(_mainLogger);
 
         _matchProcessor = new MatchingProcessor();
         _matchProcessor.CreateAndStart(_roomMgr, _serverOption);
-        _matchProcessor.SetLogger(_mainLogger);
-        _matchProcessor.SetIpAddress();
+        _matchProcessor.ExternalSetIpAddress();
 
         return ErrorCode.None;
     }

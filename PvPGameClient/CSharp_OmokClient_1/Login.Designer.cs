@@ -78,7 +78,7 @@
             this.하이브계정생성ID창.Name = "하이브계정생성ID창";
             this.하이브계정생성ID창.Size = new System.Drawing.Size(402, 21);
             this.하이브계정생성ID창.TabIndex = 2;
-            this.하이브계정생성ID창.Text = "회원가입 ID입력창";
+            //this.하이브계정생성ID창.Text = "회원가입 ID입력창";
             this.하이브계정생성ID창.TextChanged += new System.EventHandler(this.하이브계정생성ID입력창);
             // 
             // 하이브IP라벨
@@ -105,7 +105,7 @@
             this.하이브계정생성PW창.Name = "하이브계정생성PW창";
             this.하이브계정생성PW창.Size = new System.Drawing.Size(402, 21);
             this.하이브계정생성PW창.TabIndex = 5;
-            this.하이브계정생성PW창.Text = "하이브계정생성Pw입력창";
+            //this.하이브계정생성PW창.Text = "하이브계정생성 비밀번호 입력하세요";
             this.하이브계정생성PW창.TextChanged += new System.EventHandler(this.하이브계정생성PW_TextChanged);
             // 
             // 하이브PW라벨
@@ -123,7 +123,7 @@
             this.하이브ID입력창.Name = "하이브ID입력창";
             this.하이브ID입력창.Size = new System.Drawing.Size(402, 21);
             this.하이브ID입력창.TabIndex = 7;
-            this.하이브ID입력창.Text = "하이브ID입력칸";
+            //this.하이브ID입력창.Text = "하이브ID입력칸";
             this.하이브ID입력창.TextChanged += new System.EventHandler(this.하이브ID입력_TextChanged);
             // 
             // 하이브PW입력창
@@ -132,7 +132,7 @@
             this.하이브PW입력창.Name = "하이브PW입력창";
             this.하이브PW입력창.Size = new System.Drawing.Size(402, 21);
             this.하이브PW입력창.TabIndex = 8;
-            this.하이브PW입력창.Text = "하이브PW입력창";
+            //this.하이브PW입력창.Text = "하이브PW입력창";
             this.하이브PW입력창.TextChanged += new System.EventHandler(this.하이브PW입력_TextChanged);
             // 
             // 하이브로그인버튼
@@ -160,7 +160,7 @@
             this.API로긴ID입력창.Name = "API로긴ID입력창";
             this.API로긴ID입력창.Size = new System.Drawing.Size(402, 21);
             this.API로긴ID입력창.TabIndex = 11;
-            this.API로긴ID입력창.Text = "API로긴ID입력창";
+            //this.API로긴ID입력창.Text = "API로긴ID입력창";
             this.API로긴ID입력창.TextChanged += new System.EventHandler(this.API로긴ID입력_TextChanged);
             // 
             // API로그인버튼
@@ -179,7 +179,7 @@
             this.API토큰입력창.Name = "API토큰입력창";
             this.API토큰입력창.Size = new System.Drawing.Size(402, 21);
             this.API토큰입력창.TabIndex = 13;
-            this.API토큰입력창.Text = "API토큰입력창입력해";
+            //this.API토큰입력창.Text = "API토큰입력창입력해";
             this.API토큰입력창.TextChanged += new System.EventHandler(this.API토큰입력_TextChanged);
             // 
             // 하이브로긴ID라벨
