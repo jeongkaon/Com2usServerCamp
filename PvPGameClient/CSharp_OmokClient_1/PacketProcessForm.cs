@@ -122,6 +122,11 @@ namespace csharp_test_client
             var reqData = MemoryPackSerializer.Deserialize<ResLoginPacket>(packetData);
             DevLog.Write($"로그인 결과: {reqData.Result}");
 
+            if(reqData.Result == (short)ErrorCode.None)
+            {
+                RoomEnter();
+            }
+
         }
 
         void PacketProcess_RoomEnterResponse(byte[] packetData)
@@ -168,7 +173,7 @@ namespace csharp_test_client
 
             RemoveRoomUserList(notifyPkt.UserID);
 
-            DevLog.Write($"방에서 나간 유저 지움????지운거 맞아??");
+            DevLog.Write($"방에서 나간 유저 삭제");
         }
 
 
@@ -325,11 +330,10 @@ namespace csharp_test_client
         {
             var temp = MemoryPackSerializer.Deserialize<NftPutOmok>(packetData);
 
-            //목 색깔이 자기거랑 똑같으면 턴바꾸고 아니면 갸욷ㄴ다.
             ChangeTurn(temp.mok);
 
 
-            DevLog.Write($"타임아웃패킷 받음 {temp.mok}이 타임아웃됨 나는{MyPlayer.PlayerType}임");// 알:{notifyPkt.Mok}");
+            DevLog.Write($"타임아웃패킷 받음 {temp.mok}이 타임아웃");
 
         }
         void PacketProcess_EndOmokNotify(byte[] packetData)

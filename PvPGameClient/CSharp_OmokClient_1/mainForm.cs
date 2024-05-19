@@ -63,7 +63,6 @@ namespace csharp_test_client
             var packet = MemoryPackSerializer.Serialize(new ReqHeartBeatPacket());
             PostSendPacket(PacketId.ReqHeartBeat, packet);
 
-
         }
 
         private void mainForm_Load(object sender, EventArgs e)
@@ -93,7 +92,7 @@ namespace csharp_test_client
 
 
             Omok_Init();
-            DevLog.Write("프로그램 시작 !!!", LOG_LEVEL.INFO);
+            DevLog.Write("프로그램 시작", LOG_LEVEL.INFO);
         }
 
 
@@ -125,8 +124,6 @@ namespace csharp_test_client
         {
             string address = 서버주소입력창.Text;
 
-            
-
             if (checkBoxLocalHostIP.Checked)
             {
                 address = "127.0.0.1";
@@ -136,17 +133,25 @@ namespace csharp_test_client
 
             if (Network.Connect(address, port))
             {
-                //여기부터 TIMER 세팅해서 시작하자
                 labelStatus.Text = string.Format("{0}. 서버에 접속 중", DateTime.Now);
                 btnConnect.Enabled = false;
                 btnDisconnect.Enabled = true;
 
-                //접속할때부터 하트비트 보내는게 좋을듯?? 
-                //->오래 방 입장안하면 끊어버려야하기때문.
                 hbTimer.Start();
 
-
                 DevLog.Write($"서버에 접속 중", LOG_LEVEL.INFO);
+
+                //++접속 성공하면 로그인 요청 보내는거 추가함 
+                var loginReq = new ReqLoginPacket();
+                loginReq.UserID = 아이디입력칸.Text;
+                loginReq.AuthToken = 비밀번호입력칸.Text;
+                var packet = MemoryPackSerializer.Serialize(loginReq);
+
+                MyPlayer.Id = loginReq.UserID;
+
+                PostSendPacket(PacketId.ReqLogin, packet);
+                DevLog.Write($"로그인 요청:  {아이디입력칸.Text}, {비밀번호입력칸.Text}");
+
             }
             else
             {
@@ -155,6 +160,57 @@ namespace csharp_test_client
 
             PacketBuffer.Clear();
         }
+        // 로그인 요청 -> 일단 여기서 매칭요청하는거로 함수정해야함
+        private void 로그인창_클릭(object sender, EventArgs e)
+        {
+            
+            var loginReq = new ReqLoginPacket();
+            loginReq.UserID = 아이디입력칸.Text;
+            loginReq.AuthToken = 비밀번호입력칸.Text;
+            var packet = MemoryPackSerializer.Serialize(loginReq);
+
+            MyPlayer.Id = loginReq.UserID;
+
+            PostSendPacket(PacketId.ReqLogin, packet);
+            DevLog.Write($"로그인 요청:  {아이디입력칸.Text}, {비밀번호입력칸.Text}");
+
+        }
+
+        public void RoomEnter()
+        {
+
+            int result;
+            int.TryParse(방번호입력칸.Text, out result);
+            MyPlayer.PlayRoom = result;
+
+            var temp = new ReqRoomEnterPacket()
+            {
+                RoomNumber = result
+            };
+            var packet = MemoryPackSerializer.Serialize(temp);
+
+            PostSendPacket(PacketId.ReqRoomEnter, packet);
+            DevLog.Write($"방 입장 요청:  {방번호입력칸.Text} 번");
+
+        }
+
+        private void btn_RoomEnter_Click(object sender, EventArgs e)
+        {
+
+            int result;
+            int.TryParse(방번호입력칸.Text, out result);
+            MyPlayer.PlayRoom = result;
+
+            var temp = new ReqRoomEnterPacket()
+            {
+                RoomNumber = result
+            };
+            var packet = MemoryPackSerializer.Serialize(temp);
+
+            PostSendPacket(PacketId.ReqRoomEnter, packet);
+            DevLog.Write($"방 입장 요청:  {방번호입력칸.Text} 번");
+        }
+
 
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
@@ -190,7 +246,7 @@ namespace csharp_test_client
                         
                         RecvPacketQueue.Enqueue(data);
                     }
-                    DevLog.Write($"받은 데이터: {recvData.Item2}", LOG_LEVEL.INFO);
+                    
                 }
                 else
                 {
@@ -367,38 +423,6 @@ namespace csharp_test_client
         }
 
 
-        // 로그인 요청 -> 일단 여기서 매칭요청하는거로 함수정해야함
-        private void 로그인창_클릭(object sender, EventArgs e)
-        {
-     
-            var loginReq = new ReqLoginPacket();
-            loginReq.UserID = 아이디입력칸.Text;
-            loginReq.AuthToken = 비밀번호입력칸.Text;
-            var packet = MemoryPackSerializer.Serialize(loginReq);
-
-            MyPlayer.Id = loginReq.UserID;
-
-            PostSendPacket(PacketId.ReqLogin, packet);
-            DevLog.Write($"로그인 요청:  {아이디입력칸.Text}, {비밀번호입력칸.Text}");
-
-        }
-
-        private void btn_RoomEnter_Click(object sender, EventArgs e)
-        {
-
-            int result;
-            int.TryParse(방번호입력칸.Text, out result);
-            MyPlayer.PlayRoom = result;
-
-            var temp = new ReqRoomEnterPacket()
-            {
-                RoomNumber = result
-            };
-            var packet = MemoryPackSerializer.Serialize(temp);
-
-            PostSendPacket(PacketId.ReqRoomEnter, packet);
-            DevLog.Write($"방 입장 요청:  {방번호입력칸.Text} 번");
-        }
 
         private void btn_RoomLeave_Click(object sender, EventArgs e)
         {

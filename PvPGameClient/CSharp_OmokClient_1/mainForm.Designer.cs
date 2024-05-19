@@ -1,4 +1,6 @@
-﻿namespace csharp_test_client
+﻿using System.Windows.Forms;
+
+namespace csharp_test_client
 {
     partial class mainForm
     {
@@ -108,6 +110,7 @@
             this.포트입력칸.TabIndex = 18;
             this.포트입력칸.Text = "32452";
             this.포트입력칸.WordWrap = false;
+            this.포트입력칸.Enabled = false;
             // 
             // label10
             // 
@@ -139,6 +142,7 @@
             this.서버주소입력창.TabIndex = 11;
             this.서버주소입력창.Text = "34.64.232.76";
             this.서버주소입력창.WordWrap = false;
+            this.서버주소입력창.Enabled = false;
             // 
             // label9
             // 아이디 넣는곳
@@ -186,6 +190,8 @@
             this.아이디입력칸.TabIndex = 43;
             this.아이디입력칸.Text = "test1";
             this.아이디입력칸.WordWrap = false;
+            this.아이디입력칸.Enabled = false;
+
             // 
             // textBoxUserPW
             // 
@@ -196,6 +202,7 @@
             this.비밀번호입력칸.TabIndex = 45;
             this.비밀번호입력칸.Text = "123qwe";
             this.비밀번호입력칸.WordWrap = false;
+            this.비밀번호입력칸.Enabled = false;
             // 
             // label2
             // 
@@ -214,6 +221,7 @@
             this.button2.Size = new System.Drawing.Size(69, 26);
             this.button2.TabIndex = 46;
             this.button2.Text = "Login";
+            this.button2.Enabled = false;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.로그인창_클릭);
             // 
@@ -260,6 +268,7 @@
             this.btnMatching.TabIndex = 54;
             this.btnMatching.Text = "Matching";
             this.btnMatching.UseVisualStyleBackColor = true;
+            this.btnMatching.Enabled = false;
             this.btnMatching.Click += new System.EventHandler(this.btnMatching_Click);
             // 
             // GameStartBtn
@@ -335,7 +344,9 @@
             this.btn_RoomEnter.TabIndex = 47;
             this.btn_RoomEnter.Text = "Enter";
             this.btn_RoomEnter.UseVisualStyleBackColor = true;
+            this.btn_RoomEnter.Enabled = false;
             this.btn_RoomEnter.Click += new System.EventHandler(this.btn_RoomEnter_Click);
+
             // 
             // textBoxRoomNumber
             // 
@@ -346,6 +357,7 @@
             this.방번호입력칸.TabIndex = 44;
             this.방번호입력칸.Text = "0";
             this.방번호입력칸.WordWrap = false;
+            this.방번호입력칸.Enabled = false;
             // 
             // label3
             // 

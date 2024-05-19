@@ -16,14 +16,13 @@ public class MatchingProcessor
 {
     bool isThreadRunning = false;
     System.Threading.Thread _matchingThread = null;
-    RedisDB _matchRedis = new RedisDB();
+    RedisDB _matchRedis = new RedisDB(0);
 
     RoomManager _roomMgr = null;
 
     string _matchReqRedisName = "match_request";
     string _matchResRedisName = "match_response";
 
-    //이 ip주소 mainserver에서 관리할까??
     string _ip = null;      
     string _port = null;
 
