@@ -7,6 +7,7 @@ public enum ErrorCode : UInt16
 
     AythCheckFail = 21,
     ReceiptCheckFail = 22,
+    NotYetMatch=23,
 
 
 }

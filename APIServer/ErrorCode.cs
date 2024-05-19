@@ -15,6 +15,7 @@ public enum ErrorCode
     FailUserIdToMatchServer = 1004,
     FailGetUserDataInMySql=1005,
 
+    FailMatchYet=1006,
 
 
 

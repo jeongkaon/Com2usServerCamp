@@ -12,14 +12,14 @@ namespace APIServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CheckMatching : Controller
+public class CheckMatching : ControllerBase
 {
-    readonly Logger<CheckMatching> _logger;
+    readonly ILogger<CheckMatching> _logger;
 
     IMatchWoker _matchWorker;
 
 
-    public CheckMatching(Logger<CheckMatching> logger,IMatchWoker matchWorker)
+    public CheckMatching(ILogger<CheckMatching> logger,IMatchWoker matchWorker)
     {
         _logger = logger;
         _matchWorker = matchWorker;
@@ -29,23 +29,20 @@ public class CheckMatching : Controller
     public CheckMatchingResponse Post(CheckMatchingRequest request)
     {
         (var result, var completeMatchingData) = _matchWorker.GetCompleteMatching(request.UserID);
+        CheckMatchingResponse response = new CheckMatchingResponse();
 
-        if(result == false)
+        if (result == false)
         {
-            return null;
+            response.Result = ErrorCode.NotYetMatch;
+            return response;
         }
 
-        CheckMatchingResponse response = new CheckMatchingResponse()
-        {
-            Result = ErrorCode.None,
-            ServerAddress = completeMatchingData.ServerAddress,
-            Port = completeMatchingData.Port,
-            RoomNumber = completeMatchingData.RoomNumber
-        };
 
+        response.Result = ErrorCode.None;
+        response.ServerAddress = completeMatchingData.ServerAddress;
+        response.Port = completeMatchingData.Port;
+        response.RoomNumber = completeMatchingData.RoomNumber;
 
-        string json = JsonSerializer.Serialize(response);
-        _logger.ZLogInformation($"[CheckMatching] : {json}");
 
         return response;
     }

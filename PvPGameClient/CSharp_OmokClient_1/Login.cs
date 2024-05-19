@@ -52,12 +52,8 @@ namespace OmokClient
             if (task.Result == null) return;
 
             var preHiveResResult = task.Result.Content.ReadAsStringAsync().Result;
-            if (preHiveResResult == null || preHiveResResult == "") return;   //null이 아니라 ""도 해줘야에러가 안남
-            if (string.IsNullOrEmpty(preHiveResResult))
-            {
-                return;
-            }
             var jsonDocument = JsonDocument.Parse(preHiveResResult);
+
             if (jsonDocument == null) return;
 
             if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement) &&
@@ -66,7 +62,12 @@ namespace OmokClient
                 jsonDocument.RootElement.TryGetProperty("roomNumber", out var roomElement))
             {
                 //여기서 받은 값 기반으로 타이머 멈추고 hide하고 값 메인창에 넘겨줘야한다.
-                var result = resultElement.GetInt32();
+                var result = resultElement.GetInt16();
+                if (result != (short)ErrorCode.None)
+                {
+                    return;
+                }
+
                 if (result == (short)ErrorCode.None)
                 {
                     LoginInformation temp = new LoginInformation
@@ -88,11 +89,14 @@ namespace OmokClient
                 }
                 else
                 {
-                    MessageBox.Show("매칭에 실패하였습니다.");
+                    return;
+                    // MessageBox.Show("매칭에 실패하였습니다.");
 
                 }
 
             }
+
+
 
         }
            
