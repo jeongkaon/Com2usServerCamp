@@ -17,20 +17,20 @@ namespace PvPGameServer;
 
 public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 {
-    public static PvPServerOption serverOption;
-    public static SuperSocket.SocketBase.Logging.ILog MainLogger;
+    PvPServerOption _serverOption;
+    
+    SuperSocket.SocketBase.Logging.ILog _mainLogger;
+    SuperSocket.SocketBase.Config.IServerConfig _serverConfig;
 
-    SuperSocket.SocketBase.Config.IServerConfig serverConfig;
+    PacketProcessor     _mainPacketProcessor= new PacketProcessor();
+    GameDBProcessor     _dBProcessor        = new GameDBProcessor();
+    AccountDBProcessor  _accountProcessor   = new AccountDBProcessor();
+    MatchingProcessor   _matchProcessor     = new MatchingProcessor();
 
-    PacketProcessor MainPacketProcessor = new PacketProcessor();
-    GameDBProcessor DBProcessor = new GameDBProcessor();
-    AccountDBProcessor AccountProcessor = new AccountDBProcessor();
-    MatchingProcessor MatchProcessor = new MatchingProcessor();
+    RoomManager         _roomMgr            = new RoomManager();
 
-    RoomManager RoomMgr = new RoomManager();
-
-    Timer RoomCheckTimer = null; 
-    Timer UserCheckTimer = null;
+    Timer _roomCheckTimer = null; 
+    Timer _userCheckTimer = null;
 
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, MemoryPackBinaryRequestInfo>())
@@ -55,9 +55,8 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     public void InitConfig(PvPServerOption option)
     {
-        serverOption = option;
-
-        serverConfig = new SuperSocket.SocketBase.Config.ServerConfig
+        _serverOption = option;
+        _serverConfig = new SuperSocket.SocketBase.Config.ServerConfig
         {
             Name = option.Name,
             Ip = "Any",
@@ -68,15 +67,13 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             ReceiveBufferSize = option.ReceiveBufferSize,
             SendBufferSize = option.SendBufferSize
         };
-
-       
     }
 
     public void CreateAndStartServer()
     {
         try
         {
-            bool res = Setup(new SuperSocket.SocketBase.Config.RootConfig(), serverConfig, logFactory: new NLogLogFactory("NLog.config"));
+            bool res = Setup(new SuperSocket.SocketBase.Config.RootConfig(), _serverConfig, logFactory: new NLogLogFactory("NLog.config"));
 
             if (res == false)
             {
@@ -84,22 +81,22 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
             }
             else
             {
-                MainLogger = base.Logger;
-                MainLogger.Info("서버 초기화 성공");
+                _mainLogger = base.Logger;
+                _mainLogger.Info("서버 초기화 성공");
             }
 
             CreateComponent();
 
-            RoomCheckTimer = new Timer(InnerRoomCheckTimer, null, 0, serverOption.UserCheckTime);
-            UserCheckTimer = new Timer(InnerUserCheckTimer, null, 0, serverOption.RoomCheckTime);
+            _roomCheckTimer = new Timer(InnerRoomCheckTimer, null, 0, _serverOption.UserCheckTime);
+            _userCheckTimer = new Timer(InnerUserCheckTimer, null, 0, _serverOption.RoomCheckTime);
 
-            MainLogger.Debug("서버 생성 성공");
+            _mainLogger.Debug("서버 생성 성공");
 
             Start();
         }
         catch (Exception ex)
         {
-            MainLogger.Error($"[ERROR] 서버 생성 실패: {ex.ToString()}");
+            _mainLogger.Error($"[ERROR] 서버 생성 실패: {ex.ToString()}");
         }
     }
 
@@ -109,23 +106,25 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         GameBoard.NetworkSendFunc = SendData;
         GameBoard.DistributeInnerDB = DistributeGameDB;
 
-        RoomMgr.CreateRooms(serverOption);
+        _roomMgr.CreateRooms(_serverOption);
 
-        MainPacketProcessor = new PacketProcessor();
-        MainPacketProcessor.NeworktSendFunc = SendData;
-        MainPacketProcessor.ForceSession = ForceDisconnectSession;
-        MainPacketProcessor.DistributeInnerPacketDB = DistributeGameDB;
-        MainPacketProcessor.CreateAndStart(RoomMgr.GetRooms(), serverOption);
+        _mainPacketProcessor = new PacketProcessor();
+        _mainPacketProcessor.NeworktSendFunc = SendData;
+        _mainPacketProcessor.ForceSession = ForceDisconnectSession;
+        _mainPacketProcessor.DistributeInnerPacketDB = DistributeGameDB;
+        _mainPacketProcessor.CreateAndStart(_roomMgr.GetRooms(), _serverOption);
+        _mainPacketProcessor.SetLogger(_mainLogger);
 
-        
-        DBProcessor = new GameDBProcessor();
-        DBProcessor.CreateAndStart();
+        _dBProcessor = new GameDBProcessor();
+        _dBProcessor.CreateAndStart();
+        _dBProcessor.SetLogger(_mainLogger);
 
-        AccountProcessor = new AccountDBProcessor();
-        AccountProcessor.CreateAndStart();
+        _accountProcessor = new AccountDBProcessor();
+        _accountProcessor.CreateAndStart();
+        _accountProcessor.SetLogger(_mainLogger);
 
-        //ip번호도 같이 넘겨주자.
-        MatchProcessor.CreateAndStart(RoomMgr, serverOption);
+        _matchProcessor.CreateAndStart(_roomMgr, _serverOption);
+        _matchProcessor.SetLogger(_mainLogger);
 
         return ErrorCode.None;
     }
@@ -143,18 +142,16 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
 
     void Distribute(MemoryPackBinaryRequestInfo reqPacket)
     {
-        MainPacketProcessor.InsertPacket(reqPacket);
+        _mainPacketProcessor.InsertPacket(reqPacket);
     }
     void DistributeGameDB(MemoryPackBinaryRequestInfo reqPacket)
     {
-        DBProcessor.InsertPacket(reqPacket);
+        _dBProcessor.InsertPacket(reqPacket);
     }
-
     void DistributeAccountDB(MemoryPackBinaryRequestInfo reqPacket)
     {
-        AccountProcessor.InsertPacket(reqPacket);
+        _accountProcessor.InsertPacket(reqPacket);
     }
-
     public bool SendData(string sessionId, byte[] data)
     {
         var session = GetSessionByID(sessionId);
@@ -178,36 +175,28 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     public void StopServer()
     {
         Stop();
-        MainPacketProcessor.Destroy();
-        DBProcessor.Destroy();
-        AccountProcessor.Destroy();
-        MatchProcessor.Destory();
+        _mainPacketProcessor.Destroy();
+        _dBProcessor.Destroy();
+        _accountProcessor.Destroy();
+        _matchProcessor.Destory();
     }
-
 
     void OnConnected(ClientSession session)
     {
-        MainLogger.Info($"세션 번호 {session.SessionID} 접속");
+        _mainLogger.Info($"세션 번호 {session.SessionID} 접속");
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(true, session.SessionID);
         Distribute(packet);
-
     }
     void OnClosed(ClientSession session, CloseReason reason)
     {
-        
-        MainLogger.Info($"세션 번호 {session.SessionID} 접속해제: {reason.ToString()}");
+        _mainLogger.Info($"세션 번호 {session.SessionID} 접속해제: {reason.ToString()}");
         var packet = InnerPacketMaker.MakeNTFInConnectOrDisConnectClientPacket(false, session.SessionID);
-        
-
         Distribute(packet);
-        
-
     }
     void OnPacketReceived(ClientSession session, MemoryPackBinaryRequestInfo reqInfo)
     {
-        MainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
+        _mainLogger.Debug($"세션 번호 {session.SessionID} 받은 데이터 크기: {reqInfo.Body.Length}, ThreadId: {Thread.CurrentThread.ManagedThreadId}");
         var packetId = FastBinaryRead.UInt16(reqInfo.Data, 3);
-       
         reqInfo.SessionID = session.SessionID;
 
         if (packetId == (UInt16)PacketId.ReqLogin)

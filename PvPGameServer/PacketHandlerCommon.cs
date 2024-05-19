@@ -13,7 +13,12 @@ public class PacketHandlerCommon : PacketHandler
     int _maxUserCheckCount;     
     int _userCheckStartIndex;
     Action<MemoryPackBinaryRequestInfo> _distributeInnerPacketDB;
+    SuperSocket.SocketBase.Logging.ILog _logger;
 
+    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    {
+        _logger = logger;
+    }
     public void SetCheckCount(int maxUserCheck)
     {
         _userCheckStartIndex = 0;
@@ -27,19 +32,17 @@ public class PacketHandlerCommon : PacketHandler
     {
         packetHandlerMap.Add((int)PacketId.NtfInLoginCheck, ReqLoginPacket);
         packetHandlerMap.Add((int)PacketId.NtfInLoginFailedAuthToken, ReqLoginFailAuthTokenPacket);
-
         packetHandlerMap.Add((int)PacketId.NtfInConnectClient, NotifyInConnectClient);
         packetHandlerMap.Add((int)PacketId.NtfInDisconnectClient, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PacketId.ReqHeartBeat, ReqHeartBeatPacket);
         packetHandlerMap.Add((int)PacketId.NtrInUserCheck, NotifyInUserCheck);
         packetHandlerMap.Add((int)PacketId.NtfInForceDisconnectClient, NotifyInForceDisConnectClient);
     }
+    
     public void NotifyInUserCheck(MemoryPackBinaryRequestInfo requestData)
     {
         int endIdx = _userCheckStartIndex + _maxUserCheckCount;
-     
         var value = _userMgr.CheckHeartBeat(_userCheckStartIndex, endIdx);
-
 
         _userCheckStartIndex += endIdx;
         if(_userCheckStartIndex >= _maxUserCheckCount)
@@ -107,12 +110,12 @@ public class PacketHandlerCommon : PacketHandler
             innerPacket.SessionID = sessionID;
             _distributeInnerPacketDB(innerPacket);
 
-            MainServer.MainLogger.Debug($"로그인 결과. UserID:{reqData.UserID}, {errorCode}");
+            _logger.Debug($"로그인 결과. UserID:{reqData.UserID}, {errorCode}");
 
         }
         catch (Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            _logger.Error(ex.ToString());
         }
 
     }

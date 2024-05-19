@@ -18,6 +18,9 @@ public class MatchingProcessor
     System.Threading.Thread _matchingThread = null;
     RedisDB _matchRedis = new RedisDB(0);
 
+    SuperSocket.SocketBase.Logging.ILog _logger;
+  
+
     RoomManager _roomMgr = null;
 
     string _matchReqRedisName = "match_request";
@@ -38,11 +41,11 @@ public class MatchingProcessor
             // 외부 IP 주소 가져오기
             string externalIp = client.GetStringAsync(metadataUrl).Result;
 
-            Console.WriteLine($"외부 IP 주소: {externalIp}");
+            _logger.Info($"외부 IP 주소: {externalIp}");
         }
         catch (HttpRequestException e)
         {
-            Console.WriteLine($"요청 오류: {e.Message}");
+            _logger.Info($"요청 오류: {e.Message}");
         }
     }
     public void SetIpAddress()
@@ -55,15 +58,18 @@ public class MatchingProcessor
             if (address.AddressFamily == AddressFamily.InterNetwork)
             {
                 _ip = address.ToString();
-                Console.WriteLine($"IP 주소: {address}");
+                _logger.Debug($"IP 주소: {address}");
                 return;
             }
         }
 
     }
 
-    
-public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
+    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    {
+        _logger = logger;
+    }
+    public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
     {
         SetIpAddress();
 
@@ -121,7 +127,7 @@ public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
             };
 
             string json = JsonSerializer.Serialize(matchingData);
-            Console.WriteLine($"직렬화된 JSON: {json}");
+            _logger.Debug($"직렬화된 JSON: {json}");
 
 
             var res = resRedisList.LeftPushAsync(json).Result;  //길이를 반환한다.

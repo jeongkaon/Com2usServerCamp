@@ -20,9 +20,16 @@ public class PacketHandlerRoom : PacketHandler
     int _startCheckRoomNumber = 0;
     int _checkRoomNumberCount;
     int _maxRoomCheckCount;
+    SuperSocket.SocketBase.Logging.ILog _logger;
+
+    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    {
+        _logger = logger;
+    }
 
     public void SetRoomList(List<Room> roomList)
     {
+        Room.SetLogger(_logger);
         _roomList = roomList;
         _roomNumberStart = _roomList[0].Number;
         _maxRoomCheckCount = _roomList.Count();
@@ -109,7 +116,7 @@ public class PacketHandlerRoom : PacketHandler
     public void RequestRoomEnter(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("RequestRoomEnter");
+        _logger.Debug("RequestRoomEnter");
 
         try
         {
@@ -141,8 +148,7 @@ public class PacketHandlerRoom : PacketHandler
             if(room.CheckIsFull())
             {
                 ResponseEnterRoomToClient(ErrorCode.RoomEnterFaildUserFull, sessionID);
-
-                Console.WriteLine("방 다참");
+                _logger.Debug("Room Is Full");
                 return;
             }
 
@@ -161,11 +167,11 @@ public class PacketHandlerRoom : PacketHandler
 
             ResponseEnterRoomToClient(ErrorCode.None, sessionID);
 
-            MainServer.MainLogger.Debug("RequestEnterInternal - Success");
+            _logger.Debug("RequestEnterInternal - Success");
         }
         catch (Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            _logger.Error(ex.ToString());
         }
     }
     void ResponseEnterRoomToClient(ErrorCode errorCode, string sessionID)
@@ -183,7 +189,7 @@ public class PacketHandlerRoom : PacketHandler
     public void RequestLeave(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("방나가기 요청 받음");
+        _logger.Debug("방나가기 요청 받음");
 
         try
         {
@@ -202,17 +208,16 @@ public class PacketHandlerRoom : PacketHandler
 
             ResponseLeaveRoomToClient(sessionID);
 
-            MainServer.MainLogger.Debug("Room RequestLeave - Success");
+            _logger.Debug("Room RequestLeave - Success");
         }
         catch (Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            _logger.Error(ex.ToString());
         }
     }
     bool LeaveRoomUser(string sessionID, int roomNumber)
     {
-        MainServer.MainLogger.Debug($"LeaveRoomUser. SessionID:{sessionID}");
-        Console.WriteLine("LeaveRoomUser ");
+        _logger.Debug($"LeaveRoomUser. SessionID:{sessionID}");
 
         var room = GetRoom(roomNumber);
         if (room == null)
@@ -247,7 +252,7 @@ public class PacketHandlerRoom : PacketHandler
     public void NotifyLeaveInternal(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
+        _logger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.Data);
         LeaveRoomUser(sessionID, reqData.RoomNumber);
@@ -255,7 +260,7 @@ public class PacketHandlerRoom : PacketHandler
     public void RequestChat(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("Room RequestChat");
+        _logger.Debug("Room RequestChat");
 
         try
         {
@@ -280,11 +285,11 @@ public class PacketHandlerRoom : PacketHandler
 
             roomObject.Item2.Broadcast("", sendPacket);
 
-            MainServer.MainLogger.Debug("Room RequestChat - Success");
+            _logger.Debug("Room RequestChat - Success");
         }
         catch (Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            _logger.Error(ex.ToString());
         }
     }
     public void RequestGameReadyPacket(MemoryPackBinaryRequestInfo packetData)
@@ -296,7 +301,7 @@ public class PacketHandlerRoom : PacketHandler
         var room = GetRoom(roomNumber);
         room.SetRoomUserBeReady(sessionID);
 
-        MainServer.MainLogger.Debug("Room Game Ready Recv - Success");
+        _logger.Debug("Room Game Ready Recv - Success");
     }
 
 }

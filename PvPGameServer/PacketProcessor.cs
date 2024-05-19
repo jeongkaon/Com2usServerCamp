@@ -12,6 +12,8 @@ public class PacketProcessor
     bool _isThreadRunning = false;
     System.Threading.Thread ProcessThread = null;
 
+    SuperSocket.SocketBase.Logging.ILog _logger;
+
     BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 
     List<Room> _roomList = new List<Room>();
@@ -45,16 +47,19 @@ public class PacketProcessor
 
     }
 
-
+    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    {
+        _logger = logger;
+    }
     public void Destroy()
     {
-        MainServer.MainLogger.Info("PacketProcessor::Destory - begin");
+        _logger.Info("PacketProcessor::Destory - begin");
 
         _isThreadRunning = false;
         _msgBuffer.Complete();
         ProcessThread.Join();
 
-        MainServer.MainLogger.Info("PacketProcessor::Destory - end");
+        _logger.Info("PacketProcessor::Destory - end");
 
     }
 
@@ -74,14 +79,18 @@ public class PacketProcessor
         _commonPacketHandler.SetCheckCount(_userMgr.GetMaxUserCount() / 4);
         _commonPacketHandler.GetDistributeGameDB(DistributeInnerPacketDB);
         _commonPacketHandler.RegistPacketHandler(_packetHandlerMap);
+        _commonPacketHandler.SetLogger(_logger);
 
         _roomPacketHandler.Init(_userMgr);
         _roomPacketHandler.SetRoomList(_roomList);
         _roomPacketHandler.RegistPacketHandler(_packetHandlerMap);
+        _roomPacketHandler.SetLogger(_logger);
+
 
         _gamePacketHandler.Init(_userMgr);
         _gamePacketHandler.RegistPacketHandler(_packetHandlerMap);
         _gamePacketHandler.SetRoomList(_roomList);
+        _gamePacketHandler.SetLogger(_logger);
 
 
     }
@@ -111,7 +120,7 @@ public class PacketProcessor
             {
                 if (_isThreadRunning)
                 {
-                    MainServer.MainLogger.Error(ex.ToString());
+                    _logger.Error(ex.ToString());
                 }
             }
         }

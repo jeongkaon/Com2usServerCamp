@@ -18,11 +18,18 @@ public class Room
     int _maxUserCount = 2;
     List<RoomUser> _roomUserList = new List<RoomUser>();
     GameBoard _board = null;
+    static SuperSocket.SocketBase.Logging.ILog _logger;
+
 
     DateTime _roomStartTime;     //한명이 들어오면 체크?
     DateTime _gameStartTime;   
     
     public static Func<string, byte[], bool> NetworkSendFunc;
+
+    public static void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    {
+        _logger = logger;
+    }
 
     public void Init(int index, int number, int maxUserCount)
     {
@@ -280,7 +287,7 @@ public class Room
 
         Broadcast("", sendPacket);
 
-        MainServer.MainLogger.Debug("GameStart- Success");
+        _logger.Debug("GameStart- Success");
 
         GameStart();
     }

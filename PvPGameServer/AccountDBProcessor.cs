@@ -20,6 +20,8 @@ public class AccountDBProcessor
     bool _isThreadRunning = false;
     System.Threading.Thread[] _accountDBThread = null;
 
+    SuperSocket.SocketBase.Logging.ILog _logger;
+
     BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 
     Dictionary<int, Action<RedisConnection, MemoryPackBinaryRequestInfo>> _accountDBHandlerMap =
@@ -41,9 +43,14 @@ public class AccountDBProcessor
             }
         }
     }
+    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    {
+        _logger = logger;
+    }
+
     public void Destroy()
     {
-        MainServer.MainLogger.Info("RedisProcessor::Destory - begin");
+        _logger.Info("AccountDBProcessor::Destory - begin");
 
         _isThreadRunning = false;
         _msgBuffer.Complete();
@@ -53,7 +60,7 @@ public class AccountDBProcessor
             th.Join();
         }
 
-        MainServer.MainLogger.Info("RedisProcessor::Destory - end");
+        _logger.Info("AccountDBProcessor::Destory - end");
     }
     public void InsertPacket(MemoryPackBinaryRequestInfo data)
     {
@@ -80,7 +87,7 @@ public class AccountDBProcessor
             {
                 if (_isThreadRunning)
                 {
-                    MainServer.MainLogger.Error(ex.ToString());
+                    _logger.Error(ex.ToString());
                 }
             }
         }
