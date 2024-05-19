@@ -14,11 +14,14 @@ namespace APIServer.Controllers;
 [Route("[controller]")]
 public class CheckMatching : Controller
 {
+    readonly Logger<CheckMatching> _logger;
+
     IMatchWoker _matchWorker;
 
 
-    public CheckMatching(IMatchWoker matchWorker)
+    public CheckMatching(Logger<CheckMatching> logger,IMatchWoker matchWorker)
     {
+        _logger = logger;
         _matchWorker = matchWorker;
     }
 
@@ -42,7 +45,7 @@ public class CheckMatching : Controller
 
 
         string json = JsonSerializer.Serialize(response);
-            Console.WriteLine($"[매칭컨트롤러] 매칭된 애들 데이터 직렬화된 JSON: {json}");
+        _logger.ZLogInformation($"[CheckMatching] : {json}");
 
         return response;
     }

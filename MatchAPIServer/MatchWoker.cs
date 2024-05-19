@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using System.Threading;
+using ZLogger;
 
 namespace APIServer;
 
@@ -58,6 +59,7 @@ public class MatchWoker : IMatchWoker
     {
         if (_reqQueue.Contains(userID) == false)
         {
+            _logger.ZLogInformation($"Add [{userID}] in reqQueue");
             _reqQueue.Enqueue(userID);
         }
     }
@@ -93,14 +95,15 @@ public class MatchWoker : IMatchWoker
                     var temp = redisList.LeftPushAsync(matchResult).Result; 
                     if (temp == 0)
                     {
-                        //문제있다....
+                        _logger.ZLogInformation($"Fail Push In Redis");
+
                     }
                 }
 
             }
             catch (Exception ex)
             {
-                //로그를 찍어야한다.
+                _logger.ZLogError($"{ex}");
             }
         }
     }
@@ -115,18 +118,17 @@ public class MatchWoker : IMatchWoker
             try
             {
                 var temp = redisList.RightPopAsync().Result;
-                //예외처리 해야하나?
 
                 var deserializedData = JsonSerializer.Deserialize<CompleteMatchingData>(temp.Value);
 
                 _completeDic.TryAdd(deserializedData.User1, deserializedData);
                 _completeDic.TryAdd(deserializedData.User2, deserializedData);
 
-                Console.WriteLine($"Match complete: {deserializedData.User1} vs {deserializedData.User2} in Room {deserializedData.RoomNumber}");
+                _logger.ZLogInformation($"Match complete: {deserializedData.User1} vs {deserializedData.User2} in Room {deserializedData.RoomNumber}");
             }
             catch (Exception ex)
             {
-
+                _logger.ZLogError($"{ex}");
             }
         }        
     }
@@ -135,7 +137,7 @@ public class MatchWoker : IMatchWoker
 
     public void Dispose()
     {
-        Console.WriteLine("MatchWoker 소멸자 호출");
+        _logger.ZLogInformation($"MatchWoker 소멸자 호출");
     }
 }
 

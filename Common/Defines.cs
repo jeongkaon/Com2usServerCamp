@@ -1,7 +1,6 @@
 ﻿
-//에러종류, 패킷종류 등 필요한 enum들 여기다가 
 
-public enum StoneType //: int
+public enum StoneType 
 {
     None = 0,
     Black = 1,

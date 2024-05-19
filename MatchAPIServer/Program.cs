@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = builder.Configuration;
@@ -60,11 +59,6 @@ void SettingLogger()
     {
         options.UseJsonFormatter();
     });
-
-    //debug도 일단 콘솔창에 찍기위해 추가->그래도 안찍힘.. infromation으로 하자..
-    logging.SetMinimumLevel(LogLevel.Debug);
-
-
 }
 
 public class MatchingConfig
