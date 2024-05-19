@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiveServer", "HiveServer.csproj", "{1C501F0A-5E86-4F39-80C5-4473E34CA8C3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "솔루션 항목", "솔루션 항목", "{ACDDBF6A-3F72-4588-9658-A75DCE70704D}"
-	ProjectSection(SolutionItems) = preProject
-		salt_hashed.txt = salt_hashed.txt
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

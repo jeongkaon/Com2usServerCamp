@@ -19,6 +19,7 @@ public class HiveAccountDB : IHiveAccountDB
 
     readonly IOptions<DbConfig> _dbConfig;
     readonly ILogger<HiveAccountDB> _logger;
+
     IDbConnection _dbCon;
     SqlKata.Compilers.MySqlCompiler _compiler;
     QueryFactory _qFactory;
@@ -53,26 +54,18 @@ public class HiveAccountDB : IHiveAccountDB
 
             if (1 != count)
             {
-                _logger.ZLogDebug(
-                    $"[CreateAccount] email: {id} Failid");
+                _logger.ZLogDebug($"[CreateAccount] email: {id} Failid");
                 return ErrorCode.FailCreateAccount;
-
             }
 
-            _logger.ZLogDebug(
-                $"[CreateAccount] email: {id}, salt_value : {salt}, hashed_pw:{hashed}");
-
-
+            _logger.ZLogDebug($"[CreateAccount] email: {id}, salt_value : {salt}, hashed_pw:{hashed}");
             return ErrorCode.None;
 
         }
         catch 
         {
-            _logger.ZLogError(
-                $"[CreateAccount] ErrorCode: {ErrorCode.FailCreateAccount}");
-
+            _logger.ZLogError($"[CreateAccount] ErrorCode: {ErrorCode.FailCreateAccount}");
             return ErrorCode.FailCreateAccount;
-
         }
 
     }

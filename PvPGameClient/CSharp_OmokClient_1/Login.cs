@@ -232,6 +232,10 @@ namespace OmokClient
             }
             var res = task.Result;
             var preResult = res.Content.ReadAsStringAsync().Result;
+            if(preResult == null ||preResult == "")
+            {
+                MessageBox.Show("로그인버튼눌렀을때 돌아온json이 아무것도 없음");
+            }
             var jsonDocument = JsonDocument.Parse(preResult);
 
             if (jsonDocument.RootElement.TryGetProperty("result", out var resultElement))

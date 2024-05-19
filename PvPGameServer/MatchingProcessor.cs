@@ -26,7 +26,7 @@ public class MatchingProcessor
     string _ip = null;      
     string _port = null;
 
-    public void SetIpAddress()
+    public void SetIpAddress1()
     {
         HttpClient client = new HttpClient();
         try{
@@ -45,7 +45,7 @@ public class MatchingProcessor
             Console.WriteLine($"요청 오류: {e.Message}");
         }
     }
-    public void SetIpAddress1()
+    public void SetIpAddress()
     {
         string hostName = Dns.GetHostName();
         IPAddress[] addresses = Dns.GetHostAddresses(hostName);

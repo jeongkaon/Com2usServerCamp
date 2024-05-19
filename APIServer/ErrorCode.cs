@@ -2,7 +2,7 @@
 
 namespace APIServer;
 
-public enum ErrorCode : UInt16
+public enum ErrorCode 
 {
     None = 0,
 

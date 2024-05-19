@@ -55,6 +55,7 @@ public class LoginController : ControllerBase
         {
             //레디스 저장한거 실패! 
             //TODO - 로그남겨야한다.
+
         }
 
         error = await _GameService.CheckUserGameDataInDB(id);

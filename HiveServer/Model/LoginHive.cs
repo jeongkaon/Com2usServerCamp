@@ -1,10 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace HiveServer.Model;
-
-
 
 public class LoginHiveRequest
 {

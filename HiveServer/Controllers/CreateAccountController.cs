@@ -32,7 +32,6 @@ public class CreateAccountController : ControllerBase
 
         if (response.Result != ErrorCode.None)
         {
-            //_logger.ZLogDebug(
             _logger.ZLogInformation(
                 $"[CreateAccountController] Account Create Fiail ErrorCode: {ErrorCode.FailVerifyUserToken}");
             response.Result = ErrorCode.FailVerifyUserToken;

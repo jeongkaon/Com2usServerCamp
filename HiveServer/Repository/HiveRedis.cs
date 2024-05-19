@@ -16,7 +16,6 @@ public class HiveRedis : IHiveRedis
     
     RedisConnection _redisCon;
 
-
     public HiveRedis(ILogger<HiveRedis> logger, IOptions<DbConfig> dbConfig)
     {
         _logger = logger;
@@ -29,24 +28,46 @@ public class HiveRedis : IHiveRedis
     public async Task<ErrorCode> RegistUserAsync(string id, string authToken)
     {
         var idDefaultExpiry = TimeSpan.FromDays(1);
-        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
-        await redisId.SetAsync(authToken);
+        try
+        {
+            var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
+            await redisId.SetAsync(authToken);
 
-        return ErrorCode.None;
+            _logger.ZLogDebug($"[RegistUserAsync] success regist email {id} in redis");
+            return ErrorCode.None;
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogError($"[RegistUserAsync] fail regist email {id} in redis");
+            return ErrorCode.FailRegistUserInRedis;
+
+        }
+
     }
     public async Task<ErrorCode> VerifyUserToken(string id, string authToken)
     {
-
-        var idDefaultExpiry = TimeSpan.FromDays(1);
-
-        var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
-        var res =  await redisId.GetAsync();
-        if(res.Value != authToken)
+        try
         {
+            var idDefaultExpiry = TimeSpan.FromDays(1);
+            var redisId = new RedisString<string>(_redisCon, id, idDefaultExpiry);
+            var res = await redisId.GetAsync();
+            if (res.Value != authToken)
+            {
+                _logger.ZLogInformation($"[VerifyUserToken] fail verify user[{id}] token");
+                return ErrorCode.FailVerifyUserToken;
+            }
+
+            _logger.ZLogInformation($"[VerifyUserToken] success verify user[{id}] token");
+            return ErrorCode.None;
+
+        }
+        catch
+        {
+            _logger.ZLogError($"[VerifyUserToken] fail verify user[{id}] token");
             return ErrorCode.FailVerifyUserToken;
+
         }
 
-        return ErrorCode.None;
     }
 
 
