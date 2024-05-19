@@ -124,6 +124,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
         AccountProcessor = new AccountDBProcessor();
         AccountProcessor.CreateAndStart();
 
+        //ip번호도 같이 넘겨주자.
         MatchProcessor.CreateAndStart(RoomMgr, serverOption);
 
         return ErrorCode.None;

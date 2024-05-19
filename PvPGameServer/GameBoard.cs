@@ -53,17 +53,12 @@ public class GameBoard
     }
     public void GameStart()
     {
-        //이거 필요없을듯? 왜냐면 
-        //방번호 제공할때 그때 빼면됨.섭?할때 빼면된다.
-
-        _curType = StoneType.Black;
+         _curType = StoneType.Black;
         SetTimeoutCheckTime(DateTime.Now);
 
     }
     public void EndGame(StoneType win)
     {
-        //빈방 리스트에 넣어줘야한다.
-
         SavePlayerGameData(win);
         NotifyWinner(win);
         UpdateGameDataInDB();
@@ -155,7 +150,6 @@ public class GameBoard
         _players.Clear();
         _curType = StoneType.None;
 
-        //다쓴 방번호 다시 큐에 넣어줘야한다.
         AddEmptyRoomListAction(RoomNumber);
     }
     public void NotifyPutOmok(int x, int y)
@@ -385,8 +379,6 @@ public class GameBoard
 
         return SameCount;
     }
-
-
 }
 
 

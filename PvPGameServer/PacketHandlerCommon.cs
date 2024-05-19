@@ -26,6 +26,8 @@ public class PacketHandlerCommon : PacketHandler
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PacketId.NtfInLoginCheck, ReqLoginPacket);
+        packetHandlerMap.Add((int)PacketId.NtfInLoginFailedAuthToken, ReqLoginFailAuthTokenPacket);
+
         packetHandlerMap.Add((int)PacketId.NtfInConnectClient, NotifyInConnectClient);
         packetHandlerMap.Add((int)PacketId.NtfInDisconnectClient, NotifyInDisConnectClient);
         packetHandlerMap.Add((int)PacketId.ReqHeartBeat, ReqHeartBeatPacket);
@@ -101,13 +103,9 @@ public class PacketHandlerCommon : PacketHandler
 
             SendLoginToClient(errorCode, recvData.SessionID);
 
-            //게임 데이터도 들고와야한다. -> 데베이너패킷으로 넘겨야한다
             var innerPacket = InnerPacketMaker.MakeNTFInnerGetUserDataInDB(reqData.UserID);
             innerPacket.SessionID = sessionID;
             _distributeInnerPacketDB(innerPacket);
-
-            //user에 넣어야하는디..
-
 
             MainServer.MainLogger.Debug($"로그인 결과. UserID:{reqData.UserID}, {errorCode}");
 
@@ -116,6 +114,13 @@ public class PacketHandlerCommon : PacketHandler
         {
             MainServer.MainLogger.Error(ex.ToString());
         }
+
+    }
+    public void ReqLoginFailAuthTokenPacket(MemoryPackBinaryRequestInfo recvData)
+    {
+        var sessionID = recvData.SessionID;
+        SendLoginToClient(ErrorCode.FailVerifyUserToken, recvData.SessionID);
+        
 
     }
     public void ReqHeartBeatPacket(MemoryPackBinaryRequestInfo recvData)

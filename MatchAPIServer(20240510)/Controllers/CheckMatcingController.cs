@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using APIServer.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ZLogger;
 using static APIServer.Controllers.CheckMatching;
@@ -21,13 +23,26 @@ public class CheckMatching : Controller
     }
 
     [HttpPost]
-    public CheckMatchingRes Post(CheckMatchingReq request)
+    public CheckMatchingResponse Post(CheckMatchingRequest request)
     {
-        CheckMatchingRes response = new();
-
         (var result, var completeMatchingData) = _matchWorker.GetCompleteMatching(request.UserID);
-        
-        //TODO: 결과를 담아서 보낸다
+
+        if(result == false)
+        {
+            return null;
+        }
+
+        CheckMatchingResponse response = new CheckMatchingResponse()
+        {
+            Result = ErrorCode.None,
+            ServerAddress = completeMatchingData.ServerAddress,
+            Port = completeMatchingData.Port,
+            RoomNumber = completeMatchingData.RoomNumber
+        };
+
+
+        string json = JsonSerializer.Serialize(response);
+            Console.WriteLine($"[매칭컨트롤러] 매칭된 애들 데이터 직렬화된 JSON: {json}");
 
         return response;
     }
@@ -35,15 +50,3 @@ public class CheckMatching : Controller
 
 }
 
-public class CheckMatchingReq
-{
-    public string UserID { get; set; }
-}
-
-
-public class CheckMatchingRes
-{
-    public ErrorCode Result { get; set; } = ErrorCode.None;
-    public string ServerAddress { get; set; } = "";
-    public int RoomNumber { get; set; } = 0;    
-}

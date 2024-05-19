@@ -10,9 +10,6 @@ namespace PvPGameServer;
 public class RoomManager
 {
     List<Room> _roomList = new List<Room>();
-
-    //빈방 관리하고 있어야한다.
-    //순서를 보장하지 않고 중복을 허용하지 않는다.
     Queue<int> _emptyRoom = new Queue<int>();
 
     public void CreateRooms(PvPServerOption option)

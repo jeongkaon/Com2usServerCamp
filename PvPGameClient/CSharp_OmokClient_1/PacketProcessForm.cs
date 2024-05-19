@@ -127,6 +127,13 @@ namespace csharp_test_client
                 RoomEnter();
             }
 
+
+            if (reqData.Result == (short)ErrorCode.FailVerifyUserToken)
+            {
+                MessageBox.Show("토큰인증에 실패했습니다");
+            }
+
+
         }
 
         void PacketProcess_RoomEnterResponse(byte[] packetData)

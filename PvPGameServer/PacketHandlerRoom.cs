@@ -27,7 +27,6 @@ public class PacketHandlerRoom : PacketHandler
         _roomNumberStart = _roomList[0].Number;
         _maxRoomCheckCount = _roomList.Count();
         _checkRoomNumberCount = _maxRoomCheckCount / 4;
-
     }
 
     Room GetRoom(int roomNum)
@@ -67,7 +66,6 @@ public class PacketHandlerRoom : PacketHandler
         return (true, room, roomUser);
 
     }
-
     public void RegistPacketHandler(Dictionary<int, Action<MemoryPackBinaryRequestInfo>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PacketId.ReqRoomEnter, RequestRoomEnter);
@@ -77,9 +75,6 @@ public class PacketHandlerRoom : PacketHandler
         packetHandlerMap.Add((int)PacketId.ReqReadyGame, RequestGameReadyPacket);
         packetHandlerMap.Add((int)PacketId.NtfInRoomCheck, CheckInRoomState);
     }
-
-
-
     public void CheckInRoomState(MemoryPackBinaryRequestInfo requestData)
     {
         int EndCheckRoomNumber = _startCheckRoomNumber + _checkRoomNumberCount;
@@ -100,6 +95,7 @@ public class PacketHandlerRoom : PacketHandler
             int testspan = 10000; //10초
             room.CheckTimeOutPlayerTurn(curTime, testspan);
             room.CheckTooLongGameTime(curTime, 600000);
+            
         }
 
         _startCheckRoomNumber += _checkRoomNumberCount;
@@ -118,8 +114,6 @@ public class PacketHandlerRoom : PacketHandler
         try
         {
             var user = _userMgr.GetUser(sessionID);
-            
-
 
             if (user == null || user.IsConfirm(sessionID) == false)
             {
@@ -174,7 +168,6 @@ public class PacketHandlerRoom : PacketHandler
             MainServer.MainLogger.Error(ex.ToString());
         }
     }
-
     void ResponseEnterRoomToClient(ErrorCode errorCode, string sessionID)
     {
         var resRoomEnter = new ResRoomEnterPacket()
@@ -187,7 +180,6 @@ public class PacketHandlerRoom : PacketHandler
 
         NetworkSendFunc(sessionID, sendPacket);
     }
-
     public void RequestLeave(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
@@ -217,7 +209,6 @@ public class PacketHandlerRoom : PacketHandler
             MainServer.MainLogger.Error(ex.ToString());
         }
     }
-
     bool LeaveRoomUser(string sessionID, int roomNumber)
     {
         MainServer.MainLogger.Debug($"LeaveRoomUser. SessionID:{sessionID}");
@@ -241,7 +232,6 @@ public class PacketHandlerRoom : PacketHandler
         room.NotifyPacketLeaveUser(userID);
         return true;
     }
-
     void ResponseLeaveRoomToClient(string sessionID)
     {
         var resRoomLeave = new ResRoomLeavePacket()
@@ -254,7 +244,6 @@ public class PacketHandlerRoom : PacketHandler
 
         NetworkSendFunc(sessionID, sendPacket);
     }
-
     public void NotifyLeaveInternal(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
@@ -263,7 +252,6 @@ public class PacketHandlerRoom : PacketHandler
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.Data);
         LeaveRoomUser(sessionID, reqData.RoomNumber);
     }
-
     public void RequestChat(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
@@ -299,7 +287,6 @@ public class PacketHandlerRoom : PacketHandler
             MainServer.MainLogger.Error(ex.ToString());
         }
     }
-
     public void RequestGameReadyPacket(MemoryPackBinaryRequestInfo packetData)
     {
         var reqData = MemoryPackSerializer.Deserialize<ReqGameReadyPacket>(packetData.Data);
@@ -311,7 +298,5 @@ public class PacketHandlerRoom : PacketHandler
 
         MainServer.MainLogger.Debug("Room Game Ready Recv - Success");
     }
-
-
 
 }

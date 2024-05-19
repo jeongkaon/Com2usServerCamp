@@ -247,6 +247,7 @@ namespace csharp_test_client
                         RecvPacketQueue.Enqueue(data);
                     }
                     
+                  //  DevLog.Write($"받은 데이터: {recvData.Item2}", LOG_LEVEL.INFO);
                 }
                 else
                 {

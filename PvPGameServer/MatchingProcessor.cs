@@ -72,7 +72,6 @@ public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
             //룸리스트가 empty면 돌아가~
             if (_roomMgr.IsEmptyRoomList())
             {
-                //돌아가
                 //방없다는거 해줘야하나?
                 continue;
             }
@@ -93,9 +92,6 @@ public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
             string[] players = temp.Value.Split(',');
             var roomNumer = _roomMgr.DequeEmptyRoomList();
 
-
-            //서버어드레스랑 포트번호 config에서 가져오던가 
-            //앱세팅에서 가져오던가 해야할듯?
             var matchingData = new CompleteMatchingData()
             {
                 User1 = players[0],
@@ -109,7 +105,7 @@ public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
             Console.WriteLine($"직렬화된 JSON: {json}");
 
 
-            var temp1 = resRedisList.LeftPushAsync(json).Result;  //길이를 반환한다.
+            var res = resRedisList.LeftPushAsync(json).Result;  //길이를 반환한다.
             //길이 0이면 에러반환하기~
 
 

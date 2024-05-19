@@ -110,6 +110,7 @@ public enum PacketId : int
     NtrInUserCheck = 1215,
     NtfInRoomCheck = 1216,
     NtfInLoginCheck=1217,
+    NtfInLoginFailedAuthToken =1218,
 
     //DB이너패킷
     NtfInGetUserData = 1301,
