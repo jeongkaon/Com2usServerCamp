@@ -26,25 +26,28 @@ public class CheckMatching : ControllerBase
     }
 
     [HttpPost]
-    public CheckMatchingResponse Post(CheckMatchingRequest request)
+    public string Post(CheckMatchingRequest request)
     {
         (var result, var completeMatchingData) = _matchWorker.GetCompleteMatching(request.UserID);
-        CheckMatchingResponse response = new CheckMatchingResponse();
 
-        if (result == false)
+        if(result == false)
         {
-            response.Result = ErrorCode.NotYetMatch;
-            return response;
+            return "";
         }
 
+        CheckMatchingResponse response = new CheckMatchingResponse()
+        {
+            Result = ErrorCode.None,
+            ServerAddress = completeMatchingData.ServerAddress,
+            Port = completeMatchingData.Port,
+            RoomNumber = completeMatchingData.RoomNumber
+        };
 
-        response.Result = ErrorCode.None;
-        response.ServerAddress = completeMatchingData.ServerAddress;
-        response.Port = completeMatchingData.Port;
-        response.RoomNumber = completeMatchingData.RoomNumber;
 
+        string json = JsonSerializer.Serialize(response);
+        //_logger.ZLogInformation($"[CheckMatching] : {json}");
 
-        return response;
+        return json;
     }
 
 

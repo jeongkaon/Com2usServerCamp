@@ -25,7 +25,7 @@ public class MainServer : AppServer<ClientSession, MemoryPackBinaryRequestInfo>
     PacketProcessor     _mainPacketProcessor= null;
     GameDBProcessor     _dBProcessor        = null;
     AccountDBProcessor  _accountProcessor   = null;
-    MatchingProcessor _matchProcessor       = null;
+    MatchingProcessor _matchProcessor = null;
 
     RoomManager         _roomMgr            = new RoomManager();
 

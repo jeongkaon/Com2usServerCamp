@@ -2,7 +2,6 @@
 using APIServer.Services;
 using APIServer.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using ZLogger;
 
 namespace APIServer.Controllers;
@@ -22,19 +21,13 @@ public class CheckMatchingController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<CheckMatchingResponse> Create([FromBody] CheckMatchingRequest request)
+    public async Task<string> Create([FromBody] CheckMatchingRequest request)
     {
-        CheckMatchingResponse response = new CheckMatchingResponse();
-
         var res = await _matchingService.CheckToMatchServer(request.UserID);
-
-
-        if (res == null)
+        if(res == ""|| res == null)
         {
-            response.Result = ErrorCode.FailMatchYet;
-            return response;
+            return "";
         }
-
         return res;
     }
 }

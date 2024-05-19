@@ -19,11 +19,11 @@ public class MatchingService : IMatchingService
     {
         _logger = logger;
         var ip = configuration.GetSection("MatchingServerAddress").Value;
-        _matchServerAddress = ip + "/RequestMatching";
-       _checkServerAddress = ip + "/CheckMatching";
+        _matchServerAddress = ip + "/RequestMatching ";
+        _checkServerAddress = ip + "/CheckMatching ";
 
-        //_matchServerAddress = "http://localhost:11502" + "/RequestMatching";
-        //_checkServerAddress = "http://localhost:11502" + "/CheckMatching";
+        //_matchServerAddress = "http://localhost:11502" + "/RequestMatching ";
+        //_checkServerAddress = "http://localhost:11502" + "/CheckMatching ";
     }
 
     public async Task<ErrorCode> UserIdToMatchServer(string id)
@@ -51,25 +51,24 @@ public class MatchingService : IMatchingService
 
     }
 
-    public async Task<CheckMatchingResponse> CheckToMatchServer(string id)
+    public async Task<string> CheckToMatchServer(string id)
     {
         try
         {
             var checkMatchRes = await client.PostAsJsonAsync(_checkServerAddress, new { UserID = id });
-            var preRes = await checkMatchRes.Content.ReadAsStringAsync();
-            var res = JsonSerializer.Deserialize<CheckMatchingResponse>(preRes);
+            var json = await checkMatchRes.Content.ReadAsStringAsync();
   
-            if (res.Result != ErrorCode.None)
+            if (json == null)
             {
-                return null;
+                return "";
             }
-            _logger.ZLogInformation($"[MatchingService] success matching :{preRes} ");
-            return res;
+            _logger.ZLogInformation($"[MatchingService] success matching");
+            return json;
         }
         catch
         {
             _logger.ZLogError($"[MatchingService] faile Check To Match Server ");
-            return null;
+            return "";
         }
 
     }
