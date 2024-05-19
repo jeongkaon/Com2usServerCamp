@@ -259,24 +259,24 @@ public class GameBoard
     //오목로직
     public bool CheckBoardEnd(int x, int y)
     {
-        const int TestCount = 2;
+        const int winCount = 5;
 
-        if (CheckCol(x, y) == TestCount)        
+        if (CheckCol(x, y) == winCount)        
         {
             return true;
         }
 
-        else if (CheckRow(x, y) == TestCount)
+        else if (CheckRow(x, y) == winCount)
         {
             return true;
         }
 
-        else if (CheckDiagonal(x, y) == TestCount)
+        else if (CheckDiagonal(x, y) == winCount)
         {
             return true;
         }
 
-        else if (CheckReversDiagonal(x, y) == TestCount)
+        else if (CheckReversDiagonal(x, y) == winCount)
         {
             return true;
         }

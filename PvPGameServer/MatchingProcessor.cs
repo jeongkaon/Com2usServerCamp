@@ -90,26 +90,16 @@ public class MatchingProcessor
 
         while (isThreadRunning)
         {
-            //룸리스트가 empty면 돌아가~
             if (_roomMgr.IsEmptyRoomList())
             {
-                //방없다는거 해줘야하나?
                 continue;
             }
-
-
-            //레디스리스트도 비어있으면 ㄱ예외처리하면된다.
-
-
-            //아니면 레디스 리스트에서 값 가져오기
-            //없으면 돌아가
             var temp = reqRedisList.RightPopAsync().Result;
             if (temp.HasValue == false)
             {
                 continue;
             }
 
-            //값이 있는거다.
             string[] players = temp.Value.Split(',');
             var roomNumer = _roomMgr.DequeEmptyRoomList();
 
@@ -126,12 +116,7 @@ public class MatchingProcessor
             _logger.Debug($"직렬화된 JSON: {json}");
 
 
-            var res = resRedisList.LeftPushAsync(json).Result;  //길이를 반환한다.
-            //길이 0이면 에러반환하기~
-
-
-
-
+            var res = resRedisList.LeftPushAsync(json).Result;  
         }
     }
 }
