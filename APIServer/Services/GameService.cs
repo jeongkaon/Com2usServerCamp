@@ -22,6 +22,7 @@ public class GameService: IGameService
         {
             res = CreateNewUserGameData(id);
         }
+
         return res.Result;
 
     }

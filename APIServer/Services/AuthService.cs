@@ -2,6 +2,7 @@
 using APIServer.Repository.Interfaces;
 using APIServer.Services.Interface;
 using System.Text.Json;
+using ZLogger;
 using static Humanizer.In;
 
 
@@ -16,12 +17,8 @@ public class AuthService : IAuthService
 
     public AuthService(ILogger<AuthService> logger, IConfiguration configuration, IGameDB gameDb)
     {
-        //물어볼 hive 서버 주소 
-        //원래는 configuration에서 서버주소 뜯어옴
-        //_hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
-    
-
-        _hiveServerAPIAddress = "http://localhost:11500" + "/VerifyToken";
+       _hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
+       // _hiveServerAPIAddress = "http://localhost:11500" + "/VerifyToken";
 
         _gameDB = gameDb;
         _logger = logger;
@@ -45,6 +42,7 @@ public class AuthService : IAuthService
 
             if (false==ValidateHiveAuthErrorCode(hiveResResult.Result))
             {
+                _logger.ZLogError($"[AuthService] validate hive auth failed");
                 return ErrorCode.FailHiveInvalidResponse;
             }
 
@@ -52,10 +50,11 @@ public class AuthService : IAuthService
         }
         catch (HttpRequestException ex)
         {
+            _logger.ZLogError($"[AuthService] {ex}, fail VerifyTokenToHive");
+            return ErrorCode.FailHiveInvalidResponse;
 
         }
 
-        return ErrorCode.None;
     }
 
 

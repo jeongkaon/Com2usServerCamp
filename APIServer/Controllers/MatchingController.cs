@@ -9,11 +9,12 @@ namespace APIServer.Controllers;
 [Route("[controller]")]
 public class MatchingController : ControllerBase
 {
-    //서비스를 가지고 있어야함
+    readonly ILogger<MatchingController> _logger;
     readonly IMatchingService _matchingService;
 
-    public MatchingController(IMatchingService matchingService)
+    public MatchingController(ILogger<MatchingController> logger, IMatchingService matchingService)
     {
+        _logger = logger;
         _matchingService = matchingService;
     }
 
@@ -21,20 +22,24 @@ public class MatchingController : ControllerBase
     public async Task<MatchingResponse> Create([FromBody] MatchingRequst request)
     {
 
-
-        //매칭 요청 받으면 매칭서버에 넘겨줘야한다.
         MatchingResponse response = new MatchingResponse();
+        try
+        {
+            var res = _matchingService.UserIdToMatchServer(request.UserID);
 
-        //여기다가 넘겨주면된다.
-        var res = _matchingService.UserIdToMatchServer(request.UserID);
+            if (res == null)
+            {
+                response.Result = ErrorCode.FailUserIdToMatchServer;
+            }
 
-        if(res == null)
+            return response;
+        }
+        catch
         {
             response.Result = ErrorCode.FailUserIdToMatchServer;
+            return response;
         }
 
-        Console.WriteLine("매칭서버에 들어엄");
-        return response;
     }
 
         

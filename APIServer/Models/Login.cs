@@ -11,8 +11,7 @@ public class LoginRequest
 public class LoginResponse
 {
     public ErrorCode Result { get; set; }
-
-    //public UserGameDataDB UserGameData { get; set; }    
+   
 }
 
 

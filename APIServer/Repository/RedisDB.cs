@@ -40,7 +40,7 @@ public class RedisDB : IRedisDB
 
         if (res.Value != authToken)
         {
-            return ErrorCode.FailVerifyUserToken;
+            return ErrorCode.FailVerifyToken;
         }
 
         return ErrorCode.None;

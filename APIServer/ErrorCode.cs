@@ -13,11 +13,10 @@ public enum ErrorCode
     FailSetRedisUserToken = 1003,
 
     FailUserIdToMatchServer = 1004,
+    FailGetUserDataInMySql=1005,
 
 
 
-
-    FailVerifyUserToken = 1004,
 
     NotExistAccount = 2000,
 

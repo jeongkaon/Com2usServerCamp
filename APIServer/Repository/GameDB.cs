@@ -39,17 +39,28 @@ public class GameDB : IGameDB
 
     public async Task<ErrorCode> GetUserGameDataById(string id)
     {
-        var res =  await _qFactory.Query("gamedata")
-                        .Where("id", id)
-                         .FirstOrDefaultAsync<UserGameDataDB>();
-
-       
-        if(res == null)
+        try
         {
-            return ErrorCode.NotExistAccount;
+            var res = await _qFactory.Query("gamedata")
+                .Where("id", id)
+                 .FirstOrDefaultAsync<UserGameDataDB>();
+
+            if (res == null)
+            {
+                return ErrorCode.NotExistAccount;
+            }
+
+            return ErrorCode.None;
+
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogError($"Fail DB :{ex}");
+            return ErrorCode.FailGetUserDataInMySql;
+
         }
 
-        return ErrorCode.None;
+
     }
 
 

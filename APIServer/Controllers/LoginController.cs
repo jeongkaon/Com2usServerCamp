@@ -18,15 +18,17 @@ namespace APIServer.Controllers;
 [Route("[controller]")]
 public class LoginController : ControllerBase
 {
-    readonly IRedisDB _RedisDB;                 
-    readonly IAuthService _AuthService;
-    readonly IGameService _GameService;
+    readonly ILogger<LoginController> _logger;
 
-    public LoginController(IRedisDB hiveRedis, IAuthService authService, IGameService gameService)
+    readonly IRedisDB _redisDB;                 
+    readonly IAuthService _authService;
+    readonly IGameService _gameService;
+
+    public LoginController(ILogger<LoginController> logger,IRedisDB hiveRedis, IAuthService authService, IGameService gameService)
     {
-        _RedisDB = hiveRedis;
-        _AuthService = authService;
-        _GameService = gameService;
+        _redisDB = hiveRedis;
+        _authService = authService;
+        _gameService = gameService;
     }
 
     [HttpPost]
@@ -36,36 +38,36 @@ public class LoginController : ControllerBase
         var id = request.Id;
         var token = request.Token;
 
-        var error = await _RedisDB.VerifyUserToken(id, token);
-        if (error == ErrorCode.None)
+        var res = await _redisDB.VerifyUserToken(id, token);
+        if (res == ErrorCode.None)
         {
+            _logger.ZLogInformation($"[LoginController] user token stored in Redis");
             return response;
         }
 
-        error = await _AuthService.VerifyTokenToHive(id, token);
-        if(error != ErrorCode.None)
+        res = await _authService.VerifyTokenToHive(id, token);
+        if(res != ErrorCode.None)
         {
+            _logger.ZLogError($"[LoginController] fail verify token to hive");
             response.Result = ErrorCode.FailVerifyToken;
             return response;
         }
 
-        error = await _RedisDB.RegistUserAsync(id, token);
-
-        if(error== ErrorCode.FailSetRedisUserToken)
+        res = await _redisDB.RegistUserAsync(id, token);
+        if(res== ErrorCode.FailSetRedisUserToken)
         {
-            //레디스 저장한거 실패! 
-            //TODO - 로그남겨야한다.
-
+            _logger.ZLogError($"[AuthService] fail regist hive auth in redis");
+            response.Result = ErrorCode.FailSetRedisUserToken;
+            return response;
         }
 
-        error = await _GameService.CheckUserGameDataInDB(id);
-        if(error == ErrorCode.None)
+        res = await _gameService.CheckUserGameDataInDB(id);
+        if(res == ErrorCode.None)
         {
-            //TODO - 로그 변경
-            Console.WriteLine("데이터테이블에까지 생성완료");
+            _logger.ZLogInformation($"[AuthService] Success Create GameData in MySql");
         }
 
-        response.Result = error;
+        response.Result = res;
         return response;
     }
 
