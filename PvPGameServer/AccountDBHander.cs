@@ -23,12 +23,7 @@ public class AccountDBHander : PacketHandler
         var reqData = MemoryPackSerializer.Deserialize<ReqLoginPacket>(packetData.Data);
         var id = reqData.UserID;
 
-        var value = GeValue(redisConnection, id);
-
-        var idDefaultExpiry = TimeSpan.FromDays(1);
-        var redisId = new RedisString<string>(redisConnection, id, idDefaultExpiry);
-        var res = redisId.SetAsync(id).Result;
-        
+        var value = GetValue(redisConnection, id);
 
         if (reqData.AuthToken == value)
         {
@@ -41,7 +36,7 @@ public class AccountDBHander : PacketHandler
 
         DistributeInnerPacket(packetData);
     }
-    public string GeValue(RedisConnection redisConnection, string key)
+    public string GetValue(RedisConnection redisConnection, string key)
     {
         return redisConnection.GetConnection().GetDatabase().StringGet(key).ToString();
     }

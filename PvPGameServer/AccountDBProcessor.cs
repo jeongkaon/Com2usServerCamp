@@ -11,16 +11,13 @@ using StackExchange.Redis;
 
 namespace PvPGameServer;
 
-
-
-
 public class AccountDBProcessor
 {
     int _threadNum = 2;
     bool _isThreadRunning = false;
     System.Threading.Thread[] _accountDBThread = null;
 
-    SuperSocket.SocketBase.Logging.ILog _logger;
+    static SuperSocket.SocketBase.Logging.ILog _logger;
 
     BufferBlock<MemoryPackBinaryRequestInfo> _msgBuffer = new BufferBlock<MemoryPackBinaryRequestInfo>();
 

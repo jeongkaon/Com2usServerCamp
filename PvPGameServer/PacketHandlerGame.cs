@@ -10,12 +10,12 @@ namespace PvPGameServer;
 public class PacketHandlerGame : PacketHandler
 {
     List<Room> RoomList = null;
-    SuperSocket.SocketBase.Logging.ILog _logger;
+    //SuperSocket.SocketBase.Logging.ILog _logger;
 
-    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
-    {
-        _logger = logger;
-    }
+    //public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    //{
+    //    _logger = logger;
+    //}
 
     public void SetRoomList(List<Room> roomList)
     {

@@ -125,6 +125,8 @@ namespace csharp_test_client
             if(reqData.Result == (short)ErrorCode.None)
             {
                 RoomEnter();
+               
+
             }
 
 

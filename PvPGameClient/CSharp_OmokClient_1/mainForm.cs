@@ -174,6 +174,8 @@ namespace csharp_test_client
             PostSendPacket(PacketId.ReqLogin, packet);
             DevLog.Write($"로그인 요청:  {아이디입력칸.Text}, {비밀번호입력칸.Text}");
 
+
+
         }
 
         public void RoomEnter()

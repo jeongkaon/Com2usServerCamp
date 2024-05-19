@@ -13,12 +13,12 @@ public class PacketHandlerCommon : PacketHandler
     int _maxUserCheckCount;     
     int _userCheckStartIndex;
     Action<MemoryPackBinaryRequestInfo> _distributeInnerPacketDB;
-    SuperSocket.SocketBase.Logging.ILog _logger;
+    //static SuperSocket.SocketBase.Logging.ILog _logger;
 
-    public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
-    {
-        _logger = logger;
-    }
+    //public void SetLogger(SuperSocket.SocketBase.Logging.ILog logger)
+    //{
+    //    _logger = logger;
+    //}
     public void SetCheckCount(int maxUserCheck)
     {
         _userCheckStartIndex = 0;
@@ -110,12 +110,12 @@ public class PacketHandlerCommon : PacketHandler
             innerPacket.SessionID = sessionID;
             _distributeInnerPacketDB(innerPacket);
 
-            _logger.Debug($"로그인 결과. UserID:{reqData.UserID}, {errorCode}");
+            //_logger.Info($"로그인 결과. UserID:{reqData.UserID}, {errorCode}");
 
         }
         catch (Exception ex)
         {
-            _logger.Error(ex.ToString());
+            //_logger.Error(ex.ToString());
         }
 
     }
