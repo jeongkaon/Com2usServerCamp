@@ -67,7 +67,7 @@ public class MatchingProcessor
 
     public void CreateAndStart(RoomManager roomMgr, PvPServerOption serverOption)
     {
-        InternalSetIpAddress();
+        //InternalSetIpAddress();
         _roomMgr = roomMgr;
         _port = serverOption.Port.ToString();
 
