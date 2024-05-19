@@ -9,7 +9,7 @@ namespace PvPGameServer;
 public class RedisDB
 {
     RedisConnection _redisCon;
-    const string ConnectionString = "127.0.0.1:6379";
+    const string ConnectionString = "127.0.0.1:6380";
     const string MatchingConnectionString = "127.0.0.1:6379";
 
     public RedisDB()

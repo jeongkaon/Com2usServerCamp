@@ -44,7 +44,7 @@ public class LoginController : ControllerBase
         if (res == ErrorCode.None)
         {
             _logger.ZLogInformation($"[LoginController] user token stored in Redis");
-           // return response;
+            return response;
         }
 
         res = await _authService.VerifyTokenToHive(id, token);
