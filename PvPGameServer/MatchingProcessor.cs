@@ -34,8 +34,6 @@ public class MatchingProcessor
         HttpClient client = new HttpClient();
         try{
             string metadataUrl = "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip";
-
-            // 요청 헤더 추가
             client.DefaultRequestHeaders.Add("Metadata-Flavor", "Google");
 
             // 외부 IP 주소 가져오기

@@ -49,7 +49,7 @@ public class Room
     }
 
     
-    //이함수는 더 생각해봐야한다.!!!
+    //이함수는 더 생각해봐야한다
     public ErrorCode IsNotStartGame(DateTime cur, int span)
     {
         var diff = cur - _roomStartTime;

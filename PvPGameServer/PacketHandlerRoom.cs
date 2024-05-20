@@ -162,11 +162,11 @@ public class PacketHandlerRoom : PacketHandler
 
             ResponseEnterRoomToClient(ErrorCode.None, sessionID);
 
-            //_logger.Info("RequestEnterInternal - Success");
+            _logger.Info("RequestEnterInternal - Success");
         }
         catch (Exception ex)
         {
-           // _logger.Error(ex.ToString());
+            _logger.Error(ex.ToString());
         }
     }
     void ResponseEnterRoomToClient(ErrorCode errorCode, string sessionID)
@@ -184,7 +184,7 @@ public class PacketHandlerRoom : PacketHandler
     public void RequestLeave(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-      //  _logger.Info("방나가기 요청 받음");
+        _logger.Info("방나가기 요청 받음");
 
         try
         {
@@ -203,16 +203,16 @@ public class PacketHandlerRoom : PacketHandler
 
             ResponseLeaveRoomToClient(sessionID);
 
-            //_logger.Info("Room RequestLeave - Success");
+            _logger.Info("Room RequestLeave - Success");
         }
         catch (Exception ex)
         {
-           // _logger.Error(ex.ToString());
+            _logger.Error(ex.ToString());
         }
     }
     bool LeaveRoomUser(string sessionID, int roomNumber)
     {
-       // _logger.Info($"LeaveRoomUser. SessionID:{sessionID}");
+        _logger.Info($"LeaveRoomUser. SessionID:{sessionID}");
 
         var room = GetRoom(roomNumber);
         if (room == null)
@@ -247,7 +247,7 @@ public class PacketHandlerRoom : PacketHandler
     public void NotifyLeaveInternal(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-       // _logger.Info($"NotifyLeaveInternal. SessionID: {sessionID}");
+        _logger.Info($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.Data);
         LeaveRoomUser(sessionID, reqData.RoomNumber);
@@ -255,7 +255,7 @@ public class PacketHandlerRoom : PacketHandler
     public void RequestChat(MemoryPackBinaryRequestInfo packetData)
     {
         var sessionID = packetData.SessionID;
-       // _logger.Info("Room RequestChat");
+        _logger.Info("Room RequestChat");
 
         try
         {
@@ -280,11 +280,11 @@ public class PacketHandlerRoom : PacketHandler
 
             roomObject.Item2.Broadcast("", sendPacket);
 
-            //_logger.Info("Room RequestChat - Success");
+            _logger.Info("Room RequestChat - Success");
         }
         catch (Exception ex)
         {
-           // _logger.Error(ex.ToString());
+            _logger.Error(ex.ToString());
         }
     }
     public void RequestGameReadyPacket(MemoryPackBinaryRequestInfo packetData)
@@ -296,7 +296,7 @@ public class PacketHandlerRoom : PacketHandler
         var room = GetRoom(roomNumber);
         room.SetRoomUserBeReady(sessionID);
 
-     //   _logger.Info("Room Game Ready Recv - Success");
+        _logger.Info("Room Game Ready Recv - Success");
     }
 
 }
