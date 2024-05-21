@@ -56,7 +56,7 @@ public class MatchingProcessor
             if (address.AddressFamily == AddressFamily.InterNetwork)
             {
                 _ip = address.ToString();
-                _logger.Debug($"IP 주소: {address}");
+                _logger.Debug($"내부 IP 주소: {address}");
                 return;
             }
         }

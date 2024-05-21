@@ -45,7 +45,6 @@ public class CheckMatching : ControllerBase
 
 
         string json = JsonSerializer.Serialize(response);
-        //_logger.ZLogInformation($"[CheckMatching] : {json}");
 
         return json;
     }

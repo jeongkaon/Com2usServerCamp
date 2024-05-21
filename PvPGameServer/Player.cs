@@ -31,10 +31,9 @@ public class Player
 
     public bool CheckPassCount()
     {
-        //TODO - 고쳐야한다
-        const int test = 6;
+        const int loseCount = 6;    //이 횟수되면 지게한다.
 
-        if (_passCount == test) 
+        if (_passCount == loseCount) 
         {
             return true;
         }

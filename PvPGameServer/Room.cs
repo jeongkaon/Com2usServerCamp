@@ -49,7 +49,6 @@ public class Room
     }
 
     
-    //이함수는 더 생각해봐야한다
     public ErrorCode IsNotStartGame(DateTime cur, int span)
     {
         var diff = cur - _roomStartTime;
@@ -59,14 +58,12 @@ public class Room
             return ErrorCode.None;
         }
 
-        //이미 방대기상태가 긴상태
         //1명만 입장한 상태
         if (_roomUserList.Count() ==1 )
         {
             return ErrorCode.RoomCheckInputOnePlayer;
         }
 
-        //2-1. 2명 다 레디를 안하는 경우
         //TODO_나가게하기
         foreach (var user in _roomUserList)
         {

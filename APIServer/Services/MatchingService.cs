@@ -21,9 +21,6 @@ public class MatchingService : IMatchingService
         var ip = configuration.GetSection("MatchingServerAddress").Value;
         _matchServerAddress = ip + "/RequestMatching ";
         _checkServerAddress = ip + "/CheckMatching ";
-
-        //_matchServerAddress = "http://localhost:11502" + "/RequestMatching ";
-        //_checkServerAddress = "http://localhost:11502" + "/CheckMatching ";
     }
 
     public async Task<ErrorCode> UserIdToMatchServer(string id)

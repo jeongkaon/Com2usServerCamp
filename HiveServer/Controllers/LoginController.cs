@@ -31,7 +31,6 @@ public class LoginController : ControllerBase
 
         LoginHiveResponse response = new();
 
-        // 유저정보 있는지 없는지 검사
         (ErrorCode errorCode, string id) = await _accountDB.VerifyUserAccount(request.Id, request.Password);
         if (errorCode != ErrorCode.None)
         {

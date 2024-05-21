@@ -18,7 +18,6 @@ public class AuthService : IAuthService
     public AuthService(ILogger<AuthService> logger, IConfiguration configuration, IGameDB gameDb)
     {
        _hiveServerAPIAddress = configuration.GetSection("HiveServerAddress").Value + "/VerifyToken";
-       // _hiveServerAPIAddress = "http://localhost:11500" + "/VerifyToken";
 
         _logger = logger;
         _gameDB = gameDb;
